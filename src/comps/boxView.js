@@ -1,24 +1,26 @@
+// Firebase
 import firebase from "../context/firebaseContext"
 import "firebase/auth";
 import "firebase/database"; 
 
-
+// React
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+// Material UI
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent
-} 
-from '@material-ui/core';
-
-import ScoreView from "../comps/scoreView"
-
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
+
+
+// WodTrackrr
+import ScoreView from "../comps/scoreView"
 import postData from "../utils/api"
 import "../styles.css"
 
@@ -49,7 +51,13 @@ function Wod(props){
 		    </Typography>
 		  </CardContent>
 		  <CardActions>
-		    <Button size="small" color="primary" onClick={() => props.handleScoreView(props.info)}>View Scores</Button>
+		  	<Grid item align="center" xs={12}>
+		    <Button size="small" 
+		    	color="primary" 
+		    	onClick={() => props.handleScoreView(props.info)}>
+		    	View Scores
+		    </Button>
+		    </Grid>
 		  </CardActions>
 		</Card>
 		</Grid>
@@ -153,7 +161,7 @@ class BoxView extends Component {
 
 
 
-		<Grid item xs={12}>
+		<Grid item xs={12} align="center">
 			<Button variant="outlined" color="secondary" onClick={()=>{this.props.handleBack()}}>Back</Button>
 		</Grid>
 		</Grid>

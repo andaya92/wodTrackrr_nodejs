@@ -12,186 +12,144 @@ import
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	ListItem, List, ListItemText
-} 
-from '@material-ui/core';
-
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
+// Stats
+import {
+	mean, median, standardDeviation
+}from 'simple-statistics'
+
+import {cvtTimetoInt, cvtIntToTime} from "../utils/formatting"
 import postData from "../utils/api"
 import "../styles.css"
 
+import Chart from 'chart.js';
+
+
 
 var db = firebase.database();
-
-
-/*
-Show details graphs and stuff of score data
-
-// create a new view instance for a given Vega JSON spec
-var view = new vega.View(vega.parse(spec), {renderer: 'none'});
-
-// generate a static SVG image
-view.toSVG()
-  .then(function(svg) {
-    // process svg string
-  })
-  .catch(function(err) { console.error(err); });
-
-// generate a static PNG image
-view.toCanvas()
-  .then(function(canvas) {
-    // process node-canvas instance
-    // for example, generate a PNG stream to write
-    var stream = canvas.createPNGStream();
-  })
-  .catch(function(err) { console.error(err); });
-*/
-
 
 class BarChart extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			spec: this.generateSpec(props.values)
+			dataType: props.dataType,
+			data: props.data, // x y values for chart
+			values: props.values, // raw score values
+			stats: new Map() // mean, median, SD
 		}
 	}
 
-	generateSpec(values){
-		return {
-		  "$schema": "https://vega.github.io/schema/vega/v5.json",
-		  "width": 400,
-		  "height": 200,
-		  "padding": 5,
 
-		  "data": [
-		    {
-		      "name": "table",
-		      "values": values
-		    }
-		  ],
-
-		  "signals": [
-		    {
-		      "name": "tooltip",
-		      "value": {},
-		      "on": [
-		        {"events": "rect:mouseover", "update": "datum"},
-		        {"events": "rect:mouseout",  "update": "{}"}
-		      ]
-		    }
-		  ],
-
-		  "scales": [
-		    {
-		      "name": "xscale",
-		      "type": "band",
-		      "domain": {"data": "table", "field": "category"},
-		      "range": "width",
-		      "padding": 0.05,
-		      "round": true
-		    },
-		    {
-		      "name": "yscale",
-		      "domain": {"data": "table", "field": "amount"},
-		      "nice": true,
-		      "range": "height"
-		    }
-		  ],
-
-		  "axes": [
-		    { "orient": "bottom", "scale": "xscale" },
-		    { "orient": "left", "scale": "yscale" }
-		  ],
-
-		  "marks": [
-		    {
-		      "type": "rect",
-		      "from": {"data":"table"},
-		      "encode": {
-		        "enter": {
-		          "x": {"scale": "xscale", "field": "category"},
-		          "width": {"scale": "xscale", "band": 1},
-		          "y": {"scale": "yscale", "field": "amount"},
-		          "y2": {"scale": "yscale", "value": 0}
-		        },
-		        "update": {
-		          "fill": {"value": "steelblue"}
-		        },
-		        "hover": {
-		          "fill": {"value": "red"}
-		        }
-		      }
-		    },
-		    {
-		      "type": "text",
-		      "encode": {
-		        "enter": {
-		          "align": {"value": "center"},
-		          "baseline": {"value": "bottom"},
-		          "fill": {"value": "#333"}
-		        },
-		        "update": {
-		          "x": {"scale": "xscale", "signal": "tooltip.category", "band": 0.5},
-		          "y": {"scale": "yscale", "signal": "tooltip.amount", "offset": -2},
-		          "text": {"signal": "tooltip.amount"},
-		          "fillOpacity": [
-		            {"test": "isNaN(tooltip.amount)", "value": 0},
-		            {"value": 1}
-		          ]
-		        }
-		      }
-		    }
-		  ]
-		}
-
-	}
-
-	
 	componentDidMount(){
-		  
-
-    fetch('https://vega.github.io/vega/examples/bar-chart.vg.json')
-      .then(res => res.json())
-      .then(spec => this.renderSpec(spec))
-      .catch(err => console.error(err));
+    	// fetch('https://vega.github.io/vega/examples/bar-chart.vg.json')
+     //  .then(res => res.json())
+     //  .then(spec => this.renderSpec(spec))
+     //  .catch(err => console.error(err));
+     
 	}
 
-    renderSpec(spec) {
-      let vega = window.VEGA
-      let view = new vega.View(vega.parse(spec), {
-        renderer:  'canvas',  // renderer (canvas or svg)
-        container: '#barChart',   // parent DOM container
-        hover:     true       // enable hover processing
-      });
-      return view.runAsync();
-    }
+	createChart([labels, data]){
+		this.ctx = document.getElementById('barChart');
+		this.barChart = new Chart(this.ctx, {
+		    type: 'bar',
+		    data:  {
+		    	labels: labels,
+			    datasets: [{
+			    	'label': "Scores (Standard Deviation)",
+			        minBarLength: 1,
+			        backgroundColor: this.props.theme.palette.primary.main,
+			        data: data
+			    }]
+			},
+			options:{
+				maintainAspectRatio: false
+			}
+		});
+
+
+	}
+
+   
 
 	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+		this.setState({
+			...newProps,
+		}, () => {
+			this.createChart(this.binData(this.state.values))
+		})
 	}
 
 	componentWillUnmount(){
 		console.log("Component will unmount")
+	}
+
+	createLabels(_mean, sd){
+		function _(x){
+			return x <= 0 ? 0 : cvtIntToTime(x)
+		}
+		let bin1 = `${_(_mean - (sd * 3))} - ${_(_mean - (sd * 2))}`
+		let bin2 = `${_(_mean - (sd * 2))} - ${_(_mean - (sd * 1))}`
+		let bin3 = `${_(_mean - (sd * 1))} - ${_(_mean - (sd * 0))}`
+		let bin4 = `${_(_mean + (sd * 0))} - ${_(_mean + (sd * 1))}`
+		let bin5 = `${_(_mean + (sd * 1))} - ${_(_mean + (sd * 2))}`
+		let bin6 = `${_(_mean + (sd * 2))} - ${_(_mean + (sd * 3))}`
+
 		
+		return [bin1, bin2, bin3, bin4, bin5, bin6]
 	}
 
-	objListToArray(obj){
-		return Array.from(Object.entries(obj), entry => {
-			 return new Map(Object.entries(entry[1]));
-		})
-	}
-
+	binData(values){
+		// {x: binValue, y: countOfbin}
+		// 6 bins 1,2,3 SD from Mean each way
+		let sd = standardDeviation(values)
+		let _mean = mean(values)
 	
+		
+		let labels = this.createLabels(_mean, sd)
+		let binnedData = [0, 0, 0, 0, 0, 0]
+
+
+		 for(let x of values){
+		 		let diff = (x - _mean) // 11 - 10 => 1
+		 		let numSDAway = Math.floor(diff / sd) // 5 / 2 => .5 => 0
+		 		console.log(`SD: ${sd}, x: ${x}, mean: ${_mean} Diff: ${diff}, sdAway: ${numSDAway}`)
+		 		if(Math.abs(numSDAway) == 1){
+		 			if(diff > 0){
+		 				binnedData[3]++
+		 			}else{
+		 				binnedData[2]++
+		 			}
+		 		}else if(Math.abs(numSDAway) == 2){
+		 			if(diff > 0){
+		 				binnedData[4]++
+		 			}else{
+		 				binnedData[1]++
+		 			}
+		 		} else{
+		 			if(diff > 0){
+		 				binnedData[5]++
+		 			}else{
+		 				binnedData[0]++
+		 			}
+		 		}
+		 }
+		 
+		 return [labels, binnedData]
+	}
 
   render(){
 
 	return(
 		<Grid item xs={12}>
 		 	
-			<Paper elevation={2}> 
-				<div id="barChart" ></div>
-			</Paper>
+			<div stlye={{width: "100%"}}>
+				
+				<canvas id="barChart" width="400" height="400"></canvas>
+			</div>
+			
 		</Grid>
 	)
   }

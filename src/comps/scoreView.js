@@ -92,7 +92,8 @@ class ScoreView extends Component {
 			username: username,
 			score: userScore,
 			wodID: this.state.wodMD.get("wodID"),
-			boxID: this.state.wodMD.get("boxID")
+			boxID: this.state.wodMD.get("boxID"),
+			scoreType: this.state.wodMD.get("scoreType")
 		})
 	}
 
@@ -171,7 +172,7 @@ class ScoreView extends Component {
 			}
 			</Paper>
 		</Grid>
-		<Grid item xs={12}>
+		<Grid item xs={12} align="center">
 			<Button variant="outlined" color="secondary" onClick={()=>{this.props.handleBack()}}>Back</Button>
 		</Grid>
 		</Grid>

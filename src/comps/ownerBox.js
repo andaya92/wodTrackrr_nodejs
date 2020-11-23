@@ -256,7 +256,6 @@ class OwnerBox extends Component {
 		          <option aria-label="None" value="" />
 		          <option value={"time"}>Time</option>
 		          <option value={"reps"}>Reps</option>
-		          <option value={"rounds"}>Rounds</option>
 		      </Select>
 		      <Button variant="outlined" onClick={this.createWOD.bind(this)}>
 		      	Enter WOD

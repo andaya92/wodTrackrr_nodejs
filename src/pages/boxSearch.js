@@ -25,6 +25,7 @@ var db = firebase.database();
 function Box(props){
   let title = props.info.get("title")
   let boxID = props.info.get("boxID")
+  console.log(props.color)
   return(
     <Grid item xs={12}>
       <Paper>
@@ -34,8 +35,14 @@ function Box(props){
             {title}
           </Typography>
         </Grid>
-        <Grid item xs={2}>
-          <Button variant="outlined" onClick={()=>{props.handleBoxView(boxID)}}>View</Button>
+
+        <Grid container item xs={2} align="center" alignItems='center'>
+          <Button 
+              variant="outlined"
+              color="primary"
+              onClick={()=>{props.handleBoxView(boxID)}}>
+              View
+            </Button>
         </Grid>
       </Grid>
       </Paper>
@@ -129,7 +136,11 @@ class BoxSearch extends Component {
       <Grid item xs={12}>
         {
           this.state.filteredBoxes.map((box, i) => {
-            return <Box key={i} info={box} handleBoxView={this.props.handleBoxView}/>
+            return <Box 
+                    key={i} 
+                    info={box} 
+                    color={this.props.theme.palette.primary.mainGrad}
+                    handleBoxView={this.props.handleBoxView}/>
           })
         }
       </Grid>
@@ -178,7 +189,9 @@ class BoxSearchPage extends Component {
     	<Grid item xs={12} >
       {!this.state.showBoxView
         ?
-        <BoxSearch handleBoxView={this.handleBoxView.bind(this)} />
+        <BoxSearch 
+            theme={this.props.theme}
+            handleBoxView={this.handleBoxView.bind(this)} />
         :
         
         <BoxView userMD={this.state.userMD} handleBack={this.handleBack.bind(this)} boxID={this.state.currentBoxID} />
