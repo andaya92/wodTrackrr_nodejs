@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress
+	CircularProgress, LinearProgress, Modal
 } 
 from '@material-ui/core';
 
@@ -43,7 +43,10 @@ class BoxListAccordion extends Component {
       userBoxes: props.userBoxes,
       hasBoxes: props.hasBoxes,
       showBoxList: true,
-      currentBoxID: ""
+      currentBoxID: "",
+      showRemoveAlert: false,
+      curRemoveBoxID: "",
+      curRemoveBoxTitle: ""
     }
   }
 
@@ -66,8 +69,36 @@ class BoxListAccordion extends Component {
   	this.setState({showBoxList: false, currentBoxID: boxID})
   }
 
+  handleRemoveBox(boxID, boxTitle){
+  	this.setState({
+  		showRemoveAlert: true, 
+  		curRemoveBoxID: boxID,
+  		curRemoveBoxTitle: boxTitle
+  	})
+  }
+
+
   handleBack(){
   	this.setState({showBoxList: true})
+  }
+
+  handleModalClose(){
+  	this.setState({showRemoveAlert:false})
+  }
+
+  deleteBox(){
+  	this.handleModalClose()
+  	console.log(`Deleting boxId: ${this.state.curRemoveBoxID}`)
+
+  	let boxNamesTitle = `boxNames/${this.state.curRemoveBoxTitle}`
+  	let userBoxes = `users/${this.state.userMD.uid}/boxes/${this.state.curRemoveBoxID}`
+  	let boxes = `boxes/${this.state.curRemoveBoxID}`
+  	let wods = `wods/${this.state.curRemoveBoxID}`
+  	
+  	db.ref(boxes).set({})
+  	db.ref(wods).set({})
+	db.ref(boxNamesTitle).set({})
+	db.ref(userBoxes).set({})
   }
 
   render(){
@@ -93,7 +124,11 @@ class BoxListAccordion extends Component {
 				?
 					this.state.userBoxes
 					.map((box, i) => {
-					return (<Box key={i} handleBoxView={this.handleBoxView.bind(this)} info={box} />)
+					return (<Box key={i} 
+							handleBoxView={this.handleBoxView.bind(this)}
+							handleRemoveBox={this.handleRemoveBox.bind(this)}
+							info={box}
+						/>)
 					})
 				:
 				<Grid item zeroMinWidth xs={6}>
@@ -105,12 +140,37 @@ class BoxListAccordion extends Component {
 				</Grid>
 			</Grid>
 		:
-			<BoxView handleBack={this.handleBack.bind(this)} boxID={this.state.currentBoxID} />
+			<BoxView handleBack={this.handleBack.bind(this)} userMD={this.state.userMD} boxID={this.state.currentBoxID} />
 
 		}
 
 		
 		</AccordionDetails>
+		<Modal
+	        open={this.state.showRemoveAlert}
+	        onClose={this.handleModalClose.bind(this)}
+	        aria-labelledby="simple-modal-title"
+	        aria-describedby="simple-modal-description"
+	    >
+	    	<div style={{
+	    			position: 'absolute',
+	    			top: "50%",
+	    			left: "50%",
+	    			width: "80vw",
+				    transform: "translate(-50%, -50%)",
+				  }}>
+				<Grid item align="center" xs={12}>
+	    		<Paper style={{height:"25vh", display: "flex", flexDirection: "column",justifyContent: "center"}}>
+	    			<Typography style={{position: ""}}>
+	    				 Remove {this.state.curRemoveBoxTitle} ({this.state.curRemoveBoxID})
+	    			</Typography>
+	    			
+	    			<Button color="primary" variant="outlined" onClick={()=>{ this.deleteBox()}}>Delete</Button>
+	    		</Paper>
+	    		</Grid>
+	    	</div>
+
+	    </Modal>
 	</Accordion>		
 	)
   }
@@ -127,6 +187,7 @@ function Box(props){
 		<Typography noWrap align="left">Title: {title}</Typography>
 		<Typography  noWrap align="left">Id: {boxID}</Typography>
 		<Button variant="outlined" color="primary" onClick={()=>{props.handleBoxView(boxID)}}>View</Button>
+		<Button variant="outlined" color="error" onClick={()=>{props.handleRemoveBox(boxID, title)}}>Remove</Button>
 	</Paper>
 	</Grid>)
 }

@@ -134,21 +134,29 @@ class ScoreDataView extends Component {
   render(){
 	return(
 		<Grid item xs={12}>
-			<Paper>
-				<Typography>Low: {cvtIntToTime(this.state.stats.get("min"))}</Typography>
-				<Typography>High: {cvtIntToTime(this.state.stats.get("max"))}</Typography>
-			</Paper>
-			<Paper elevation={2}> 
-				<LineChart 
-					data = {this.state.scores}
-					values={this.state.rawScores}
-					dataType={this.state.dataType} />
-
-				<BarChart 
-					data = {this.state.scores}
-					values={this.state.rawScores}
-					dataType={this.state.dataType} />
-			</Paper>
+			<Grid  item xs={12}>
+				<Paper>
+					<Typography>Low: {cvtIntToTime(this.state.stats.get("min"))}</Typography>
+					<Typography>High: {cvtIntToTime(this.state.stats.get("max"))}</Typography>
+				</Paper>
+			</Grid>
+			
+			<Grid item xs={12}>
+				
+					<LineChart 
+						data = {this.state.scores}
+						values={this.state.rawScores}
+						dataType={this.state.dataType} />
+				
+			</Grid>
+			<Grid item xs={12}>
+				
+					<BarChart 
+						data = {this.state.scores}
+						values={this.state.rawScores}
+						dataType={this.state.dataType} />
+			
+			</Grid>
 		</Grid>
 	)
   }

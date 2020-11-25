@@ -48,18 +48,29 @@ class LineChart extends Component {
 
 	createChart(){
 		this.ctx = document.getElementById('lineChart');
-		console.log(this.state.data)
+		
+		let context = this.ctx.getContext('2d')
+		let grd = context.createLinearGradient(200,0,200,400);
+		grd.addColorStop(0,"#01d3fe");
+		
+		grd.addColorStop(1,"#0890fd");
+
+		if(this.barChart){
+			this.barChart.destroy()
+		}
+		
 		this.barChart = new Chart(this.ctx, {
 		    type: 'line',
 		    
 		    data:  {
+		    	label: "Scores",
 			    datasets: [{
-			    	'label': "Score",
+			    	label: "Score",
 			        barPercentage: 0.5,
 			        barThickness: 6,
 			        maxBarThickness: 8,
 			        minBarLength: 2,
-			        backgroundColor: this.props.theme.palette.primary.main,
+			        backgroundColor: grd,
 			        data: this.state.data
 			    }]
 			},
@@ -75,6 +86,9 @@ class LineChart extends Component {
 			    },
 			    tooltips: {
 			        callbacks: {
+			        	title: (tooltipItem, data) => {
+
+			        	},
 			            label: function(tooltipItem, data) {
 			                var label = data.datasets[tooltipItem.datasetIndex].label || '';
 
@@ -125,10 +139,9 @@ class LineChart extends Component {
 
 	return(
 		<Grid item xs={12}>
-		 	
-			<Paper elevation={2}> 
-				<canvas id="lineChart" width="400" height="400"></canvas>
-			</Paper>
+			<div style={{height:"25vh", "max-width":"50vw"}}>
+				<canvas id="lineChart" ></canvas>
+			</div>
 		</Grid>
 	)
   }

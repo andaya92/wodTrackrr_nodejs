@@ -53,6 +53,14 @@ class BarChart extends Component {
 
 	createChart([labels, data]){
 		this.ctx = document.getElementById('barChart');
+		let context = this.ctx.getContext('2d')
+		let grd = context.createLinearGradient(200,0,200,400);
+		grd.addColorStop(0,"#01d3fe");
+		
+		grd.addColorStop(1,"#0890fd");
+		if(this.barChart){
+			this.barChart.destroy()
+		}
 		this.barChart = new Chart(this.ctx, {
 		    type: 'bar',
 		    data:  {
@@ -60,7 +68,7 @@ class BarChart extends Component {
 			    datasets: [{
 			    	'label': "Scores (Standard Deviation)",
 			        minBarLength: 1,
-			        backgroundColor: this.props.theme.palette.primary.main,
+			        backgroundColor: grd,
 			        data: data
 			    }]
 			},
@@ -78,12 +86,30 @@ class BarChart extends Component {
 		this.setState({
 			...newProps,
 		}, () => {
+			
 			this.createChart(this.binData(this.state.values))
+			
 		})
 	}
 
 	componentWillUnmount(){
-		console.log("Component will unmount")
+		console.log("Component will unmount: BarChart")
+	}
+
+	addData() {
+	    
+	    this.barChart.data.datasets.forEach((dataset) => {
+	        dataset.data.push(this.binData(this.state.values));
+	    });
+	    this.barChart.update();
+	}
+
+	removeData(chart) {
+	    
+	    this.barChart.data.datasets.forEach((dataset) => {
+	        dataset.data.pop();
+	    });
+	    this.barChart.update();
 	}
 
 	createLabels(_mean, sd){
@@ -116,13 +142,13 @@ class BarChart extends Component {
 		 		let diff = (x - _mean) // 11 - 10 => 1
 		 		let numSDAway = Math.floor(diff / sd) // 5 / 2 => .5 => 0
 		 		console.log(`SD: ${sd}, x: ${x}, mean: ${_mean} Diff: ${diff}, sdAway: ${numSDAway}`)
-		 		if(Math.abs(numSDAway) == 1){
+		 		if(Math.abs(numSDAway) <= 1){
 		 			if(diff > 0){
 		 				binnedData[3]++
 		 			}else{
 		 				binnedData[2]++
 		 			}
-		 		}else if(Math.abs(numSDAway) == 2){
+		 		}else if(Math.abs(numSDAway) <= 2){
 		 			if(diff > 0){
 		 				binnedData[4]++
 		 			}else{
@@ -144,12 +170,9 @@ class BarChart extends Component {
 
 	return(
 		<Grid item xs={12}>
-		 	
-			<div stlye={{width: "100%"}}>
-				
-				<canvas id="barChart" width="400" height="400"></canvas>
+			<div style={{height:"25vh", "max-width":"50vw"}}>
+				<canvas id="barChart"></canvas>
 			</div>
-			
 		</Grid>
 	)
   }

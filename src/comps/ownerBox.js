@@ -179,7 +179,7 @@ class OwnerBox extends Component {
  
   render () {
     return (
-    	<Grid item xs={12} id="ownerBox">
+    	<Grid item xs={12} id="ownerBox" >
 			<Typography variant="h3">
 				Welcome, {this.state.userMD.accountType}!
 			</Typography>

@@ -36,8 +36,14 @@ function Score(props){
 	
 	return(
 		<ListItem>
-			<ListItemText primary={username}/>
-			<ListItemText primary={score}/>
+			<Grid item xs={12}>
+				<Grid item xs={6}>
+					<ListItemText primary={username}/>
+				</Grid>
+				<Grid item xs={6}>
+					<ListItemText primary={`${score}::how do I compare doe`}/> 
+				</Grid>
+			</Grid>
 		</ListItem>
 	)
 }
@@ -46,10 +52,12 @@ class ScoreView extends Component {
 	constructor(props){
 		super(props)
 		let wodID = props.wodMD.get("wodID")
+		let scoreType = props.wodMD.get("scoreType")
 		this.state = {
 			userMD: props.userMD,
 			wodID: wodID,
 			wodMD: props.wodMD,
+			scoreType: scoreType,
 			scores: new Array()
 		}
 	}
@@ -78,10 +86,62 @@ class ScoreView extends Component {
 			 return new Map(Object.entries(entry[1]));
 		})
 	}
+	isNumInSane(s){
+		
+		let hasNonDigitRegex = /\D/
+		let res = s.search(hasNonDigitRegex) 
+		let isSane = (res === -1) ? true: false
+		
+		console.log(`String: ${s}, length: ${s.length}, isSane: ${isSane}`)
+		return isSane 
+		
+	}
 
 	handleAddScore(){
+		console.log(this.state.userMD)
 		if(!this.state.userMD){return}
-		let userScore =  document.getElementById("scoreViewUserScore").value
+
+		let userScore = ""
+		if(this.state.scoreType === "time"){
+			let mins =  document.getElementById("scoreViewUserScoreMins").value
+			let secs =  document.getElementById("scoreViewUserScoreSecs").value
+			if(!this.isNumInSane(mins) || !this.isNumInSane(secs)){
+				alert(`Time must only contain numbers, entered: ${mins}:${secs}`)
+				return
+			}
+			if(parseInt(secs) > 59){
+				alert(`Seconds must be 59 or below, entered: ${secs}`)
+				return
+			}
+			if(parseInt(secs) < 10 && secs.length === 1){
+				secs = `0${secs}`
+			}
+			if(mins.length > 2){
+				alert(`Minutes must be 99 or below, entered: ${mins}`)	
+				return
+			}
+			if(mins.length === 0){
+				mins = "0"
+			}
+			if(secs.length === 0){
+				secs = "0"
+			}
+			userScore = `${mins}:${secs}`
+		}else{
+			// reps or rounds
+			userScore =  document.getElementById("scoreViewUserScore").value
+			if(userScore.length > 3){
+				alert(`Score must be 3 digits or less, entered: ${userScore}`)
+				return
+			}
+			if(!this.isNumInSane(userScore)){
+				alert(`Score must be digits only, entered: ${userScore}`)
+				return
+			}
+
+		}
+
+
 		let username = this.state.userMD.username
 		let uid = this.state.userMD.uid
 		
@@ -121,25 +181,79 @@ class ScoreView extends Component {
 					</Typography>	        
 				</AccordionSummary>
 				<AccordionDetails>
-					<Typography>{this.state.wodMD.get("scoreType")}</Typography>
-					<TextField
-		              id="scoreViewUserScore"
-		              type="text"
-		              style={{ margin: 8}}
-		              pattern="[\sA-Za-z0-9]{35}"
-		              inputProps={{
-		                title: "Letters only, max length 35",
-		                placeholder: "Score"
-		              }}
-		              margin="normal"
-		              color="primary"
-		              InputLabelProps={{
-		                shrink: true,
-		              }}
-		            />
-		            <Button variant="outline" color="primary" onClick={this.handleAddScore.bind(this)}>Add</Button>
+				<Grid container>
+					<Grid  item xs={12} >
+						<Typography >
+							{this.state.scoreType
+								.replace(
+									this.state.scoreType[0],
+									this.state.scoreType[0].toUpperCase())
+							}
+						</Typography>
+					</Grid>
+				
 
+					{this.state.scoreType === "reps"
+					?	<Grid item xs={10}>
+						<TextField
+			              id="scoreViewUserScore"
+			              type="number"
+			              style={{ margin: 8}}
+			              pattern="[0-9]{4}"
+			              inputProps={{
+			                title: "Numbers only, max length 4",
+			                placeholder: "Score"
+			              }}
+			              margin="normal"
+			              color="primary"
+			              InputLabelProps={{
+			                shrink: true,
+			              }}
+			            />
+			            </Grid>
+			        :
+			        	<React.Fragment>
+			        	<Grid item xs={5}>
+			        	<TextField
+			              id="scoreViewUserScoreMins"
+			              type="number"
+			              style={{ margin: 8}}
+			              pattern="[0-9]{3}"
+			              inputProps={{
+			                title: "Numbers only, max length 3",
+			                placeholder: "Minutes"
+			              }}
+			              margin="normal"
+			              color="primary"
+			              InputLabelProps={{
+			                shrink: true,
+			              }}
+			            />
+			            </Grid>
+			            <Grid item xs={5}>
+			            <TextField
+			              id="scoreViewUserScoreSecs"
+			              type="number"
+			              style={{ margin: 8}}
+			              pattern="[0-9]{2}"
+			              inputProps={{
+			                title: "Numbers only, max length 2",
+			                placeholder: "Seconds"
+			              }}
+			              margin="normal"
+			              color="primary"
+			              InputLabelProps={{
+			                shrink: true,
+			              }}
+			            />
+			            </Grid>
+			        	</React.Fragment>
 
+					}
+					<Grid item xs={2}>
+		            	<Button variant="outline" color="primary" onClick={this.handleAddScore.bind(this)}>Add</Button>
+		            </Grid>
+		        </Grid>
 				</AccordionDetails>
 			</Accordion>		
 		</Grid>

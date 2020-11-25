@@ -29,7 +29,7 @@ var db = firebase.database();
 
 
 /*
-Show details of Box and its WODS
+	Show details of Box and its WODS
 */
 function Wod(props){
 	let title = props.info.get("title")
@@ -122,7 +122,7 @@ class BoxView extends Component {
 
   render(){
 	return(
-		<Grid item xs={12}>
+		<Grid item xs={12} align="center">
 		<Paper elevation={2}>
 			<Typography align="center" variant="h3">{this.state.boxMD.get("title")}</Typography>
 
