@@ -154,6 +154,7 @@ class BoxView extends Component {
 		  return wod.get("title").toLowerCase().includes(val.toLowerCase())
 		})
 		this.setState({filteredWods: filteredWods})
+		console.log("Testing branche merge")
 	}
 
 
