@@ -9,14 +9,10 @@ import { Route, Link } from 'react-router-dom';
 import { Grid, Paper, Button, Typography, Collapse } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
-import Login from "../comps/login"
-import OwnerBox from "../comps/ownerBox"
+import Login from "../comps/profile/login"
+import OwnerBox from "../comps/boxes/ownerBox"
 
-
-import UsernamePanel from "../comps/usernamePanel"
-import history from "../history"
-
-
+import UsernamePanel from "../comps/profile/usernamePanel"
 
 import postData from "../utils/api"
 import "../styles.css"
@@ -33,7 +29,6 @@ export class PageContent extends Component {
       user: props.user,
       userMD: props.userMD
     }
-    console.log(props)
   }
 
   componentWillReceiveProps(newProps){
@@ -76,7 +71,7 @@ export class PageContent extends Component {
             <React.Fragment></React.Fragment>
           }
 
-
+          
           <Paper elevation={2}>
             <OwnerBox user={this.state.user}
               userMD={this.state.userMD}

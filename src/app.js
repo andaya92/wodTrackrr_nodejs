@@ -19,7 +19,7 @@ import PanoramaIcon from '@material-ui/icons/Panorama';
 import "./styles.css";
 
 
-import BoxSearch from "./pages/boxSearch"
+import BoxSearchPage from "./pages/boxSearchPage"
 import Profile from "./pages/profile"
 import Header from "./comps/header"
 
@@ -102,7 +102,7 @@ export default class App extends React.Component {
         <Grid item xs={11} id="page-container" className="page-content">
         <Switch>
           <Route exact path="/boxSearch">
-            <BoxSearch user={this.state.user}
+            <BoxSearchPage user={this.state.user}
               userMD={this.state.userMD} />
           </Route>     
           <Route exact path="/profile">

@@ -34,7 +34,7 @@ class LineChart extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			dataType: props.dataType,
+			scoreType: props.scoreType,
 			data: props.data, // x y values for chart
 			values: props.values, // raw score values
 			stats: new Map() // mean, median, SD
@@ -47,6 +47,8 @@ class LineChart extends Component {
 	}
 
 	createChart(){
+		console.log("LineChart____________")
+		console.log(this.state)
 		this.ctx = document.getElementById('lineChart');
 		
 		let context = this.ctx.getContext('2d')
@@ -55,11 +57,11 @@ class LineChart extends Component {
 		
 		grd.addColorStop(1,"#0890fd");
 
-		if(this.barChart){
-			this.barChart.destroy()
+		if(this.lineChart){
+			this.lineChart.destroy()
 		}
 		
-		this.barChart = new Chart(this.ctx, {
+		this.lineChart = new Chart(this.ctx, {
 		    type: 'line',
 		    
 		    data:  {
@@ -78,8 +80,12 @@ class LineChart extends Component {
 				scales: {
 		            yAxes: [{
 		                ticks:{
-		                	callback: function(label, index, labels) {
-			                	return cvtIntToTime(label)
+		                	callback: (label, index, labels) => {
+			                	if(this.state.scoreType === "time"){
+			                		return cvtIntToTime(label)
+			                	}else if(this.state.scoreType === "reps"){
+			                		return label
+			                	}
 			                }
 			             }
 		            }]
@@ -89,13 +95,19 @@ class LineChart extends Component {
 			        	title: (tooltipItem, data) => {
 
 			        	},
-			            label: function(tooltipItem, data) {
+			            label: (tooltipItem, data) => {
 			                var label = data.datasets[tooltipItem.datasetIndex].label || '';
 
 			                if (label) {
 			                    label += ': ';
 			                }
-			                label += cvtIntToTime(tooltipItem.yLabel)
+
+			                if(this.state.scoreType === "time"){
+		                		label += cvtIntToTime(tooltipItem.yLabel)
+		                	}else if(this.state.scoreType === "reps"){
+		                		label += tooltipItem.yLabel
+		                	}
+			                
 			                
 			                return label;
 			            }
@@ -106,8 +118,6 @@ class LineChart extends Component {
 			plugins: [{
 				beforeInit: function(chart) {
 					var chartData = chart.data.datasets[0].data
-					console.log(chart.options.scales.yAxes)
-
 				}
 			}]
 		});

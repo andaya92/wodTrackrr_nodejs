@@ -35,7 +35,7 @@ class BarChart extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			dataType: props.dataType,
+			scoreType: props.scoreType,
 			data: props.data, // x y values for chart
 			values: props.values, // raw score values
 			stats: new Map() // mean, median, SD
@@ -43,12 +43,14 @@ class BarChart extends Component {
 	}
 
 
-	componentDidMount(){
-    	// fetch('https://vega.github.io/vega/examples/bar-chart.vg.json')
-     //  .then(res => res.json())
-     //  .then(spec => this.renderSpec(spec))
-     //  .catch(err => console.error(err));
-     
+	componentWillReceiveProps(newProps){
+		this.setState({
+			...newProps,
+		}, () => {
+			
+			this.createChart(this.binData(this.state.values))
+			
+		})
 	}
 
 	createChart([labels, data]){
@@ -76,22 +78,9 @@ class BarChart extends Component {
 				maintainAspectRatio: false
 			}
 		});
-
-
 	}
 
    
-
-	componentWillReceiveProps(newProps){
-		this.setState({
-			...newProps,
-		}, () => {
-			
-			this.createChart(this.binData(this.state.values))
-			
-		})
-	}
-
 	componentWillUnmount(){
 		console.log("Component will unmount: BarChart")
 	}
@@ -112,19 +101,34 @@ class BarChart extends Component {
 	    this.barChart.update();
 	}
 
-	createLabels(_mean, sd){
-		function _(x){
+	format(x){
+		if(this.state.scoreType === "time"){
 			return x <= 0 ? 0 : cvtIntToTime(x)
+		}else if(this.state.scoreType === "reps"){
+			return parseFloat(x)
 		}
-		let bin1 = `${_(_mean - (sd * 3))} - ${_(_mean - (sd * 2))}`
-		let bin2 = `${_(_mean - (sd * 2))} - ${_(_mean - (sd * 1))}`
-		let bin3 = `${_(_mean - (sd * 1))} - ${_(_mean - (sd * 0))}`
-		let bin4 = `${_(_mean + (sd * 0))} - ${_(_mean + (sd * 1))}`
-		let bin5 = `${_(_mean + (sd * 1))} - ${_(_mean + (sd * 2))}`
-		let bin6 = `${_(_mean + (sd * 2))} - ${_(_mean + (sd * 3))}`
+	}
 
-		
-		return [bin1, bin2, bin3, bin4, bin5, bin6]
+	createLabels(_mean, sd){
+		let bins = []
+
+		for(let i=0; i<3; i++){
+			let binA = `${this.format(_mean - (sd * (i + 1)))} - ${this.format(_mean - (sd * i))}`
+			let binB = `${this.format(_mean + (sd * i))} - ${this.format(_mean + (sd * (i + 1)))}`	
+			bins.unshift(binA)
+			bins.push(binB)
+		}
+
+		// let bin1 = `${_(_mean - (sd * 3))} - ${_(_mean - (sd * 2))}`
+		// let bin2 = `${_(_mean - (sd * 2))} - ${_(_mean - (sd * 1))}`
+		// let bin3 = `${_(_mean - (sd * 1))} - ${_(_mean - (sd * 0))}`
+		// let bin4 = `${_(_mean + (sd * 0))} - ${_(_mean + (sd * 1))}`
+		// let bin5 = `${_(_mean + (sd * 1))} - ${_(_mean + (sd * 2))}`
+		// let bin6 = `${_(_mean + (sd * 2))} - ${_(_mean + (sd * 3))}`
+
+		console.log("Bins")
+		console.log(bins)
+		return bins
 	}
 
 	binData(values){
