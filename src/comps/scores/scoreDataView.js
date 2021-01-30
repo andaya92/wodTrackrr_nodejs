@@ -49,15 +49,25 @@ class ScoreDataView extends Component {
 		let scoresPath = `scores/${this.state.wodID}`
 		this.scoreListener  = db.ref(scoresPath).on("value", ss => {
 			if(ss && ss.exists()){
+				/*ss.val() looks like this object from the path scores/wodID
+					scores/wodID: {
+						uid: {
+							scoreinfo
+						},
+						uid: {...},
+						...
+					}
+				*/
 				let [graphData, rawScores, scoreType] = this.getData(ss.val())
 				let stats = this.getDescStats(rawScores)
-				
+				let showCharts = (rawScores.length > 1) ? true : false
 
 				this.setState({
 					graphData: graphData, 
 					rawScores: rawScores, 
 					scoreType: scoreType, 
-					stats: stats
+					stats: stats,
+					showCharts: showCharts
 				})
 			}
 		})
@@ -71,18 +81,17 @@ class ScoreDataView extends Component {
 		console.log("Component will unmount")
 	}
 
-	
 	getData(obj){
 		// create two arrays
 		// One for data display in graph, 
 		//		[ {"category": "A", "amount": 28}, ... ]
 		// Second to crunch data, raw values
 		/*
-				key			(uid)
-				boxID: 		"-MMVcVjihF2bXFc6qIEp"
-				score:  	"321"
-				username:  	"TestOwner"
-				wodID:  	"-MMjP1_MQH23dnFQOfjR"
+				key	=> uid
+					boxID: 		"-MMVcVjihF2bXFc6qIEp"
+					score:  	"321"
+					username:  	"TestOwner"
+					wodID:  	"-MMjP1_MQH23dnFQOfjR"
 		*/
 		let graphData = []
 		let values = []
@@ -129,50 +138,51 @@ class ScoreDataView extends Component {
   render(){
 	return(
 		<Grid item xs={12}>
-			<Grid  item  container xs={12}>
-				<Grid  item  xs={12}>
-					<Paper>
-						<Typography>Low: {this.state.scoreType === "time"? cvtIntToTime(this.state.stats.get("min")): this.state.stats.get("min")}</Typography>
+			<Grid item container align="center" xs={12}>
+				<Grid item xs={4}>
+					<Paper elevation={6}>
+						<Typography>
+							Low: {this.state.scoreType === "time" ? 
+								cvtIntToTime(this.state.stats.get("min"))
+								: this.state.stats.get("min")}
+						</Typography>
 					</Paper>
 				</Grid>
-				<Grid  item  xs={12}>
-					<Paper>
-						<Typography>High: {this.state.scoreType === "time"? cvtIntToTime(this.state.stats.get("max")): this.state.stats.get("max")}</Typography>
-					</Paper>
-				<Grid  item  xs={12}>
-					<Paper>
-						<Typography>Avg: {this.state.scoreType === "time"? cvtIntToTime(this.state.stats.get("mean")): this.state.stats.get("mean")}</Typography>
+				<Grid item xs={4}>
+					<Paper elevation={6}>
+						<Typography>
+							High: {this.state.scoreType === "time" ?
+							cvtIntToTime(this.state.stats.get("max"))
+							: this.state.stats.get("max")}
+						</Typography>
 					</Paper>
 				</Grid>
+				<Grid item xs={4}>
+					<Paper elevation={6}>
+						<Typography >
+							Avg: {this.state.scoreType === "time" ?
+							cvtIntToTime(this.state.stats.get("mean"))
+							: this.state.stats.get("mean")}
+						</Typography>
+					</Paper>
 				</Grid>
-
-	
 			</Grid>
-			
+
 			<Grid item xs={12}>
-				
 					<LineChart 
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType} />
-				
 			</Grid>
 			<Grid item xs={12}>
-				
 					<BarChart 
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType} />
-			
 			</Grid>
 		</Grid>
 	)
   }
 }
-
-
-
-
-  
 export default ScoreDataView = withTheme(ScoreDataView);
 

@@ -44,31 +44,24 @@ theme = responsiveFontSizes(theme)
 export default class App extends React.Component {
   constructor(props){
     super(props)
-  
     this.state={
       btmnav: 0,
       user: firebase.auth().currentUser,
       userMD: false
     }
-    
-
-
 
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
       if(user){
-        console.log("Firebase user listener")
         this.setState({ user: user })
         this.userMDListener = db.ref('users/' + user.uid)
-          .on('value', metadata => {
-             if(metadata.val()){
-              console.log("Metadata change")
-              console.log(metadata.val())
-              this.setState({
-                userMD: metadata.val()
-              })
-             }
-          })
+        .on('value', metadata => {
+           if(metadata.val()){
+            this.setState({
+              userMD: metadata.val()
+            })
+           }
+        })
       }
     })
   }
@@ -80,38 +73,27 @@ export default class App extends React.Component {
       this.userMDListener && this.userMDListener()
   }
 
-
-          // <Route path="/subscribe"  >
-          //   <SubscribePage 
-              // user={this.state.user}
-              // userMetadata={this.state.userMetadata}
-          //   />
-
   render(){
     return(
     <FirebaseAuthContext.Provider>
     <HashRouter history={history} >
-   
     <ThemeProvider theme={theme}>
-      
       <Grid container>
-
         <Grid item xs={12} id="page-header">
           <Header className="header" />
         </Grid>
         <Grid item xs={11} id="page-container" className="page-content">
-        <Switch>
-          <Route exact path="/boxSearch">
-            <BoxSearchPage user={this.state.user}
-              userMD={this.state.userMD} />
-          </Route>     
-          <Route exact path="/profile">
-            <Profile user={this.state.user}
-              userMD={this.state.userMD} />
-          </Route>      
-        </Switch>
+          <Switch>
+            <Route exact path="/boxSearch">
+              <BoxSearchPage user={this.state.user}
+                userMD={this.state.userMD} />
+            </Route>     
+            <Route exact path="/profile">
+              <Profile user={this.state.user}
+                userMD={this.state.userMD} />
+            </Route>      
+          </Switch>
         </Grid>
-
         <Grid item xs={12} className="footer">
           <BottomNavigation className="footer"
             value = {this.state.btmnav}
@@ -119,21 +101,19 @@ export default class App extends React.Component {
                 this.setState({btmnav: newValue})
               }}
               style={{background: theme.palette.background.toolbar}}
-            showLabels>
+            showLabels
+          >
             <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
             <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
           </BottomNavigation>
         </Grid>
-    </Grid>
-    
-       </ThemeProvider>
-
+      </Grid>
+      </ThemeProvider>
       </HashRouter>
       </FirebaseAuthContext.Provider>
   
     );
   }
 }
-
 App.contextType = FirebaseAuthContext;
 

@@ -154,7 +154,6 @@ class BoxView extends Component {
 		  return wod.get("title").toLowerCase().includes(val.toLowerCase())
 		})
 		this.setState({filteredWods: filteredWods})
-		console.log("Testing branche merge")
 	}
 
 
@@ -192,9 +191,16 @@ class BoxView extends Component {
  	]
  
 	return(
-		<Grid item xs={12} align="center">
+		<Grid item xs={12}>
 		<Paper elevation={2}>
-			<Typography align="center" variant="h3">{this.state.boxMD.get("title")}</Typography>
+			<Grid item align="center" xs={12}>
+				<Typography 
+					align="center" 
+					variant="h3"
+				>
+					{this.state.boxMD.get("title")}
+				</Typography>
+			</Grid>
 
 
 			{this.state.showWodList
