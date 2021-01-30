@@ -42,14 +42,12 @@ class BarChart extends Component {
 		}
 	}
 
-
 	componentWillReceiveProps(newProps){
 		this.setState({
 			...newProps,
 		}, () => {
-			
-			this.createChart(this.binData(this.state.values))
-			
+			if(this.state.values.length > 0)
+				this.createChart(this.binData(this.state.values))
 		})
 	}
 
@@ -58,8 +56,8 @@ class BarChart extends Component {
 		let context = this.ctx.getContext('2d')
 		let grd = context.createLinearGradient(200,0,200,400);
 		grd.addColorStop(0,"#01d3fe");
-		
 		grd.addColorStop(1,"#0890fd");
+
 		if(this.barChart){
 			this.barChart.destroy()
 		}
@@ -80,27 +78,6 @@ class BarChart extends Component {
 		});
 	}
 
-   
-	componentWillUnmount(){
-		console.log("Component will unmount: BarChart")
-	}
-
-	addData() {
-	    
-	    this.barChart.data.datasets.forEach((dataset) => {
-	        dataset.data.push(this.binData(this.state.values));
-	    });
-	    this.barChart.update();
-	}
-
-	removeData(chart) {
-	    
-	    this.barChart.data.datasets.forEach((dataset) => {
-	        dataset.data.pop();
-	    });
-	    this.barChart.update();
-	}
-
 	format(x){
 		if(this.state.scoreType === "time"){
 			return x <= 0 ? 0 : cvtIntToTime(x)
@@ -118,31 +95,20 @@ class BarChart extends Component {
 			bins.unshift(binA)
 			bins.push(binB)
 		}
-
-		// let bin1 = `${_(_mean - (sd * 3))} - ${_(_mean - (sd * 2))}`
-		// let bin2 = `${_(_mean - (sd * 2))} - ${_(_mean - (sd * 1))}`
-		// let bin3 = `${_(_mean - (sd * 1))} - ${_(_mean - (sd * 0))}`
-		// let bin4 = `${_(_mean + (sd * 0))} - ${_(_mean + (sd * 1))}`
-		// let bin5 = `${_(_mean + (sd * 1))} - ${_(_mean + (sd * 2))}`
-		// let bin6 = `${_(_mean + (sd * 2))} - ${_(_mean + (sd * 3))}`
-
-		console.log("Bins")
-		console.log(bins)
 		return bins
 	}
 
 	binData(values){
-		// {x: binValue, y: countOfbin}
-		// 6 bins 1,2,3 SD from Mean each way
+		/*
+			{x: binValue, y: countOfbin}
+			6 bins 1,2,3 SD from Mean each way
+		*/
+		console.log(values)
 		let sd = standardDeviation(values)
 		let _mean = mean(values)
-	
-		
 		let labels = this.createLabels(_mean, sd)
 		let binnedData = [0, 0, 0, 0, 0, 0]
-
-
-		 for(let x of values){
+		for(let x of values){
 		 		let diff = (x - _mean) // 11 - 10 => 1
 		 		let numSDAway = Math.floor(diff / sd) // 5 / 2 => .5 => 0
 		 		console.log(`SD: ${sd}, x: ${x}, mean: ${_mean} Diff: ${diff}, sdAway: ${numSDAway}`)
