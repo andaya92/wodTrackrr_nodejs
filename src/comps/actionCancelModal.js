@@ -22,8 +22,14 @@ export default class ActionCancelModal extends Component{
 		this.state = {
 			open: props.open
 		}
-		console.log("Modal")
-		console.log(this)
+		/*
+		open
+		actionText
+		cancelText
+		modalText
+		onAction
+		onClose
+		*/
 	}
 
 	componentWillReceiveProps(newProps){

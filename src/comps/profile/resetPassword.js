@@ -7,7 +7,6 @@ import { Grid, TextField, Button, Paper, Typography , Collapse } from '@material
 import { Alert } from '@material-ui/lab';
 
 import "../../css/login.css"
-import postData from "../../utils/api"
 
 export default class ResetPassword extends Component {
    constructor(props){

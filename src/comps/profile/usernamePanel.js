@@ -6,7 +6,8 @@ import "firebase/database";
 import React, { Component } from 'react'
 import { Grid, TextField, Button, Typography } from '@material-ui/core';
 
-import postData from "../../utils/api"
+import { setUsername } from '../../utils/firestore/users'
+
 import "../../styles.css"
 
 var db = firebase.database();
@@ -14,7 +15,6 @@ var db = firebase.database();
 const usernameMaxLength = 12
 const usernameMaxLengthErrMsg = "Username cannot be longer than 12 characters"
 const usernameErrMsg = "Username can only contain letters & numbers" 
-
 
 export default class UsernamePanel extends Component {
   
@@ -26,19 +26,16 @@ export default class UsernamePanel extends Component {
     }
   }
 
-
   componentWillReceiveProps(newProps){
     this.setState({...newProps})
   }
 
-
-componentDidMount(){
-  this.hideUsernameInput()
-}
-componentDidUpdate(){
-  this.hideUsernameInput()
-}
-
+  componentDidMount(){
+    this.hideUsernameInput()
+  }
+  componentDidUpdate(){
+    this.hideUsernameInput()
+  }
 
   // <!-- TODO: Add SDKs for Firebase products that you want to use
   //      https://firebase.google.com/docs/web/setup#available-libraries -->
@@ -46,12 +43,9 @@ componentDidUpdate(){
   updateUsername(ev){
     let usernameInput = document.getElementById('updateUsernameInput')
     
-
     if(usernameInput.style.display === "none"){
       usernameInput.style.display = "block"
-
     }else{
-
       let re = /\W/g  // match non word characters ^[A-Za-z0-9]
     
       if(usernameInput.value.length > 12){
@@ -68,12 +62,10 @@ componentDidUpdate(){
         return 
       }
 
-      db.ref(`users/${this.state.user.uid}/`)
-      .update({
-        "username": usernameInput.value
-      })
-      .then(() => {
-       this.hideUsernameInput()
+      setUsername(this.state.user.uid, usernameInput.value)
+      .then((res) => {
+        console.log(res)
+        this.hideUsernameInput()
       })
       .catch(err => { console.log(err) })
     }
@@ -93,8 +85,7 @@ componentDidUpdate(){
     }catch{return}
   }
 
-  render () {
-    
+  render () {    
     return (
     <Grid container id="usernamePanel" >
     {

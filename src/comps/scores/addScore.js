@@ -21,26 +21,21 @@ import { withTheme } from '@material-ui/core/styles';
 
 import ScoreDataView from "./scoreDataView" 
 
-import { setScore, removeScore } from "../../utils/firebaseData"
+import { removeScore, setShallowScore } from "../../utils/firebase/scores"
+import { setScore } from "../../utils/firestore/scores"
 import "../../styles.css"
 
 
 var db = firebase.database();
 
-class AddScore extends Component {
+class AddScore extends Component{
 	constructor(props){
 		super(props)
-		let wodID = props.wodMD.get("wodID")
-		let scoreType = props.wodMD.get("scoreType")
-		let boxID = props.wodMD.get("boxID")
-
 		this.state = {
 			userMD: props.userMD,
-			wodMD: props.wodMD,
-			wodID: wodID,
-			boxID: boxID,
-			scoreType: scoreType
+			wodMD: props.wodMD
 		}
+		console.log(props)
 	}
 
 	componentWillReceiveProps(newProps){
@@ -65,7 +60,7 @@ class AddScore extends Component {
 		if(!this.state.userMD){return}
 
 		let userScore = ""
-		if(this.state.scoreType === "time"){
+		if(this.state.wodMD['scoreType'] === "time"){
 			let mins =  document.getElementById("scoreViewUserScoreMins").value
 			let secs =  document.getElementById("scoreViewUserScoreSecs").value
 			if(!this.isNumInSane(mins) || !this.isNumInSane(secs)){
@@ -78,6 +73,10 @@ class AddScore extends Component {
 			}
 			if(parseInt(secs) < 10 && secs.length === 1){
 				secs = `0${secs}`
+			}
+			if(isNaN(parseInt(secs)) ||  isNaN(parseInt(mins))){
+				alert(`Missing field, entered: ${mins}:${secs}`)
+				return
 			}
 			if(mins.length > 2){
 				alert(`Minutes must be 99 or below, entered: ${mins}`)	
@@ -101,50 +100,19 @@ class AddScore extends Component {
 				alert(`Score must be digits only, entered: ${userScore}`)
 				return
 			}
-
 		}
 
 		let username = this.state.userMD.username
 		let uid = this.state.userMD.uid
-		let wodID = this.state.wodMD.get("wodID")
-		let boxID = this.state.wodMD.get("boxID")
-		let title = this.state.wodMD.get("title")
-
-
-		// each score can be idnetified by wodID/uid, enforces 1 score per workout per user
-		let scorePath = `scores/${wodID}/${uid}`
-		let userScorePath = `users/${uid}/scores/${boxID}/${wodID}`
-
-		setScore( scorePath,
-			title,
-			username, 
-			uid, 
-			userScore,
-			wodID,
-			boxID,
-			this.state.wodMD.get("scoreType")
-		)
-		.then((res) => console.log(res))
-		.catch((err) => console.log(err))
-
-
-		setScore( userScorePath,
-			title,
-			username, 
-			uid, 
-			userScore,
-			wodID,
-			boxID,
-			this.state.wodMD.get("scoreType")
-		)
+		let wodID = this.state.wodMD["wodID"]
+		let boxID = this.state.wodMD["boxID"]
+		let title = this.state.wodMD["title"]
+		let scoreType = this.state.wodMD["scoreType"]
+		
+		setScore(title, username, uid, userScore, wodID, boxID, scoreType)
 		.then((res) => console.log(res))
 		.catch((err) => console.log(err))
 	}
-
-	
-
-
-
 
   render(){
 	return(
@@ -164,10 +132,10 @@ class AddScore extends Component {
 				<Grid container>
 					<Grid  item xs={12} >
 						<Typography >
-							{this.state.scoreType
+							{this.state.wodMD['scoreType']
 								.replace(
-									this.state.scoreType[0],
-									this.state.scoreType[0].toUpperCase())
+									this.state.wodMD['scoreType'][0],
+									this.state.wodMD['scoreType'][0].toUpperCase())
 							}
 						</Typography>
 					</Grid>

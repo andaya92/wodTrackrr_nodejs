@@ -20,14 +20,15 @@ import { withTheme } from '@material-ui/core/styles';
 
 import BoxListAccordion from "./boxListAccordion"
 
-import {setBox, setWod, removeWod} from "../../utils/firebaseData"
+import { setBox } from "../../utils/firestore/boxes"
+
 import AddWod from "../wods/addWod"
 
-import postData from "../../utils/api"
 import "../../styles.css"
 
 
-var db = firebase.database();
+let db = firebase.database();
+let fs = firebase.firestore();
 
 
 
@@ -64,9 +65,9 @@ class OwnerBox extends Component {
  
   componentWillReceiveProps(newProps){
 	this.setState({...newProps})
-	if(newProps.userMD.accountType === "owner"){
-		this.listenForBoxes()
-	}
+		if(newProps.userMD.accountType === "owner"){
+			this.listenForBoxes()
+		}
   }
 
   componentWillUnmount(){
@@ -75,32 +76,25 @@ class OwnerBox extends Component {
   	}
   }
 
-
-  getArrayOfBoxes(boxObj){
-	return Array.from(Object.entries(boxObj), entry => {
-		 return new Map(Object.entries(entry[1]));
-	})
-  }
-
   listenForBoxes(){
-  	if(this.state.user.uid === null){return}
-  	let path = `users/${this.state.user.uid}/boxes`
-  	
-  	this.boxListener = db.ref(path).on('value', ss => {
-  		if(ss != null && ss.exists()){
+		fs.collection("boxes").where("uid", "==", this.state.user.uid)
+		.onSnapshot(ss => {
+			let data = []
+			ss.forEach(doc => {
+				data.push(doc.data())
+			})
 			this.setState({
 				hasBoxes: true, 
-				userBoxes: this.getArrayOfBoxes(ss.val())
+				userBoxes: data
 			})  			
-  		}else{
-  			this.setState({
+		},
+		err => {
+  		this.setState({
 				hasBoxes: false, 
 				userBoxes: []
-			})
-  		}
-  	})
+			})  			
+		})
   }
-  
 
   onKeyUp(data){
     if((data.keyCode || data.which) == 13){
@@ -114,7 +108,8 @@ class OwnerBox extends Component {
   // import setBox from ""
   createBox(title){
 	setBox(title, this.props.user.uid)
-	.then((res) => {console.log(res)})
+	.then(res => {console.log(res)})
+	.catch(err => {console.log(err)})
   }
 
 
