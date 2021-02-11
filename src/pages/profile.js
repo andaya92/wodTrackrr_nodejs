@@ -2,32 +2,29 @@ import firebase from "../context/firebaseContext"
 import "firebase/auth";
 import "firebase/database"; 
 
-
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 
 import { Grid, Paper, Button, Typography, Collapse } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import { withTheme } from '@material-ui/core/styles';
 
 import Login from "../comps/profile/login"
 import OwnerBox from "../comps/boxes/ownerBox"
 
 import UsernamePanel from "../comps/profile/usernamePanel"
-
-import postData from "../utils/api"
+import Athlete from '../comps/profile/athlete'
 import "../styles.css"
 
-
-
 var db = firebase.database();
-
 
 export class PageContent extends Component {
   constructor(props){
     super(props)
     this.state = {
       user: props.user,
-      userMD: props.userMD
+      userMD: props.userMD,
+      emailAlertOpen: false
     }
   }
 
@@ -56,13 +53,11 @@ export class PageContent extends Component {
       <Grid item xs={12}>
           <Paper elevation={2} >
           </Paper>
-          {
-          !this.state.user.emailVerified
-          ?
-          
+          {!this.state.user.emailVerified ?
             <Paper elevation={2}>
-              <Button variant="outline" onClick={this.sendVerificationEmail.bind(this)} >
-               <Typography  variant="h5" component="h3">
+              <Button variant="outline" 
+                onClick={this.sendVerificationEmail.bind(this)} >
+                <Typography  variant="h5" component="h3">
                   Send Verification Email
                 </Typography>
               </Button>
@@ -70,18 +65,17 @@ export class PageContent extends Component {
           :
             <React.Fragment></React.Fragment>
           }
-
-          
+          <Paper elevation={4}>
+            <UsernamePanel user={this.state.user} userMD={this.state.userMD} />
+          </Paper>
           <Paper elevation={2}>
-            <OwnerBox user={this.state.user}
-              userMD={this.state.userMD}
-            />
+          {this.state.userMD.accountType === "owner" ?
+            <OwnerBox user={this.state.user} userMD={this.state.userMD} />
+          :
+            <Athlete user={this.state.user} userMD={this.state.userMD} />
+          }
           </Paper>
       </Grid>
-
-
-
-
       <Grid item xs={12}>
         <Grid item xs={12} className="compBorderOutline">
           <Paper elevation={2}>
@@ -96,14 +90,12 @@ export class PageContent extends Component {
         </Grid>
       </Grid>
     </Grid>
-
     )
   }
 }
 
 
-
-export default class ProfilePage extends Component {
+class ProfilePage extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -111,7 +103,6 @@ export default class ProfilePage extends Component {
       userMD: props.userMD
     }  
   }
-
  
   handleLogout(){
     firebase.auth().signOut().then(() => {
@@ -133,9 +124,7 @@ export default class ProfilePage extends Component {
     this.setState({...newProps})
   }
 
-
   render () {
-    
     return (
     	<Grid item xs={12} id="profilepage">
         {
@@ -153,3 +142,4 @@ export default class ProfilePage extends Component {
   }
 }
 
+export default ProfilePage = withTheme(ProfilePage);

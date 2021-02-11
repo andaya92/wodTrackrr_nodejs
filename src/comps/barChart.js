@@ -22,7 +22,6 @@ import {
 }from 'simple-statistics'
 
 import {cvtTimetoInt, cvtIntToTime} from "../utils/formatting"
-import postData from "../utils/api"
 import "../styles.css"
 
 import Chart from 'chart.js';

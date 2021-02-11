@@ -53,7 +53,7 @@ class ScoreList extends Component {
 					{
 					this.state.scores.map(score => {
 						let isCurUserScore = 
-							(this.state.uid == score.get("uid"))? true : false
+							(this.state.uid == score["uid"])? true : false
 						return <ScoreRow 
 							info={score}
 							onRemove = {this.props.onRemove}
@@ -87,11 +87,11 @@ export default ScoreList = withTheme(ScoreList);
 Show details of Box and its WODS
 */
 function ScoreRow(props){
-	let score = props.info.get("score")
-	let username = props.info.get("username")
-	let wodID = props.info.get("wodID")
-	let uid = props.info.get("uid")
-	let scoreID = `${wodID}/${uid}`
+	let score = props.info["score"]
+	let username = props.info["username"]
+	let wodID = props.info["wodID"]
+	let uid = props.info["uid"]
+	let scoreID = props.info["scoreID"]
 	let rowStyle = (props.isUserScore)? "": ""
 	return(
 		<TableRow selected={props.isUserScore}>

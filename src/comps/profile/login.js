@@ -6,8 +6,7 @@ import React, { Component } from 'react'
 import { Grid, TextField, Button, Typography, Paper } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
-import postData from "../../utils/api"
-import "../../css/login.css"
+
 import "../../styles.css"
 
 

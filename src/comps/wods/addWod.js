@@ -14,7 +14,7 @@ import
 } 
 from '@material-ui/core';
 
-import {setWod} from "../../utils/firebaseData"
+import { setWod } from "../../utils/firestore/wods"
 
 
 var db = firebase.database();
@@ -46,7 +46,7 @@ export default class AddWod extends Component {
 	  	}
 
 	  	setWod(boxID, title, wodText, scoreType)
-	  	.then((res)=> {console.log(res)})
+	  	.then(()=> {console.log("Successfully added wod.")})
 	  	.catch((err)=>{console.log(err)})
 
 	  }
@@ -66,7 +66,7 @@ export default class AddWod extends Component {
 			          { this.state.hasBoxes ?
 			          	this.state.userBoxes
 		        		.map((box, i) => {
-			        		return (<option key={i} value={box.get("boxID")} >{box.get("title")}</option>)
+			        		return (<option key={i} value={box["boxID"]} >{box["title"]}</option>)
 			        	})
 			        	:
 			        	<option aria-label="None" value="" >No boxes!</option>

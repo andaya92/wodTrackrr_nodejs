@@ -59,20 +59,17 @@ class SearchSortTable extends Component {
 		let val = ev.target.value
 		console.log(val)
 		let filteredRows = this.state.rows.filter(wod =>{
-		  return wod.get("title").toLowerCase().includes(val.toLowerCase())
+		  return wod["title"].toLowerCase().includes(val.toLowerCase())
 		})
 
 		this.setState({filteredRows: filteredRows})
 	}
-
-	/*
-		Sort Table
-	*/ 
+	
 	descendingComparator(a, b, orderBy) {
-		if (b.get(orderBy) < a.get(orderBy)) {
+		if(b[orderBy] < a[orderBy]){
 			return -1;
 		}
-		if (b.get(orderBy) > a.get(orderBy)) {
+		if(b[orderBy] > a[orderBy]){
 			return 1;
 		}
 		return 0;
@@ -127,9 +124,6 @@ class SearchSortTable extends Component {
 			pageEnd: rowsPerPage
 		})
 	}
-
-
-
 
   render(){
 	return(
@@ -223,10 +217,12 @@ class SearchSortTable extends Component {
 }
 
 function Wod(props){
-	let title = props.info.get("title")
-	let scoreType = props.info.get("scoreType")
-	let wodText = props.info.get("wodText")
-	let date = props.info.get("date")
+	let title = props.info["title"]
+	let scoreType = props.info["scoreType"]
+	let wodText = props.info["wodText"]
+	let wodID = props.info["wodID"]
+	let boxID = props.info["boxID"]
+	let date = props.info["date"]
 	return(
 		<TableRow>
 			<TableCell>
@@ -250,10 +246,9 @@ function Wod(props){
 				</Typography>
 			</TableCell>
 			<TableCell>
-				<Button size="small" color="primary" 
-					onClick={() => props.handleView(props.info)}>
+				<Link component={Button} to={`/wod/${boxID}/${wodID}`}>
 					View Scores
-				</Button>
+				</Link>
 			</TableCell>
 			<React.Fragment>
 			{

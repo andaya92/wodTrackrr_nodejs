@@ -14,7 +14,7 @@ import
 } 
 from '@material-ui/core';
 
-import {editWod} from "../../utils/firebaseData"
+import {editWod} from "../../utils/firestore/wods"
 
 
 var db = firebase.database();
@@ -22,8 +22,6 @@ var db = firebase.database();
 export default class EditWod extends Component {
 	constructor(props){
 		super(props)
-		
-
 		this.state = {
 			wodInfo: props.wodInfo,
 			userBoxes: props.userBoxes,
@@ -39,27 +37,24 @@ export default class EditWod extends Component {
 		this.setState({...newProps})
 	}
 	
-
 	editWOD(){
 	  	let boxID = document.getElementById("editOwnerBoxAddWodBoxID").value
 	  	let title = document.getElementById("editOwnerBoxAddWodTitle").value
 	  	let scoreType = document.getElementById("editOwnerBoxAddWodScoreType").value
 	  	let wodText = document.getElementById("editOwnerBoxAddWodWodText").value
-	  	let wodID = this.state.wodInfo.get("wodID")
+	  	let wodID = this.state.wodInfo["wodID"]
 
 	  	if(!boxID || !title || !scoreType || !wodText || !wodID){
 	  		console.log("Error with input editWod")
 	  		console.log(boxID, title, scoreType, wodText)
 	  		return
 	  	}
-
 	  	editWod(boxID, wodID, title, wodText, scoreType)
 	  	.then((res)=> {
 	  		console.log(res)
 	  		this.props.onClose()
 	  	})
 	  	.catch((err)=>{console.log(err)})
-
 	  }
 
 	handleValChange(ev, val){
@@ -71,9 +66,9 @@ export default class EditWod extends Component {
 	}
 
 	render(){
-		let oldScoreType = this.state.wodInfo.get("scoreType")
+		let oldScoreType = this.state.wodInfo["scoreType"]
 		let scoreTypes = ["time", "reps"]
-		let oldBoxID = this.state.wodInfo.get("boxID")
+		let oldBoxID = this.state.wodInfo["boxID"]
 		return(
 
 			<Modal
@@ -95,9 +90,8 @@ export default class EditWod extends Component {
 					>
 					<Paper style={{display: "flex", flexDirection: "column", justifyContent: "center"}}>
 		    			<Typography style={{position: ""}}>
-		    				 Edit Wod({this.state.wodInfo.get("wodID")})
+		    				 Edit Wod({this.state.wodInfo["wodID"]})
 		    			</Typography>
-
 
 		    			<Grid item container xs={12}>
 						<Grid item xs={6}>
@@ -109,21 +103,20 @@ export default class EditWod extends Component {
 					          }}
 					        >
 					          { this.state.hasBoxes ?
-					          	this.state.userBoxes
-				        		.map((box, i) => {
-					        		let boxID = box.get("boxID")
-					        		return (
-					        			<option 
-				        					key={i}
-				        					value={boxID}
-				        					selected={oldBoxID === boxID? true: false}
-				        				>
-				        					{box.get("title")}
-				        				</option>
-					        		)
-					        	})
+					          	this.state.userBoxes.map((box, i) => {
+						        		let boxID = box["boxID"]
+						        		return (
+						        			<option 
+					        					key={i}
+					        					value={boxID}
+					        					selected={oldBoxID === boxID? true: false}
+					        				>
+					        					{box["title"]}
+					        				</option>
+						        		)
+						        	})
 					        	:
-					        	<option aria-label="None" value="" >No boxes!</option>
+					        		<option aria-label="None" value="" >No boxes!</option>
 					          }
 					      </Select>
 					    </Grid>
@@ -139,83 +132,81 @@ export default class EditWod extends Component {
 									scoreTypes.map((scoreType) => {
 										return (
 											<option 
-										      	value={scoreType}
-										      	selected={oldScoreType === scoreType? true: false}
-										      >
-										      	{scoreType}
-										    </option>
+								      	value={scoreType}
+								      	selected={oldScoreType === scoreType? true: false}
+								      >
+										  	{scoreType}
+										  </option>
 										)
 									})
 								}
-							      
 							</Select>
 					    </Grid>
 					    <Grid item xs={12}>
-				          <TextField
-				              id="editOwnerBoxAddWodTitle"
-				              type="text"
-				              name="title"
-				              style={{ margin: 8}}
-				              value= {this.state.title}
-				              onChange={this.handleValChange.bind(this)}
-				              pattern="[\sA-Za-z0-9]{35}"
-				              inputProps={{
-				                title: "Letters only, max length 35",
-				                placeholder: "Title"
-				              }}
-				              margin="normal"
-				              color="primary"
-				              InputLabelProps={{
-				                shrink: true,
-				              }}
-				            />
-				        </Grid>
-				        <Grid item xs={12}>
-				             <TextField
-				              id="editOwnerBoxAddWodWodText"
-				              type="text"
-				              name="wodText"
-				              style={{ margin: 8}}
-				              value= {this.state.wodText}
-				              onChange={this.handleValChange.bind(this)}
-				              pattern="[\sA-Za-z0-9]{35}"
-				              inputProps={{
-				                title: "Letters only, max length 35",
-				                placeholder: "Workout here"
-				              }}
-				              margin="normal"
-				              color="primary"
-				              multiline
-  					  		  rows={5}
-				              InputLabelProps={{
-				                shrink: true,
-				              }}
-				            />
-				        </Grid>
-					      <Grid item xs={12}>
-						      <Button 
-						      	variant="outlined" 
-						      	color="primary" 
-						      	onClick={this.editWOD.bind(this)}
-						      >
-						      	Update
-						      </Button>
-					      </Grid>
-					         <Grid item xs={12}>
-						      <Button 
-						      	variant="outlined" 
-						      	color="primary" 
-						      	onClick={this.props.onClose}
-						      >
-						      	Cancel
-						      </Button>
-					      </Grid>
-					</Grid>
+			          <TextField
+			              id="editOwnerBoxAddWodTitle"
+			              type="text"
+			              name="title"
+			              style={{ margin: 8}}
+			              value= {this.state.title}
+			              onChange={this.handleValChange.bind(this)}
+			              pattern="[\sA-Za-z0-9]{35}"
+			              inputProps={{
+			                title: "Letters only, max length 35",
+			                placeholder: "Title"
+			              }}
+			              margin="normal"
+			              color="primary"
+			              InputLabelProps={{
+			                shrink: true,
+			              }}
+			            />
+				      </Grid>
+			        <Grid item xs={12}>
+	             	<TextField
+		              id="editOwnerBoxAddWodWodText"
+		              type="text"
+		              name="wodText"
+		              style={{ margin: 8}}
+		              value= {this.state.wodText}
+		              onChange={this.handleValChange.bind(this)}
+		              pattern="[\sA-Za-z0-9]{35}"
+		              inputProps={{
+		                title: "Letters only, max length 35",
+		                placeholder: "Workout here"
+		              }}
+		              margin="normal"
+		              color="primary"
+		              multiline
+				  		  	rows={5}
+		              InputLabelProps={{
+		                shrink: true,
+		              }}
+	            	/>
+			      	</Grid>
+				      <Grid item xs={12}>
+					      <Button 
+					      	variant="outlined" 
+					      	color="primary" 
+					      	onClick={this.editWOD.bind(this)}
+					      >
+					      	Update
+					      </Button>
+				      </Grid>
+				      <Grid item xs={12}>
+					      <Button 
+					      	variant="outlined" 
+					      	color="primary" 
+					      	onClick={this.props.onClose}
+					      >
+					      	Cancel
+					      </Button>
+				      </Grid>
+						</Grid>
 					</Paper>
 					</Grid>
 				</div>
 			</Modal>
-			
 		)
 	}
 }

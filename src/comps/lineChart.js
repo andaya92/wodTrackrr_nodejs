@@ -23,7 +23,6 @@ import {
 	mean, median, standardDeviation
 }from 'simple-statistics'
 
-import postData from "../utils/api"
 import "../styles.css"
 
 
@@ -37,7 +36,7 @@ class LineChart extends Component {
 			scoreType: props.scoreType,
 			data: props.data, // x y values for chart
 			values: props.values, // raw score values
-			stats: new Map() // mean, median, SD
+			stats: props.stats // mean, median, SD
 		}
 	}
 

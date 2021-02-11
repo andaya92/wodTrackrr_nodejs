@@ -29,3 +29,14 @@ export function cvtTimetoIntList(rawScores){
 export function msToDate(ms){
 	return new Date(ms).toLocaleDateString("en-US")
 }
+
+
+export function formatDate(){
+  const [{ value: month },,{ value: day },,{ value: year }] 
+    = new Intl.DateTimeFormat('en', 
+      { year: 'numeric', month: 'numeric', day: '2-digit' })
+      .formatToParts(new Date())  
+  console.log(new Intl.DateTimeFormat('en', 
+      { year: 'numeric', month: 'numeric', day: '2-digit' }))
+  return `${year}/${month}/${day}`
+}

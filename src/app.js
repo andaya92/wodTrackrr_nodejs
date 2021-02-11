@@ -1,7 +1,8 @@
 import firebase, { FirebaseAuthContext } from "./context/firebaseContext"
 import "firebase/auth";
 import "firebase/storage"; 
-import "firebase/database"; 
+import "firebase/database";
+import "firebase/firestore";
 
 
 import React from "react";
@@ -20,10 +21,12 @@ import "./styles.css";
 
 
 import BoxSearchPage from "./pages/boxSearchPage"
+import BoxView from "./comps/boxes/boxView"
+import RegisterUser from "./comps/profile/registerUser"
+import ScoreView from "./comps/scores/scoreView"
 import Profile from "./pages/profile"
 import Header from "./comps/header"
 
-import postData from "./utils/api"
 
 import history from "./history"
 
@@ -35,11 +38,11 @@ import teal from '@material-ui/core/colors/teal';
 
 import apptheme from "./css/apptheme"
 
-var db = firebase.database();
-
 // Needs to move to its own file
 let theme = createMuiTheme(apptheme);
 theme = responsiveFontSizes(theme)
+
+
 
 export default class App extends React.Component {
   constructor(props){
@@ -50,20 +53,26 @@ export default class App extends React.Component {
       userMD: false
     }
 
+  }
+
+  componentWillMount(){
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
+      let fs = firebase.firestore();
+      let metadata = false
       if(user){
-        this.setState({ user: user })
-        this.userMDListener = db.ref('users/' + user.uid)
-        .on('value', metadata => {
-           if(metadata.val()){
-            this.setState({
-              userMD: metadata.val()
-            })
-           }
-        })
+        let doc = fs.collection("users").doc(user.uid)
+        this.userMDListener = doc.onSnapshot(metadata => {
+          if(metadata.exists){
+            this.setState({ user: user, userMD: metadata.data() })
+          }else{
+            this.setState({ user: user, userMD: false })
+          }
+        }, err => {console.log(err)})
+
       }
     })
+
   }
 
   componentWillUnmount(){
@@ -91,11 +100,35 @@ export default class App extends React.Component {
             <Route exact path="/profile">
               <Profile user={this.state.user}
                 userMD={this.state.userMD} />
-            </Route>      
+            </Route>
+            <Route path="/box/:boxID"
+              render= { props =>(
+                <BoxView
+                  userMD={this.state.userMD}
+                  boxID={props.match.params.boxID}/>
+                )
+              } 
+            />
+           <Route path="/wod/:boxID/:wodID"
+            render= { props =>(
+              <ScoreView userMD={this.state.userMD}
+                boxID={props.match.params.boxID}
+                wodID={props.match.params.wodID}
+                isReadOnly={true}/>
+              )
+            } 
+          />
+          <Route exact path="/register"
+            render= { props =>(
+              <RegisterUser />
+              )
+            } 
+          />
           </Switch>
+          <div style={{"margin": "10vh"}}></div>
         </Grid>
         <Grid item xs={12} className="footer">
-          <BottomNavigation className="footer"
+          <BottomNavigation 
             value = {this.state.btmnav}
             onChange = {(event, newValue) => {
                 this.setState({btmnav: newValue})

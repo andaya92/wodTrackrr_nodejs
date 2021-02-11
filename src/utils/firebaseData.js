@@ -1,7 +1,7 @@
 import firebase from "../context/firebaseContext"
 import "firebase/auth"; 
 import "firebase/storage";
-import "firebase/database"; 
+import "firebase/database";
 var storage = firebase.storage()
 var db = firebase.database();
 
@@ -127,52 +127,3 @@ export function removeWod(wodPath, scorePath){
 
 
 
-/*
-	Scores
-*/
-
-export function setScore( path,
-	title,
-	username, 
-	uid, 
-	userScore,
-	wodID,
-	boxID,
-	scoreType
-){
-	return new Promise((res, rej) => {
-
-		db.ref(path).set({
-			username: username,
-			uid: uid,
-			title: title,
-			score: userScore,
-			wodID: wodID,
-			boxID: boxID,
-			scoreType: scoreType,
-			date: Date.now()
-		})
-		.then(() => res("Success added score"))
-		.catch(() => rej("Failed to add score"))	
-	})
-}
-
-export function setShallowScore( path
-){
-	return new Promise((res, rej) => {
-
-		db.ref(`shallow/${path}`).set(true)
-		.then(() => res("Success added score"))
-		.catch(() => rej("Failed to add score"))	
-	})
-}
-
-
-export function removeScore(scoreID){
-	return new Promise((res, rej) => {
-		db.ref(`scores/${scoreID}`)
-		.remove()
-		.then(()=>{res(`Successfully removed score: ${scoreID}`)})
-		.catch((err) => {rej(`Failed to remove score: ${scoreID}`)})
-	})
-}
