@@ -6,8 +6,8 @@ import ReactMarkdown from 'react-markdown'
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
@@ -20,8 +20,6 @@ import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import ScoreDataView from "./scoreDataView" 
-
-import { removeScore, setShallowScore } from "../../utils/firebase/scores"
 import { setScore } from "../../utils/firestore/scores"
 import "../../styles.css"
 
@@ -96,6 +94,10 @@ class AddScore extends Component{
 				alert(`Score must be 3 digits or less, entered: ${userScore}`)
 				return
 			}
+			if(!userScore){
+				alert("Must enter score.")
+				return
+			}
 			if(!this.isNumInSane(userScore)){
 				alert(`Score must be digits only, entered: ${userScore}`)
 				return
@@ -105,18 +107,19 @@ class AddScore extends Component{
 		let username = this.state.userMD.username
 		let uid = this.state.userMD.uid
 		let wodID = this.state.wodMD["wodID"]
+		let gymClassID = this.state.wodMD["gymClassID"]
 		let boxID = this.state.wodMD["boxID"]
 		let title = this.state.wodMD["title"]
 		let scoreType = this.state.wodMD["scoreType"]
 		
-		setScore(title, username, uid, userScore, wodID, boxID, scoreType)
+		setScore(title, username, uid, userScore, wodID, gymClassID, boxID, scoreType)
 		.then((res) => console.log(res))
 		.catch((err) => console.log(err))
 	}
 
   render(){
 	return(
-		<Grid item xs={12}>
+		<Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
 			<Accordion>
 				<AccordionSummary
 					style={{background: this.props.theme.palette.primary.main}}
@@ -129,39 +132,39 @@ class AddScore extends Component{
 					</Typography>	        
 				</AccordionSummary>
 				<AccordionDetails>
-				<Grid container>
-					<Grid  item xs={12} >
-						<Typography >
-							{this.state.wodMD['scoreType']
-								.replace(
-									this.state.wodMD['scoreType'][0],
-									this.state.wodMD['scoreType'][0].toUpperCase())
-							}
-						</Typography>
-					</Grid>
-
-					{this.state.scoreType === "reps"
-					?	<Grid item xs={10}>
-						<TextField
-			              id="scoreViewUserScore"
-			              type="number"
-			              style={{ margin: 8}}
-			              pattern="[0-9]{4}"
-			              inputProps={{
-			                title: "Numbers only, max length 4",
-			                placeholder: "Score"
-			              }}
-			              margin="normal"
-			              color="primary"
-			              InputLabelProps={{
-			                shrink: true,
-			              }}
-			            />
-			            </Grid>
-			        :
-			        	<React.Fragment>
-			        	<Grid item xs={5}>
-			        	<TextField
+					<Typography>
+						{this.state.wodMD['scoreType']
+							.replace(
+								this.state.wodMD['scoreType'][0],
+								this.state.wodMD['scoreType'][0].toUpperCase())
+						}
+					</Typography>
+					<TableContainer>
+					<Table>
+						<TableRow>
+							{this.state.wodMD.scoreType === "reps" ?	
+								<TableCell align="center" colSpan={2}>
+									<TextField
+						              id="scoreViewUserScore"
+						              type="number"
+						              style={{ margin: 8}}
+						              pattern="[0-9]{4}"
+						              inputProps={{
+						                title: "Numbers only, max length 4",
+						                placeholder: "Score"
+						              }}
+						              margin="normal"
+						              style={{width: "100%"}}
+						              color="primary"
+						              InputLabelProps={{
+						                shrink: true,
+						              }}
+						            />
+								</TableCell>
+							:
+								<React.Fragment>
+								<TableCell align="center">
+									<TextField
 			              id="scoreViewUserScoreMins"
 			              type="number"
 			              style={{ margin: 8}}
@@ -170,15 +173,16 @@ class AddScore extends Component{
 			                title: "Numbers only, max length 3",
 			                placeholder: "Minutes"
 			              }}
+			              style={{width: "100%"}}
 			              margin="normal"
 			              color="primary"
 			              InputLabelProps={{
 			                shrink: true,
 			              }}
 			            />
-			            </Grid>
-			            <Grid item xs={5}>
-			            <TextField
+								</TableCell>
+								<TableCell align="center">
+									<TextField
 			              id="scoreViewUserScoreSecs"
 			              type="number"
 			              style={{ margin: 8}}
@@ -187,20 +191,27 @@ class AddScore extends Component{
 			                title: "Numbers only, max length 2",
 			                placeholder: "Seconds"
 			              }}
+			              style={{width: "100%"}}
 			              margin="normal"
 			              color="primary"
 			              InputLabelProps={{
 			                shrink: true,
 			              }}
 			            />
-			            </Grid>
-			        	</React.Fragment>
-
-					}
-					<Grid item xs={2}>
-		            	<Button variant="outline" color="primary" onClick={this.handleAddScore.bind(this)}>Add</Button>
-		            </Grid>
-		        </Grid>
+								</TableCell>
+								</React.Fragment>
+							}
+						</TableRow>
+						<TableRow>
+							<TableCell colSpan={3} align="center">
+				        	<Button  color="primary" style={{width: "100%"}} variant="outlined"
+				        		onClick={this.handleAddScore.bind(this)}>
+				        		Add
+				        	</Button>
+							</TableCell>
+						</TableRow>
+					</Table>
+					</TableContainer>
 				</AccordionDetails>
 			</Accordion>		
 		</Grid>

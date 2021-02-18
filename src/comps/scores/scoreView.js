@@ -91,6 +91,7 @@ class ScoreView extends Component {
 
   componentWillReceiveProps(newProps){
     this.setState({...newProps})
+    console.log(newProps)
   }
 
   componentWillUnmount(){
@@ -124,6 +125,7 @@ class ScoreView extends Component {
   }
 
   render(){
+    console.log(this.state.userMD)
   return(
     <React.Fragment>
       {Object.keys(this.state.wodMD).length > 0 ?
@@ -140,10 +142,14 @@ class ScoreView extends Component {
               <ReactMarkdown>{this.state.wodMD["wodText"]}</ReactMarkdown>
             </Paper>   
           </Grid>
-          <AddScore 
-            userMD={this.state.userMD}
-            wodMD={this.state.wodMD}
-          />
+          {Object.keys(this.state.userMD).length > 0?
+            <AddScore 
+              userMD={this.state.userMD}
+              wodMD={this.state.wodMD}
+            />
+          :
+            <React.Fragment></React.Fragment>
+          }
           <Grid item xs={12}>
             <Paper elevation={2}>   
               <ScoreDataView 

@@ -6,8 +6,8 @@ import ReactMarkdown from 'react-markdown'
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
@@ -16,13 +16,12 @@ import
 	TableCell, TableBody, Table, Modal
 } 
 from '@material-ui/core';
-
 import { DeleteOutlined, LooksOneOutlined, AddBoxOutlined } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import ActionCancelModal from "../actionCancelModal"
-import { removeScore } from "../../utils/firebase/scores"
+import { removeScore } from "../../utils/firestore/scores"
 import "../../styles.css"
 
 

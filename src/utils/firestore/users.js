@@ -18,6 +18,14 @@ export function setUsername(uid, username){
 			return fs.collection("scores").doc(doc.data().scoreID).update(data)
 		})
 	})
+
+	fs.collection("following").where("uid", "==", uid)
+	.get().then(ss => {
+		let promises = ss.docs.map(doc => {
+			console.log(doc.data())
+			return fs.collection("following").doc(doc.data().followID).update(data)
+		})
+	})
 	
 	return new Promise((res, rej) => {
 		Promise.all(promises)

@@ -39,15 +39,11 @@ class LineChart extends Component {
 			stats: props.stats // mean, median, SD
 		}
 	}
-
 	
 	componentDidMount(){
-
 	}
 
 	createChart(){
-		console.log("LineChart____________")
-		console.log(this.state)
 		this.ctx = document.getElementById('lineChart');
 		
 		let context = this.ctx.getContext('2d')
@@ -120,10 +116,7 @@ class LineChart extends Component {
 				}
 			}]
 		});
-
-
 	}
-    
 
 	componentWillReceiveProps(newProps){
 		this.setState({...newProps}, ()=>{
@@ -133,26 +126,16 @@ class LineChart extends Component {
 
 	componentWillUnmount(){
 		console.log("Component will unmount")
-		
 	}
-
-	objListToArray(obj){
-		return Array.from(Object.entries(obj), entry => {
-			 return new Map(Object.entries(entry[1]));
-		})
-	}
-
-	
 
   render(){
-
-	return(
-		<Grid item xs={12}>
-			<div style={{height:"25vh", "max-width":"50vw"}}>
-				<canvas id="lineChart" ></canvas>
-			</div>
-		</Grid>
-	)
+		return(
+			<Grid item xs={12}>
+				<div style={{height:"25vh", "max-width":"50vw"}}>
+					<canvas id="lineChart" ></canvas>
+				</div>
+			</Grid>
+		)
   }
 }
 

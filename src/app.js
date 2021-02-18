@@ -1,16 +1,11 @@
 import firebase, { FirebaseAuthContext } from "./context/firebaseContext"
-import "firebase/auth";
-import "firebase/storage"; 
-import "firebase/database";
-import "firebase/firestore";
-
+import "firebase/auth"
+import "firebase/firestore"
 
 import React from "react";
-import { HashRouter, Switch, Route, Link } from 'react-router-dom';
-
+import { HashRouter, Switch, Route, Link, Redirect } from 'react-router-dom';
 
 import { Paper, Button, BottomNavigation, BottomNavigationAction ,Grid, Container} from '@material-ui/core';
-
 
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
@@ -23,9 +18,11 @@ import "./styles.css";
 import BoxSearchPage from "./pages/boxSearchPage"
 import BoxView from "./comps/boxes/boxView"
 import RegisterUser from "./comps/profile/registerUser"
+import GymClassView from "./comps/gymClasses/gymClassView"
 import ScoreView from "./comps/scores/scoreView"
 import Profile from "./pages/profile"
 import Header from "./comps/header"
+import Login from "./comps/profile/login"
 
 
 import history from "./history"
@@ -36,13 +33,12 @@ import lightBlue from '@material-ui/core/colors/lightBlue';
 import pink from '@material-ui/core/colors/pink';
 import teal from '@material-ui/core/colors/teal';
 
-import apptheme from "./css/apptheme"
 
-// Needs to move to its own file
+import apptheme from "./css/apptheme"
+import "./styles.css"
+
 let theme = createMuiTheme(apptheme);
 theme = responsiveFontSizes(theme)
-
-
 
 export default class App extends React.Component {
   constructor(props){
@@ -52,14 +48,12 @@ export default class App extends React.Component {
       user: firebase.auth().currentUser,
       userMD: false
     }
-
   }
 
   componentWillMount(){
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
-      let fs = firebase.firestore();
-      let metadata = false
+      let fs = firebase.firestore()
       if(user){
         let doc = fs.collection("users").doc(user.uid)
         this.userMDListener = doc.onSnapshot(metadata => {
@@ -70,9 +64,23 @@ export default class App extends React.Component {
           }
         }, err => {console.log(err)})
 
+      }else{
+        this.setState({ user: null, userMD: false })
       }
     })
 
+  }
+
+  handleLogin(user){
+    this.setState({user: user})
+  }
+
+  handleLogout(){
+    firebase.auth().signOut().then(() => {
+      this.setState({user: null})
+    }, (error) => {
+      console.error('Sign Out Error', error )
+    });
   }
 
   componentWillUnmount(){
@@ -89,41 +97,64 @@ export default class App extends React.Component {
     <ThemeProvider theme={theme}>
       <Grid container>
         <Grid item xs={12} id="page-header">
-          <Header className="header" />
+          <Header className="header" user={this.state.user}
+                userMD={this.state.userMD} handleLogout={this.handleLogout.bind(this)} />
         </Grid>
-        <Grid item xs={11} id="page-container" className="page-content">
+        <Grid item xs={12} id="page-container" className="page-content">
           <Switch>
             <Route exact path="/boxSearch">
               <BoxSearchPage user={this.state.user}
                 userMD={this.state.userMD} />
-            </Route>     
-            <Route exact path="/profile">
-              <Profile user={this.state.user}
-                userMD={this.state.userMD} />
             </Route>
+            <Route exact path="/profile">
+              {this.state.user?
+                <Profile user={this.state.user}
+                  userMD={this.state.userMD} />
+              :
+                <Redirect to="/login" />
+              }
+            </Route>
+
             <Route path="/box/:boxID"
               render= { props =>(
                 <BoxView
                   userMD={this.state.userMD}
                   boxID={props.match.params.boxID}/>
-                )
-              } 
+              )} 
+            />
+            <Route path="/class/:gymClassID"
+              render= { props =>(
+                <GymClassView
+                  userMD={this.state.userMD}
+                  gymClassID={props.match.params.gymClassID}/>
+              )} 
             />
            <Route path="/wod/:boxID/:wodID"
             render= { props =>(
-              <ScoreView userMD={this.state.userMD}
-                boxID={props.match.params.boxID}
-                wodID={props.match.params.wodID}
-                isReadOnly={true}/>
+                <ScoreView userMD={this.state.userMD}
+                  boxID={props.match.params.boxID}
+                  wodID={props.match.params.wodID}
+                  isReadOnly={true}/>
               )
             } 
           />
           <Route exact path="/register"
             render= { props =>(
-              <RegisterUser />
+              this.state.user?
+                <Redirect to="/profile" />
+              :
+                <RegisterUser />
               )
             } 
           />
+          <Route exact path="/login">
+            {!this.state.user?
+              <Login 
+                onLogin={this.handleLogin.bind(this)} />
+            :
+              <Redirect to="/boxSearch" />
+            }
+            </Route>
           </Switch>
           <div style={{"margin": "10vh"}}></div>
         </Grid>

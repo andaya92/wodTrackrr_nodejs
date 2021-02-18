@@ -10,37 +10,20 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress
+	CircularProgress, LinearProgress, TableRow, TableHead, TableContainer,
+  TableCell, TableBody, Table
 } 
 from '@material-ui/core';
 
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
-
 import BoxListAccordion from "./boxListAccordion"
-
 import { setBox } from "../../utils/firestore/boxes"
-
 import AddWod from "../wods/addWod"
-
 import "../../styles.css"
 
-
-let db = firebase.database();
 let fs = firebase.firestore();
-
-
-
-/*
-Accordion for:
-Add Box
-Show Boxes
-
-
-*/
-
-
 
 class OwnerBox extends Component {
   constructor(props){
@@ -55,13 +38,10 @@ class OwnerBox extends Component {
       boxIDSelectVal: ""
     }
   }
-  
-
-
+ 
   componentDidMount(){
   	this.listenForBoxes()
   }
-
  
   componentWillReceiveProps(newProps){
 	this.setState({...newProps})
@@ -98,20 +78,21 @@ class OwnerBox extends Component {
 
   onKeyUp(data){
     if((data.keyCode || data.which) == 13){
-        let a = document.getElementById("ownerBoxAddBoxTitle")
-        let title = a.value
-        this.setState({showAddBoxProgress: true})
-        this.createBox(title)
+      let a = document.getElementById("ownerBoxAddBoxTitle")
+      let title = a.value
+      this.setState({showAddBoxProgress: true})
+      this.createBox(title)
     }
   }
 
   // import setBox from ""
   createBox(title){
-	setBox(title, this.props.user.uid)
-	.then(res => {console.log(res)})
-	.catch(err => {console.log(err)})
+	  if(!title)
+	  	return
+		setBox(title, this.props.user.uid)
+		.then(res => {console.log(res)})
+		.catch(err => {console.log(err)})
   }
-
 
   handleSelectValChange(ev){
 	const name = ev.target.name;
@@ -123,77 +104,100 @@ class OwnerBox extends Component {
  
   render () {
     return (
-    	<Grid item xs={12} id="ownerBox" >
-			<Typography variant="h3">
-				Welcome, {this.state.userMD.accountType}!
-			</Typography>
-			
-			<Accordion>
+    	<Grid item container xs={12} id="ownerBox" >
+				<Grid item xs={12} md ={6}>
+					<Accordion>
 		        <AccordionSummary
-				  style={{background: this.props.theme.palette.primary.mainGrad}}
-		          expandIcon={<ExpandMoreIcon />}
+		          expandIcon={<ExpandMoreIcon color="primary"/>}
 		          aria-label="Expand"
 		          aria-controls="additional-actions1-content"
 		          id="additional-actions1-header"
 		        >
 		        	<Typography >
-		        		Add Box
+		        		Add Gym
 		        	</Typography>	        
 		        </AccordionSummary>
 		        <AccordionDetails>
-		          <TextField
-		              id="ownerBoxAddBoxTitle"
-		              type="text"
-		              style={{ margin: 8}}
-		              pattern="[\sA-Za-z0-9]{35}"
-		              inputProps={{
-		                title: "Letters only, max length 35",
-		                placeholder: "Name of box"
-		              }}
-		              onKeyUp={this.onKeyUp.bind(this) }
-		              margin="normal"
-		              color="primary"
-		              InputLabelProps={{
-		                shrink: true,
-		              }}
-		            />
+		        	<Grid container item xs={12}>
+			        	<Grid item xs={12}>
+			        		<TableContainer>
+										<Table>
+											<TableRow>
+													<TableCell>Title</TableCell>
+													<TableCell>
+														<TextField
+								              id="ownerBoxAddBoxTitle"
+								              type="text"
+								              pattern="[\sA-Za-z0-9]{35}"
+								              inputProps={{
+								                title: "Letters only, max length 35",
+								                placeholder: "Name of gym"
+								              }}
+								              onKeyUp={this.onKeyUp.bind(this) }
+								              margin="normal"
+								              color="primary"
+								              style={{width: "100%"}}
+								              InputLabelProps={{
+								                shrink: true,
+								              }}
+								            />
+													</TableCell>
+											</TableRow>
+											<TableRow>
+													<TableCell align="center" colSpan={2}>
+														<Button size="small" variant="outlined" color="primary" 
+										      		onClick={ () =>{
+										      			let el = document.getElementById("ownerBoxAddBoxTitle")
+										      			this.createBox(el.value)
+										      		}
+										      	}>
+										      	Enter Title
+										      </Button>
+						      			</TableCell>
+											</TableRow>
+										</Table>
+									</TableContainer>
+								</Grid>
+					    </Grid>
 		        </AccordionDetails>
-		    </Accordion>
-	
-			<Accordion>
+				  </Accordion>
+				</Grid>			
+				
+				<Grid item xs={12} md={6}>
+					<Accordion>
 		        <AccordionSummary
-				  style={{background: this.props.theme.palette.primary.mainGrad}}
-		          expandIcon={<ExpandMoreIcon />}
+		          expandIcon={<ExpandMoreIcon color="primary"/>}
 		          aria-label="Expand"
 		          aria-controls="additional-actions0-content"
 		          id="additional-actions0-header"
 		        >
-	        	<Typography >
-	        		Add WOD
-	        	</Typography>	        
+		        	<Typography >
+		        		Add wod
+		        	</Typography>	        
 		        </AccordionSummary>
 		        <AccordionDetails>
-		        {this.state.hasBoxes ?
+		       		{this.state.hasBoxes ?
 		          	<AddWod
   		          	uid={this.state.user.uid}
   		          	userMD={this.state.userMD}
   		          	userBoxes={this.state.userBoxes}
   		          	hasBoxes={this.state.hasBoxes}
   		          />
-  		          :
-  		          <span>No boxes</span>
+  		        :
+  		          <span>No Gyms</span>
   		      	}
 		        </AccordionDetails>
-		    </Accordion>
-
-		  	<BoxListAccordion 
-		  		user = {this.state.user}
-				userMD = {this.state.userMD}
-				userBoxes = {this.state.userBoxes}
-				hasBoxes = {this.state.hasBoxes}
-		  	/>
-		  
-    	
+				  </Accordion>
+				</Grid>
+				
+				<Grid item xs={12}>
+			  	<BoxListAccordion 
+			  		user = {this.state.user}
+						userMD = {this.state.userMD}
+						userBoxes = {this.state.userBoxes}
+						hasBoxes = {this.state.hasBoxes}
+			  	/>
+				</Grid>
   		</Grid>
     );
   }

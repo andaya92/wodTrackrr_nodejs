@@ -1,24 +1,19 @@
-import firebase from "../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database"; 
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
-import { Grid, Paper, Button, Typography, Collapse } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Collapse,
+        Accordion, AccordionSummary, AccordionDetails }
+from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
-import Login from "../comps/profile/login"
-import OwnerBox from "../comps/boxes/ownerBox"
 
+import NewOwnerBox from "../comps/topNavigation"
 import UsernamePanel from "../comps/profile/usernamePanel"
+import UserFollows from '../comps/followers/userFollows'
 import Athlete from '../comps/profile/athlete'
-import "../styles.css"
 
-var db = firebase.database();
-
-export class PageContent extends Component {
+class PageContentRaw extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -42,58 +37,65 @@ export class PageContent extends Component {
 
   render(){
     return (
-      <Grid container align="center">
-      <Grid item xs={12}>
-        <Collapse in={this.state.emailAlertOpen}>
-          <Alert onClose={() => {this.setState({emailAlertOpen: false})}}>
-            Email sent!
-          </Alert>
-        </Collapse>
-      </Grid>
-      <Grid item xs={12}>
-          <Paper elevation={2} >
-          </Paper>
-          {!this.state.user.emailVerified ?
-            <Paper elevation={2}>
-              <Button variant="outline" 
-                onClick={this.sendVerificationEmail.bind(this)} >
-                <Typography  variant="h5" component="h3">
-                  Send Verification Email
-                </Typography>
-              </Button>
-            </Paper>
-          :
-            <React.Fragment></React.Fragment>
-          }
-          <Paper elevation={4}>
-            <UsernamePanel user={this.state.user} userMD={this.state.userMD} />
-          </Paper>
-          <Paper elevation={2}>
+      <Grid item container align="center">
+        <Grid item xs={12}>
+          <Collapse in={this.state.emailAlertOpen}>
+            <Alert onClose={() => {this.setState({emailAlertOpen: false})}}>
+              Email sent!
+            </Alert>
+          </Collapse>
+        </Grid>
+        <Grid item xs={12}> 
+          <Grid item container xs={12}>
+              {!this.state.user.emailVerified ?
+                <Grid item xs={12}>
+                  <Paper elevation={4}>
+                    <Typography >
+                      Verification
+                    </Typography>         
+                    
+                    <Button variant="outlined" 
+                      onClick={this.sendVerificationEmail.bind(this)} >
+                      <Typography  variant="h5" component="h3">
+                        Send Verification Email
+                      </Typography>
+                    </Button>
+                  </Paper>
+                </Grid>
+              :
+                <React.Fragment></React.Fragment>
+              }
+
+              <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
+                <Paper elevation={4}>   
+                  <UsernamePanel user={this.state.user} userMD={this.state.userMD} />
+                </Paper>
+              </Grid>
+                
+             <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
+               <Paper elevation={4}>       
+                <UserFollows
+                  user={this.state.user}
+                  userMD={this.state.userMD}
+                 />
+               </Paper>
+              </Grid>
+        </Grid>
+
+        <Paper elevation={2} style={{margin: "8px 0px 0px 0px"}}>
           {this.state.userMD.accountType === "owner" ?
-            <OwnerBox user={this.state.user} userMD={this.state.userMD} />
+            <NewOwnerBox user={this.state.user} userMD={this.state.userMD} />
           :
             <Athlete user={this.state.user} userMD={this.state.userMD} />
           }
           </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid item xs={12} className="compBorderOutline">
-          <Paper elevation={2}>
-            <Button variant="outlined" color="secondary"
-                      onClick={this.props.onLogout}>
-                  <Typography variant="h6" component="h6">
-                    Logout
-                  </Typography>
-            </Button>
-          </Paper>
-          
-        </Grid>
-      </Grid>
+        </Grid>   
     </Grid>
     )
   }
 }
 
+const PageContent = withTheme(PageContentRaw)
 
 class ProfilePage extends Component {
   constructor(props){
@@ -104,15 +106,6 @@ class ProfilePage extends Component {
     }  
   }
  
-  handleLogout(){
-    firebase.auth().signOut().then(() => {
-      alert('Signed Out');
-      this.setState({user: null})
-    }, (error) => {
-      console.error('Sign Out Error', error )
-    });
-  }
-
   /*
     login.js has the form and does the login, calls this with the user obj
   */
@@ -127,19 +120,13 @@ class ProfilePage extends Component {
   render () {
     return (
     	<Grid item xs={12} id="profilepage">
-        {
-          this.state.user !== null
           ? <PageContent 
-                onLogout={this.handleLogout.bind(this)} 
                 user= {this.state.user}
                 userMD={this.state.userMD}
             />
-          : <Login 
-            onLogin={this.handleLogIn.bind(this)} />
-        }
   		</Grid>
     );
   }
 }
 
-export default ProfilePage = withTheme(ProfilePage);
+export default ProfilePage = withTheme(ProfilePage)

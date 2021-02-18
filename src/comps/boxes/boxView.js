@@ -1,11 +1,9 @@
 // Firebase
 import firebase from "../../context/firebaseContext"
-import "firebase/auth";
 import "firebase/firestore"
 
 // React
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -23,6 +21,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 // WodTrackrr
 import ScoreView from "../scores/scoreView"
+import GymClassList from "../gymClasses/gymClassList"
 import EditWod from "../wods/editWod"
 import { removeWod } from "../../utils/firestore/wods"
 import SearchSortTable from "../searchSortTable"
@@ -127,7 +126,6 @@ class BoxView extends Component {
 	}
 
 	componentWillReceiveProps(newProps){
-		console.log(newProps)
 		this.setState({...newProps})
 		this.checkListeners()
 	}
@@ -201,69 +199,28 @@ class BoxView extends Component {
 	 		{id:"title", sortable:true, label:"Title"},
 	 		{id:"scoreType", sortable:true, label:"Scoring"},
 	 		{id:"wodText", sortable:false, label:"Wod"},
-	 		{id:"view", sortable:false, label:""},
-	 		{id:"edit", sortable:false, label:""},
-	 		{id:"remove", sortable:false, label:""}
+	 		{id:"btns", sortable:false, label:""}
 	 	]
 	 	let sortableHeadersUser = [
 	 		{id:"date", sortable:true, label:"Date"},
 	 		{id:"title", sortable:true, label:"Title"},
 	 		{id:"scoreType", sortable:true, label:"Scoring"},
 	 		{id:"wodText", sortable:false, label:"Wod"},
-	 		{id:"view", sortable:false, label:""}
+	 		{id:"btns", sortable:false, label:""}
 	 	]
 	 
 		return(
 			<Grid item xs={12}>
-			<Paper elevation={2}>
-				<Grid item align="center" xs={12}>
-					<Typography 
-						align="center" 
-						variant="h3"
-					>
-						{this.state.boxMD["title"]}
-					</Typography>
-				</Grid>
-
-				<React.Fragment>
-				{
-					this.state.wods.length > 0?
-					<SearchSortTable
-						rows = {this.state.wods}
-						filteredRows={this.state.wods}
-						headers={showOwnerBtns? sortableHeadersOwner: sortableHeadersUser}
-						handleRemove={this.handleRemoveWod.bind(this)}
-						handleEdit={this.handleEdit.bind(this)}
-						showOwnerBtns={showOwnerBtns}
+				{Object.keys(this.state.boxMD).length > 0 ?
+					<GymClassList 
+						user={this.state.user}
+						userMD={this.state.userMD}
+						boxID={this.state.boxID}
+						isOwner={true}
 					/>
-					:
-					<Grid xs={12}>
-						<Paper elevation={2}>
-							<Typography>No wods</Typography>
-						</Paper>
-					</Grid>
+				:
+					<React.Fragment></React.Fragment>
 				}
-				</React.Fragment>
-			</Paper>
-			
-			<ActionCancelModal
-				open={this.state.showRemoveAlert}
-		        onClose={this.handleModalClose.bind(this)}
-		        onAction={this.deleteWod.bind(this)}
-		        modalText={ `Remove ${this.state.curRemoveWodTitle} (${this.state.curRemoveWodID})?`}
-		        actionText={"Delete"}
-		        cancelText={"Cancel"}
-			/>
-
-			<EditWod 
-				open={this.state.showEditModal}
-				onClose={this.handleEditModalClose.bind(this)}
-				userBoxes={this.state.userBoxes}
-				hasBoxes={this.state.hasBoxes}
-				wodInfo={this.state.editWodInfo}
-				title={this.state.editWodInfo["title"]}
-				wodText={this.state.editWodInfo["wodText"]}
-			/>
 			</Grid>
 		)
   }

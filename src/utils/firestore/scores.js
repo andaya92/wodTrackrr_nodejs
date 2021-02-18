@@ -9,12 +9,13 @@ import "firebase/firestore";
 let fs = firebase.firestore();
 
 
-export function setScore(title, username, uid, userScore, wodID, boxID,
+export function setScore(title, username, uid, userScore, wodID, gymClassID, boxID,
 						scoreType){
 	return new Promise((res, rej) => {
 		let data = {
 				uid: uid,
 				wodID: wodID,
+				gymClassID: gymClassID,
 				boxID: boxID,
 				username: username,
 				title: title,

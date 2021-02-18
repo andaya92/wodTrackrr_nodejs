@@ -3,7 +3,6 @@ export default function cvtReps(x){
 }
 
 export function cvtTimetoInt(x){
-	console.log("Split", x)
 	let [mins, seconds] = x.split(":")
 	return (parseInt(mins) * 60) + parseInt(seconds)
 }

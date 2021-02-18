@@ -16,14 +16,72 @@ import
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+	TableHead, TableRow, TablePagination, TableSortLabel
 } from '@material-ui/core';
-
+import Delete from '@material-ui/icons/Delete'
+import Edit from '@material-ui/icons/Edit'
 import SearchIcon from '@material-ui/icons/Search';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import {msToDate} from "../utils/formatting"
+
+
+function WodRaw(props){
+	let title = props.info["title"]
+	let scoreType = props.info["scoreType"]
+	let wodText = props.info["wodText"]
+	let wodID = props.info["wodID"]
+	let boxID = props.info["boxID"]
+	let date = props.info["date"]
+	return(
+		<TableRow>
+			<TableCell>
+				<Typography variant="h5" component="h2"gutterBottom>
+					{msToDate(date)}
+				</Typography>
+			</TableCell>
+			<TableCell>
+				<Typography variant="h5" component="h2"gutterBottom>
+					{title}
+				</Typography>
+			</TableCell>
+			<TableCell>
+				<Typography variant="h5" component="h2"gutterBottom>
+					{scoreType}
+				</Typography>
+			</TableCell>
+			<TableCell>
+				<Typography variant="h5" component="h2"gutterBottom>
+					<ReactMarkdown>{wodText}</ReactMarkdown>
+				</Typography>
+			</TableCell>
+			<TableCell align="right">
+				<Link to={`/wod/${boxID}/${wodID}`}
+					component={Button} color="primary" variant="outlined">
+					View
+				</Link>
+			
+			{ props.showOwnerBtns ?
+			    <React.Fragment>
+				    <Button size="small"
+				    	color="secondary" 
+				    	onClick={() => props.handleEdit(props.info)}>
+				    	<Edit />
+				    </Button>
+				    <Button size="small" 
+				    	onClick={() => props.handleRemove(props.info)}>
+				    	<Delete color="error"/>
+			    	</Button>
+			    </React.Fragment>
+		  		:
+		  		<React.Fragment></React.Fragment>
+	  		}
+			</TableCell>
+		</TableRow>
+	)
+}
+const Wod = withTheme(WodRaw)
 
 class SearchSortTable extends Component {
 	constructor(props){
@@ -216,73 +274,4 @@ class SearchSortTable extends Component {
   }
 }
 
-function Wod(props){
-	let title = props.info["title"]
-	let scoreType = props.info["scoreType"]
-	let wodText = props.info["wodText"]
-	let wodID = props.info["wodID"]
-	let boxID = props.info["boxID"]
-	let date = props.info["date"]
-	return(
-		<TableRow>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					{msToDate(date)}
-				</Typography>
-			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					{title}
-				</Typography>
-			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					{scoreType}
-				</Typography>
-			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					<ReactMarkdown>{wodText}</ReactMarkdown>
-				</Typography>
-			</TableCell>
-			<TableCell>
-				<Link component={Button} to={`/wod/${boxID}/${wodID}`}>
-					View Scores
-				</Link>
-			</TableCell>
-			<React.Fragment>
-			{
-	  			props.showOwnerBtns
-	  			?
-				<TableCell>
-			    <Button size="small" 
-			    	color="secondary" 
-			    	onClick={() => props.handleEdit(props.info)}>
-			    	Edit
-			    </Button>
-				</TableCell>
-		  		:
-		  		<React.Fragment></React.Fragment>
-	  		}
-	  		</React.Fragment>
-
-			<React.Fragment>
-			{
-	  			props.showOwnerBtns
-	  			?
-				<TableCell>
-			    <Button size="small" 
-			    	color="error" 
-			    	onClick={() => props.handleRemove(props.info)}>
-			    	Remove
-			    </Button>
-				</TableCell>
-		  		:
-		  		<React.Fragment></React.Fragment>
-	  		}
-	  		</React.Fragment>
-		</TableRow>
-	)
-}
-
-export default SearchSortTable = withTheme(SearchSortTable);
+export default SearchSortTable = withTheme(SearchSortTable)

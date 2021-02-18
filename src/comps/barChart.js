@@ -101,55 +101,47 @@ class BarChart extends Component {
 		/*
 			{x: binValue, y: countOfbin}
 			6 bins 1,2,3 SD from Mean each way
-		*/
-		console.log(values)
+	*/
 		let sd = standardDeviation(values)
 		let _mean = mean(values)
 		let labels = this.createLabels(_mean, sd)
 		let binnedData = [0, 0, 0, 0, 0, 0]
 		for(let x of values){
-		 		let diff = (x - _mean) // 11 - 10 => 1
-		 		let numSDAway = Math.floor(diff / sd) // 5 / 2 => .5 => 0
-		 		console.log(`SD: ${sd}, x: ${x}, mean: ${_mean} Diff: ${diff}, sdAway: ${numSDAway}`)
-		 		if(Math.abs(numSDAway) <= 1){
-		 			if(diff > 0){
-		 				binnedData[3]++
-		 			}else{
-		 				binnedData[2]++
-		 			}
-		 		}else if(Math.abs(numSDAway) <= 2){
-		 			if(diff > 0){
-		 				binnedData[4]++
-		 			}else{
-		 				binnedData[1]++
-		 			}
-		 		} else{
-		 			if(diff > 0){
-		 				binnedData[5]++
-		 			}else{
-		 				binnedData[0]++
-		 			}
-		 		}
-		 }
-		 
-		 return [labels, binnedData]
+	 		let diff = (x - _mean)
+	 		let numSDAway = Math.floor(diff / sd)	 		
+	 		if(Math.abs(numSDAway) <= 1){
+	 			if(diff > 0){
+	 				binnedData[3]++
+	 			}else{
+	 				binnedData[2]++
+	 			}
+	 		}else if(Math.abs(numSDAway) <= 2){
+	 			if(diff > 0){
+	 				binnedData[4]++
+	 			}else{
+	 				binnedData[1]++
+	 			}
+	 		} else{
+	 			if(diff > 0){
+	 				binnedData[5]++
+	 			}else{
+	 				binnedData[0]++
+	 			}
+	 		}
+		}
+		return [labels, binnedData]
 	}
 
   render(){
-
-	return(
-		<Grid item xs={12}>
-			<div style={{height:"25vh", "max-width":"50vw"}}>
-				<canvas id="barChart"></canvas>
-			</div>
-		</Grid>
-	)
+		return(
+			<Grid item xs={12}>
+				<div style={{height:"25vh", "max-width":"50vw"}}>
+					<canvas id="barChart"></canvas>
+				</div>
+			</Grid>
+		)
   }
 }
 
-
-
-
-  
 export default BarChart = withTheme(BarChart);
 

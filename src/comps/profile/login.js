@@ -63,7 +63,7 @@ export default class Login extends Component {
             id="password"
             type="password"
             style={{ margin: 8 }}
-            placeholder="Passowrd"
+            placeholder="Password"
             margin="normal"
             InputLabelProps={{
             shrink: true,

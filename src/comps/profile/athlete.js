@@ -10,7 +10,6 @@ import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import UserScoreList from '../scores/userScoreList'
-import UserFollows from '../followers/userFollows'
 
 var db = firebase.database();
 
@@ -50,12 +49,6 @@ class Athlete extends Component{
     return(
       <Grid xs={12}>
         <Grid xs={12}>
-          <Grid xs={12}>
-            <UserFollows
-              user={this.state.user}
-              userMD={this.state.userMD}
-            />
-          </Grid>
           <Grid xs={12}>
             <Typography>Scores</Typography>
             <UserScoreList

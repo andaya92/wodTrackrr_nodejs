@@ -1,29 +1,18 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database"; 
-
-import ReactMarkdown from 'react-markdown'
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import 
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
+{ 	Grid, Paper, Button, Typography, TextField, Select,
+	CardActions, Card, CardContent, TableRow, TableHead, TableContainer,
 	TableCell, TableBody, Table, Modal
 } 
 from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab'
+import { withTheme } from '@material-ui/core/styles'
+import Delete from '@material-ui/icons/Delete'
+
 
 
 import "../../styles.css"
-
-
-var db = firebase.database();
 
 class ScoreList extends Component {
 	constructor(props){
@@ -38,7 +27,7 @@ class ScoreList extends Component {
 		this.setState({...newProps})
 	}
 	
-  	render(){
+  render(){
 		return(
 			<React.Fragment>
 			{this.state.scores.length > 0?
@@ -83,10 +72,11 @@ class ScoreList extends Component {
   
 export default ScoreList = withTheme(ScoreList);
 
+
 /*
 Show details of Box and its WODS
 */
-function ScoreRow(props){
+function ScoreRowRaw(props){
 	let score = props.info["score"]
 	let username = props.info["username"]
 	let wodID = props.info["wodID"]
@@ -104,11 +94,11 @@ function ScoreRow(props){
 				{
 		  			props.isUserScore
 		  			?
-			  		<TableCell>
+			  		<TableCell align="right">
 					    <Button size="small" 
-					    	color="error" 
+					    	
 					    	onClick={() => props.onRemove(scoreID)}>
-					    	Remove
+					    	<Delete color="error"  />
 					    </Button>
 			  		</TableCell>
 			  		:
@@ -118,3 +108,4 @@ function ScoreRow(props){
 		</TableRow>
 	)
 }
+let ScoreRow =  withTheme(ScoreRowRaw)

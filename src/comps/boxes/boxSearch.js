@@ -3,22 +3,66 @@ import "firebase/auth";
 import "firebase/database"; 
 
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Redirect } from 'react-router-dom';
 
 import 
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
-InputBase, InputAdornment,  }
-from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import SearchIcon from '@material-ui/icons/Search';
-import { withTheme } from '@material-ui/core/styles';
+InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
+  TableHead, TableRow }
+from '@material-ui/core'
+
+import { Alert } from '@material-ui/lab'
+import SearchIcon from '@material-ui/icons/Search'
+import { withTheme } from '@material-ui/core/styles'
+
+import Delete from '@material-ui/icons/Delete'
+import Waves from '@material-ui/icons/Waves'
+import Whatshot from '@material-ui/icons/Whatshot'
 
 import BoxView from "./boxView" 
 
-import { setFollow, removeFollow} from "../../utils/firestore/follows"
+import { setFollow, removeFollow } from "../../utils/firestore/follows"
 import "../../styles.css"
 
 const fs = firebase.firestore()
+
+function BoxRaw(props){
+  let title = props.info["title"]
+  let boxID = props.info["boxID"]
+
+  return(
+    <TableRow id={`box/${boxID}`} name="BoxRow" onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
+      <TableCell align="left">
+        <Typography variant="subtitle" color="primary">
+          { title }
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        { props.isUserFollowing ?
+          <Button variant="outlined"
+              onClick={()=>{props.handleUnfollow(boxID)}}>
+            <Whatshot color="primary" />
+          </Button>
+        :
+          <Button
+            onClick={()=>{props.handleFollow(props.info)}}>
+            <Whatshot/>
+          </Button>
+        }
+        { props.isOwner ?
+          <Button
+            onClick={()=>{props.handleRemoveBox(boxID, title)}}>
+            <Delete  color="error" />
+          </Button>
+        :
+          <React.Fragment></React.Fragment>
+        }
+      </TableCell>
+    </TableRow>
+  )
+ 
+}
+const Box = withTheme(BoxRaw)
 
 class BoxSearch extends Component {
   constructor(props){
@@ -29,7 +73,9 @@ class BoxSearch extends Component {
       isOwner: props.isOwner,
       allBoxes: props.allBoxes,
       filteredBoxes: props.allBoxes,
-      userFollowing: {}
+      userFollowing: {},
+      redirect: false,
+      redirectTo: ""
     }
   }
 
@@ -39,7 +85,6 @@ class BoxSearch extends Component {
 
   componentWillReceiveProps(newProps){
     this.setState({...newProps})
-    console.log(newProps)
     this.listenForFollowing(newProps)
   }
 
@@ -53,8 +98,6 @@ class BoxSearch extends Component {
       fs.collection("following").where("uid", "==", props.user.uid)
       .onSnapshot(ss => {
         let following = {}
-        console.log("Getting follows")
-        console.log(ss)
         if(!ss.empty){
           
           ss.forEach(doc =>{
@@ -78,11 +121,9 @@ class BoxSearch extends Component {
   }
 
   isUserFollowing(boxID){
-
     return (this.state.userFollowing[boxID])? true: false
   }
-
-
+  
   handleFollow(boxInfo){
     setFollow(this.state.user.uid, this.state.userMD.username, boxInfo.boxID,
               boxInfo.title)
@@ -102,95 +143,74 @@ class BoxSearch extends Component {
     .catch(err => {console.log(err)})
   }
 
+  onRowClick(ev, id){
+    console.log(id)
+    if(ev.target.tagName === "TD"){
+      this.setState({redirect: true, redirectTo: id})
+    }
+  }
+
   render () {
     return (
-      <Grid item xs={12} >
-      <Paper elevation={2} component="form">
-  
-       <TextField
-       fullWidth
-        variant="outlined"
-        onKeyUp={this.onKeyUp.bind(this)}
-        onChange={this.onChange.bind(this)}
-        placeholder="Search Boxes"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon color="primary" />
-            </InputAdornment>
-          )
-        }}
-      />
-      
-      </Paper>
       <Grid item xs={12}>
-        {
-          this.state.filteredBoxes.map((box, i) => {
-            console.log(this.isUserFollowing(box["boxID"]))
-            return <Box 
-                    key={i} 
-                    info={box} 
-                    color={this.props.theme.palette.primary.mainGrad}
-                    handleBoxView={this.props.handleBoxView}
-                    handleRemoveBox={this.props.handleRemoveBox}
-                    isOwner={this.props.isOwner}
-                    isUserFollowing={this.isUserFollowing(box["boxID"])}
-                    handleFollow={this.handleFollow.bind(this)}
-                    handleUnfollow={this.handleUnfollow.bind(this)}
-                    />
-          })
+        {this.state.redirect ?
+          <Redirect to={this.state.redirectTo} />
+        :
+          <React.Fragment></React.Fragment>
         }
-      </Grid>
+        <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
+        <Paper elevation={2} component="form">
+           <TextField
+             fullWidth
+              variant="outlined"
+              onKeyUp={this.onKeyUp.bind(this)}
+              onChange={this.onChange.bind(this)}
+              placeholder="Search Boxes"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="primary" />
+                  </InputAdornment>
+                )
+              }}
+          />
+        </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <TableContainer>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Boxes</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+    {
+      this.state.filteredBoxes.map((box, i) => {
+        return <Box 
+                key={i} 
+                info={box} 
+                color={this.props.theme.palette.primary.mainGrad}
+                handleBoxView={this.props.handleBoxView}
+                handleRemoveBox={this.props.handleRemoveBox}
+                isOwner={this.props.isOwner}
+                isUserFollowing={this.isUserFollowing(box["boxID"])}
+                handleFollow={this.handleFollow.bind(this)}
+                handleUnfollow={this.handleUnfollow.bind(this)}
+                onRowClick={this.onRowClick.bind(this)}
+                />
+      })
+    }
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
       </Grid>
     );
   }
 }
 
 
-function Box(props){
-  let title = props.info["title"]
-  let boxID = props.info["boxID"]
-  let isFollowing = props.isUserFollowing
-  return(
-    <Grid item xs={12}>
-      <Paper>
-        <Grid container itemxs={12}>
-        <Grid item xs={6}>
-          <Typography align="left" style={{padding: "2.5vw"}} variant="body1">
-            {title}
-          </Typography>
-        </Grid>
 
-        <Grid container item xs={2} align="center" alignItems='center'>
-          <Link 
-            to={`box/${boxID}`}
-            component={Button}>
-              View
-          </Link>
-        </Grid>
-        <Grid container item xs={2} align="center" alignItems='center'>
-          { isFollowing ?
-              <Button variant="outlined" color="error" 
-                  onClick={()=>{props.handleUnfollow(boxID)}}>Unfollow</Button>
-            :
-              <Button variant="outlined" color="error" 
-                onClick={()=>{props.handleFollow(props.info)}}>Follow</Button>
-          }
-        </Grid>
-        <Grid container item xs={2} align="center" alignItems='center'>
-          {
-            props.isOwner
-            ?
-              <Button variant="outlined" color="error" 
-                onClick={()=>{props.handleRemoveBox(boxID, title)}}>Remove</Button>
-            :
-            <React.Fragment></React.Fragment>
-          }
-        </Grid>
-          
-      </Grid>
-      </Paper>
-    </Grid>)
-}
-
-export default BoxSearch = withTheme(BoxSearch);
+export default BoxSearch = withTheme(BoxSearch)

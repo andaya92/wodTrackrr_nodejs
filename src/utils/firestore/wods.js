@@ -10,12 +10,13 @@ export default function mTea(){}
 	Wods
 */
 
-export function setWod(boxID, title, wodText, scoreType){
+export function setWod(boxID, gymClassID, title, wodText, scoreType){
 	let fs = firebase.firestore();
 	let doc = fs.collection("wods").doc()
 	let data = {
 		wodID: doc.id,
 		boxID: boxID,
+		gymClassID: gymClassID,
 		title: title,
 		scoreType: scoreType,
 		wodText: wodText,

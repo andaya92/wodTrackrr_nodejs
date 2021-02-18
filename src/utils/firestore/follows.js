@@ -19,6 +19,11 @@ export function removeFollow(followID){
 	})
 }
 
+export function getFollowers(uid){
+	let fs = firebase.firestore()
+	return fs.collection("following").where("uid", "==", uid)
+}
+
 export function setFollow(uid, username, boxID, title){
 	let fs = firebase.firestore()
 	return new Promise((res, rej) => {

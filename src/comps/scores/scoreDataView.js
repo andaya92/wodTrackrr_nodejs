@@ -27,9 +27,6 @@ import {cvtTimetoInt, cvtIntToTime, cvtTimetoIntList} from "../../utils/formatti
 import "../../styles.css"
 
 
-var db = firebase.database();
-
-
 class ScoreDataView extends Component {
 	constructor(props){
 		super(props)
@@ -39,8 +36,7 @@ class ScoreDataView extends Component {
 			rawScores: [],
 			scoreType: "",
 			stats: {}
-		}
-		
+		}		
 	}
 
 	componentWillReceiveProps(newProps){
@@ -66,11 +62,11 @@ class ScoreDataView extends Component {
 	}
 
 	transformData(scores){
-		// create two arrays
-		// One for data display in graph, 
-		//		[ {"category": "A", "amount": 28}, ... ]
-		// Second to crunch data, raw values
 		/*
+			create two arrays
+			One for data display in graph, 
+					[ {"category": "A", "amount": 28}, ... ]
+			Second to crunch data, raw values
 				key	=> uid
 					boxID: 		"-MMVcVjihF2bXFc6qIEp"
 					score:  	"321"
@@ -80,7 +76,6 @@ class ScoreDataView extends Component {
 		let graphData = []
 		let scoreType = ""
 		let values = scores.map(score => {
-			console.log(score)
 			scoreType = score.scoreType
 			return (score.scoreType === "time") ? cvtTimetoInt(score.score)
 				: parseFloat(score.score)
@@ -94,14 +89,15 @@ class ScoreDataView extends Component {
 	}
 
 	 getDescStats(vals){
+	 	console.log(vals)
 		return {
-					'min': Math.min(...vals),
-					'max': Math.max(...vals),
-					'mean': mean(vals),
-					'median': median(vals),
-					'sd': standardDeviation(vals)
-				}
-    }
+			'min': Math.min(...vals),
+			'max': Math.max(...vals),
+			'mean': mean(vals),
+			'median': median(vals),
+			'sd': standardDeviation(vals)
+		}
+  }
 
   render(){
 	return(
