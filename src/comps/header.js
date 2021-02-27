@@ -19,33 +19,35 @@ class Header extends Component{
 		}
 	}
 
-	componentWillReceiveProps(newProps){
-    this.setState({...newProps})
-  }
+	static getDerivedStateFromProps(props, state){
+		return props
+  	}
 
 	render(){
 		return(
 			<AppBar position="static" 
 					style={{background:this.props.theme.palette.background.toolbar}}>
 			<Toolbar disableGutters={false}>
-			    <Typography gutterBottom variant="h3">
+			    <Typography gutterBottom  variant="h3">
 		            WodTrackrr
 		          </Typography>
+				  
 		          <section style={{marginLeft: "auto", marginRight: -12}}>
-		          	{this.state.user?
+		          	<Button size="small" onClick={this.props.changeTheme}>Change Theme</Button>
+					{this.state.user?
 			          	<Button variant="outlined" color="secondary"
 	                      onClick={this.props.handleLogout}>
-			                <Typography variant="h6" component="h6">
+			                <Typography variant="subtitle2">
 			                  Logout
 			                </Typography>
 			            </Button>
 			           :
-			           <Link to="/login"
-			           		component={Button} variant="outlined" color="secondary">
-			                <Typography variant="h6" component="h6">
+			           <Button to="/login"
+			           		component={Link} variant="outlined" color="secondary">
+			                <Typography variant="subtitle2">
 			                  Login
 			                </Typography>
-			            </Link>
+			            </Button>
 		          	}
 		          	</section>
 		        </Toolbar>

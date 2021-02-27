@@ -26,8 +26,7 @@ import Login from "./comps/profile/login"
 
 
 import history from "./history"
-
-import { createMuiTheme, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
+import { createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import lightBlue from '@material-ui/core/colors/lightBlue';
 import pink from '@material-ui/core/colors/pink';
@@ -35,10 +34,16 @@ import teal from '@material-ui/core/colors/teal';
 
 
 import apptheme from "./css/apptheme"
+import lightapptheme from "./css/applighttheme"
 import "./styles.css"
 
-let theme = createMuiTheme(apptheme);
-theme = responsiveFontSizes(theme)
+let darkTheme = createMuiTheme(apptheme)
+darkTheme = responsiveFontSizes(darkTheme)
+
+
+let lightTheme = createMuiTheme(lightapptheme)
+lightTheme = responsiveFontSizes(lightTheme)
+
 
 export default class App extends React.Component {
   constructor(props){
@@ -46,11 +51,13 @@ export default class App extends React.Component {
     this.state={
       btmnav: 0,
       user: firebase.auth().currentUser,
-      userMD: false
+      userMD: false,
+      theme: darkTheme,
+      darkTheme: true
     }
   }
 
-  componentWillMount(){
+  componentDidMount(){
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
       let fs = firebase.firestore()
@@ -90,17 +97,30 @@ export default class App extends React.Component {
       this.userMDListener && this.userMDListener()
   }
 
+  changeTheme(){
+    let newTheme  = this.state.darkTheme? lightTheme: darkTheme
+    this.setState({theme: newTheme, darkTheme: !this.state.darkTheme})
+  }
+
   render(){
     return(
     <FirebaseAuthContext.Provider>
     <HashRouter history={history} >
-    <ThemeProvider theme={theme}>
-      <Grid container>
+    <ThemeProvider theme={this.state.theme}>
+      <Grid container 
+        direction="row"
+        justify="center">
+        <Paper style={{ width: "100%" }}>
         <Grid item xs={12} id="page-header">
           <Header className="header" user={this.state.user}
-                userMD={this.state.userMD} handleLogout={this.handleLogout.bind(this)} />
+                userMD={this.state.userMD}
+                changeTheme={this.changeTheme.bind(this)}
+                handleLogout={this.handleLogout.bind(this)} />
         </Grid>
-        <Grid item xs={12} id="page-container" className="page-content">
+        <Grid item container xs={12} lg={10}
+          id="page-container"
+          style={{"minHeight": "100vh"}}
+          className="page-content">
           <Switch>
             <Route exact path="/boxSearch">
               <BoxSearchPage user={this.state.user}
@@ -122,11 +142,12 @@ export default class App extends React.Component {
                   boxID={props.match.params.boxID}/>
               )} 
             />
-            <Route path="/class/:gymClassID"
+            <Route path="/class/:boxID/:gymClassID"
               render= { props =>(
                 <GymClassView
                   userMD={this.state.userMD}
-                  gymClassID={props.match.params.gymClassID}/>
+                  gymClassID={props.match.params.gymClassID}
+                  boxID={props.match.params.boxID}/>
               )} 
             />
            <Route path="/wod/:boxID/:wodID"
@@ -164,13 +185,14 @@ export default class App extends React.Component {
             onChange = {(event, newValue) => {
                 this.setState({btmnav: newValue})
               }}
-              style={{background: theme.palette.background.toolbar}}
+              style={{background: this.state.theme.palette.background.toolbar}}
             showLabels
           >
             <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
             <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
           </BottomNavigation>
         </Grid>
+        </Paper>
       </Grid>
       </ThemeProvider>
       </HashRouter>

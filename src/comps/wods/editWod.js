@@ -33,8 +33,8 @@ export default class EditWod extends Component {
 		}
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+	static getDerivedStateFromProps(props, state){
+		return props
 	}
 	
 	editWOD(){
@@ -97,6 +97,7 @@ export default class EditWod extends Component {
 						<Grid item xs={6}>
 						    <Select
 					          native
+							  value={oldBoxID}
 					          inputProps={{
 					            name: 'Box',
 					            id: 'editOwnerBoxAddWodBoxID',
@@ -106,11 +107,7 @@ export default class EditWod extends Component {
 					          	this.state.userBoxes.map((box, i) => {
 						        		let boxID = box["boxID"]
 						        		return (
-						        			<option 
-					        					key={i}
-					        					value={boxID}
-					        					selected={oldBoxID === boxID? true: false}
-					        				>
+						        			<option key={i} value={boxID}>
 					        					{box["title"]}
 					        				</option>
 						        		)
@@ -127,14 +124,12 @@ export default class EditWod extends Component {
 							    name: 'Score Type',
 							    id: 'editOwnerBoxAddWodScoreType',
 							  }}
+							  value={oldScoreType}
 							>
 								{
-									scoreTypes.map((scoreType) => {
+									scoreTypes.map((scoreType, i) => {
 										return (
-											<option 
-								      	value={scoreType}
-								      	selected={oldScoreType === scoreType? true: false}
-								      >
+											<option key={i} value={scoreType}>
 										  	{scoreType}
 										  </option>
 										)

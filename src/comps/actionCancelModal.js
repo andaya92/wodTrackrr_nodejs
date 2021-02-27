@@ -32,8 +32,8 @@ export default class ActionCancelModal extends Component{
 		*/
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+	static getDerivedStateFromProps(props, state){
+		return props
 	}
 
 	render(){
@@ -68,7 +68,6 @@ export default class ActionCancelModal extends Component{
 		    				{this.props.actionText}
 		    			</Button>
 		    			<Button 
-		    				color="error"
 		    				variant="outlined" 
 		    				onClick={()=>{ this.props.onClose()}}>
 		    				{this.props.cancelText}

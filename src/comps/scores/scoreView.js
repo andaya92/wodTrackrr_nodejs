@@ -13,7 +13,7 @@ import
   Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
   CircularProgress, LinearProgress, CardActions, Card, CardContent,
   ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-  TableCell, TableBody, Table, Modal
+  TableCell, TableBody, Table, Modal, GridListTileBar
 } 
 from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -25,10 +25,33 @@ import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 
 import { removeScore } from "../../utils/firestore/scores"
+import { dupNewLine } from "../../utils/formatting"
 import "../../styles.css"
 
 
 var db = firebase.database();
+
+function RenderWodTextRaw(props){
+  let lines = props.wodText.split("\n")
+  console.log(lines)
+  return(
+    <Grid item xs={12}>
+      {
+        lines.map((line, i) => {
+          return(
+            <Grid item xs={12} key={i}>
+              <Typography>
+                {line? line: <br/>}
+              </Typography>
+            </Grid>
+          )
+        })
+      }
+    </Grid>
+  )
+}
+
+const RenderWodText = withTheme(RenderWodTextRaw)
 
 class ScoreView extends Component {
   constructor(props){
@@ -89,9 +112,8 @@ class ScoreView extends Component {
       err => {})
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
-    console.log(newProps)
+  static getDerivedStateFromProps(props, state){
+    return props
   }
 
   componentWillUnmount(){
@@ -133,15 +155,34 @@ class ScoreView extends Component {
           <Grid item align="center" xs={12}>
             <Paper elevation={2}>
               <Typography>{this.state.wodMD["title"]}</Typography>
-              <Typography>Type: {this.state.wodMD["scoreType"]}</Typography>
+              <Typography 
+                variant="subtitle1"
+                color="primary">
+                  For {this.state.wodMD["scoreType"]}
+              </Typography>
             </Paper>
           </Grid>
 
-          <Grid item container xs={12}>
-            <Paper elevation={2}>
-              <ReactMarkdown>{this.state.wodMD["wodText"]}</ReactMarkdown>
-            </Paper>   
+          <Grid item xs={12}>
+            <Paper elevation={2} style={{
+                margin: "8px 0px 8px 0px",
+                padding: "8px"
+            }}>
+            <Grid item xs={12} align="center">
+            <Typography 
+                variant="subtitle2"
+                color="primary">
+                  Workout
+              </Typography>
+            </Grid>
+            <Grid item container xs={12}>
+              <RenderWodTextRaw 
+                wodText={this.state.wodMD["wodText"]}
+              />
+              </Grid>
+            </Paper>
           </Grid>
+         
           {Object.keys(this.state.userMD).length > 0?
             <AddScore 
               userMD={this.state.userMD}
@@ -152,9 +193,13 @@ class ScoreView extends Component {
           }
           <Grid item xs={12}>
             <Paper elevation={2}>   
-              <ScoreDataView 
-                scores={this.state.scores}
-              />
+              {this.state.scores && this.state.scores.length > 1?
+                <ScoreDataView 
+                  scores={this.state.scores}
+                />
+              :
+                <React.Fragment></React.Fragment>
+              }
             </Paper>
           </Grid>
           <Grid item xs={12}>

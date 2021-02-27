@@ -35,15 +35,12 @@ export default class Login extends Component {
     });
   }
 
-  // <!-- TODO: Add SDKs for Firebase products that you want to use
-  //      https://firebase.google.com/docs/web/setup#available-libraries -->
-
   render () {
     return (
       <Grid container id="login" align="center" justify="center">
         <br />
         <Grid item xs={12} >
-          <Paper elevation="2">
+          <Paper elevation={2}>
             <Typography variant="h4">
               Login
             </Typography>
@@ -74,11 +71,11 @@ export default class Login extends Component {
         </Grid>
 
         <Grid item xs={12} >
-          <Paper elevation="2">
+          <Paper elevation={2}>
             <Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
               Login
             </Button>
-            <Link to="/register" className="no-line" style={{'padding-left': '10px'}}>
+            <Link to="/register" className="no-line" style={{'paddingLeft': '10px'}}>
               <Button variant="outlined" color="secondary" >
                 Register
               </Button>

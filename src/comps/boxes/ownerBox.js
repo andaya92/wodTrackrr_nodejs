@@ -43,8 +43,8 @@ class OwnerBox extends Component {
   	this.listenForBoxes()
   }
  
-  componentWillReceiveProps(newProps){
-	this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+	return props
 		if(newProps.userMD.accountType === "owner"){
 			this.listenForBoxes()
 		}

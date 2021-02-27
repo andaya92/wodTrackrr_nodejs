@@ -23,8 +23,8 @@ class ScoreList extends Component {
 		}
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+	static getDerivedStateFromProps(props, state){
+		return props
 	}
 	
   render(){
@@ -34,16 +34,18 @@ class ScoreList extends Component {
 			<TableContainer component={Paper}>
 				<Table aria-label="score table">
 				<TableHead>
-					<TableCell>Username</TableCell>
-					<TableCell>Score</TableCell>
-					<TableCell></TableCell>
+					<TableRow>
+						<TableCell>Username</TableCell>
+						<TableCell>Score</TableCell>
+						<TableCell></TableCell>
+					</TableRow>
 				</TableHead>
 				<TableBody>
 					{
-					this.state.scores.map(score => {
+					this.state.scores.map((score, i) => {
 						let isCurUserScore = 
 							(this.state.uid == score["uid"])? true : false
-						return <ScoreRow 
+						return <ScoreRow key={i}
 							info={score}
 							onRemove = {this.props.onRemove}
 							isUserScore={isCurUserScore} 

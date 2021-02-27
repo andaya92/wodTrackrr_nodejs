@@ -7,6 +7,18 @@ export function cvtTimetoInt(x){
 	return (parseInt(mins) * 60) + parseInt(seconds)
 }
 
+export function dupNewLine(text){
+	console.log("\n".charCodeAt(0))
+	
+	let newLinePattern = /\\n/
+	let newText = text.replace(newLinePattern, "\\n\\n")
+	
+	for(let c of newText){
+		console.log(c)
+		console.log(c.charCodeAt(0))
+	}
+	return newText
+}
 
 export function cvtIntToTime(x){
 	let mins = Math.floor(x / 60)

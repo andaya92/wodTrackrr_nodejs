@@ -41,6 +41,7 @@ class LineChart extends Component {
 	}
 	
 	componentDidMount(){
+		this.createChart()
 	}
 
 	createChart(){
@@ -118,10 +119,12 @@ class LineChart extends Component {
 		});
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps}, ()=>{
-			this.createChart()
-		})
+	static getDerivedStateFromProps(props, state){
+		return props
+	}
+
+	componentDidUpdate(){
+		this.createChart()
 	}
 
 	componentWillUnmount(){
@@ -131,7 +134,7 @@ class LineChart extends Component {
   render(){
 		return(
 			<Grid item xs={12}>
-				<div style={{height:"25vh", "max-width":"50vw"}}>
+				<div style={{width: "92vw", padding: "8px"}}>
 					<canvas id="lineChart" ></canvas>
 				</div>
 			</Grid>

@@ -31,11 +31,11 @@
     "vega-statistics": "^1.7.9"
   },
   "scripts": {
-    "start-client": "react-scripts start",
+    "start": "react-app-rewired start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "npm run build && (cd server && npm start)"
+    "start-server": "npm run build && (cd server && npm start)"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -52,5 +52,9 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-plugin-import": "^1.13.3",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.1.8"
+  }
 }

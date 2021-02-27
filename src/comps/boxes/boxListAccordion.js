@@ -13,6 +13,8 @@ import { withTheme } from '@material-ui/core/styles';
 import BoxView from "./boxView" 
 import BoxSearch from "./boxSearch" 
 import { removeBox } from "../../utils/firestore/boxes"
+import ActionCancelModal from "../actionCancelModal"
+
 import "../../styles.css"
 
 class BoxListAccordion extends Component {
@@ -30,8 +32,8 @@ class BoxListAccordion extends Component {
     }
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+    return props
   }
 
   componentWillUnmount(){
@@ -62,8 +64,8 @@ class BoxListAccordion extends Component {
 
   render(){
 	return(
-		<Grid  item={12}>
-			<Grid  item={12}>
+		<Grid item xs ={12}>
+			<Grid item xs={12}>
 				{
 					this.state.userBoxes.length > 0
 				?
@@ -71,6 +73,7 @@ class BoxListAccordion extends Component {
 						user = {this.state.user}
 						userMD = {this.state.userMD}
 						allBoxes = {this.state.userBoxes}
+						filteredBoxes={this.state.userBoxes}
 						handleRemoveBox={this.handleRemoveBox.bind(this)}
 						isOwner = {true}
 					/>
@@ -82,29 +85,14 @@ class BoxListAccordion extends Component {
 					</Grid>
 				}
 			</Grid>
-			<Modal
-		        open={this.state.showRemoveAlert}
-		        onClose={this.handleModalClose.bind(this)}
-		        aria-labelledby="simple-modal-title"
-		        aria-describedby="simple-modal-description">
-		    	<div style={{
-					position: 'absolute',
-					top: "50%",
-					left: "50%",
-					width: "80vw",
-				    transform: "translate(-50%, -50%)",
-				}}>
-					<Grid item align="center" xs={12}>
-		    		<Paper style={{height:"25vh", display: "flex", flexDirection: "column",justifyContent: "center"}}>
-		    			<Typography style={{position: ""}}>
-		    				 Remove {this.state.curRemoveBoxTitle} ({this.state.curRemoveBoxID})
-		    			</Typography>
-		    			
-		    			<Button color="primary" variant="outlined" onClick={()=>{ this.deleteBox()}}>Delete</Button>
-		    		</Paper>
-		    		</Grid>
-		    	</div>
-		    </Modal>
+			<ActionCancelModal
+				open={this.state.showRemoveAlert}
+				onClose={this.handleModalClose.bind(this)}
+				onAction={this.deleteBox.bind(this)}
+				modalText={ `Remove ${this.state.curRemoveBoxTitle} (${this.state.curRemoveBoxID})`}
+				actionText={"Remove"}
+				cancelText={"Cancel"}
+			/>
 		</Grid>		
 	)
   }

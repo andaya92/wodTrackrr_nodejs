@@ -11,6 +11,7 @@ import { withTheme } from '@material-ui/core/styles'
 
 import { getFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
 
+
 class UserFollows extends Component{
   constructor(props){
     super(props)
@@ -22,21 +23,28 @@ class UserFollows extends Component{
     }
   }
 
+  extractData(ss){
+    let follows = []
+    let following = {}
+    
+    ss.forEach(doc => {
+      let data = doc.data()
+      follows.push(data)
+      following[data.boxID] = data.followID
+    })
+    return [follows, following]
+  }
+
   componentDidMount(){
-    getFollowers(this.state.user.uid)
+   this.getFollowers = getFollowers(this.state.user.uid)
     .onSnapshot(followingSS => {
+      let [follows, following] = this.extractData(followingSS)
       followingSS.docChanges().forEach(change => {
         switch(change.type){    
           case "added":
             console.log("Case Added!")
-            let follows = []
-            let following = {}
             
-            followingSS.forEach(doc => {
-              let data = doc.data()
-              follows.push(data)
-              following[data.boxID] = data.followID
-            })
+
 
             this.setState({
               userFollows: follows,
@@ -45,12 +53,25 @@ class UserFollows extends Component{
 
             break
           case "modified":
+            console.log("modififed")
+            let modData = change.doc.data()
+            console.log(modData)
+
+            this.setState({
+              userFollows: follows,
+              userFollowing: following
+            })
+
+            
             break
           case "removed":
+            console.log("case Removed")
             let data = change.doc.data()
             let userFollowing = this.state.userFollowing
             userFollowing[data.boxID] = undefined
             this.setState({userFollowing: userFollowing})
+
+
             break
           default:
             console.log("Uncaught change.")
@@ -59,7 +80,18 @@ class UserFollows extends Component{
     })
   }
 
+  componentWillUnmount(){
+    if(this.getFollowers){
+      this.getFollowers()
+    }
+  }
+
   handleFollow(follow){
+    console.log(follow)
+    if(follow.boxID === ""){
+      return
+    }
+
     setFollow(this.state.user.uid, this.state.userMD.username, follow.boxID,
               follow.title)
     .then(res => {console.log("Succefully followed.")})
@@ -85,56 +117,65 @@ class UserFollows extends Component{
     return (this.state.userFollowing[boxID])? true: false
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+    return props
   }
 
   render(){
     return(
-      <Grid xs={12}>
-        <Grid xs={12}>
-          <Grid xs={12}>
-          <Typography>Following</Typography>
+      <Grid item xs={12}>
+          <Grid item xs={12}>
+            <Typography>Following</Typography>
           </Grid>
-          <TableContainer>
-            <Table>
+          <Grid item xs={12}>
               {this.state.userFollows.length > 0 ?
-                this.state.userFollows.map(follow => {
-                  return (
-                    <TableRow>
-                      <TableCell>
-                        <Link
-                          to={`box/${follow.boxID}`}
-                          component={Button}
-                        >
-                          {follow.title}
-                        </Link>
-                      </TableCell>
-                       <TableCell align="right">
-                        { this.isUserFollowing(follow.boxID) ?
-                            <Button variant="outlined"
-                              onClick={()=>{
-                                this.handleUnfollow(follow.boxID)}
-                              }>
-                              <Whatshot color="primary" />
-                            </Button>
-                          :
-                            <Button variant="outlined" color="error" 
-                              onClick={()=>{
-                                this.handleFollow(follow)
-                              }}>
-                              <Whatshot />
-                            </Button>
-                        }
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
+                <TableContainer>
+                  <Table>
+                    <TableBody>
+                      {this.state.userFollows.map((follow, i) => {
+                        return (
+                          <TableRow key={i}>
+                            <TableCell>
+                              {follow.boxID === "" ?
+                                <Button>
+                                  {follow.title} <Typography variant="caption" component="span">&nbsp;(deleted)</Typography>
+                                </Button>
+                              :  
+                                <Button
+                                  to={`box/${follow.boxID}`}
+                                  component={Link}
+                                >
+                                  {follow.title}
+                                </Button>
+                            }
+                            </TableCell>
+                              <TableCell align="right">
+                              { this.isUserFollowing(follow.boxID) ?
+                                  <Button variant="outlined"
+                                    onClick={()=>{
+                                      this.handleUnfollow(follow.boxID)}
+                                    }>
+                                    <Whatshot color="primary" />
+                                  </Button>
+                                :
+                                  <Button variant="outlined" 
+                                    onClick={()=>{
+                                      this.handleFollow(follow)
+                                    }}>
+                                    <Whatshot />
+                                  </Button>
+                              }
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })
+                      }
+                  </TableBody>
+                </Table>
+              </TableContainer>
               :
                 <React.Fragment>Not following anyone!</React.Fragment>
               }
-            </Table>
-          </TableContainer>
         </Grid>
       </Grid>
     )

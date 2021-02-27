@@ -4,6 +4,9 @@ let apptheme = {
          "black":"#000",
          "white":"#fff"
       },
+      "appBackground":{
+         "main": "black"
+        },
       "background":{
          "paper":"#2e3134",
          "toolbar": "#0d0e0e",

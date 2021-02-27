@@ -10,31 +10,42 @@ export default function mTea(){}
 */
 
 export function getGymClasses(boxID){
-	return fs.collection("gymClasses").where("boxID", "==", boxID)
+	return fs.collection("gymClasses").doc(boxID).collection("classes")
 }
 
-export function setGymClass(title, uid, boxID, boxTitle){
+export function setGymClass(title, uid, boxID, boxTitle, isPrivate){
   	return new Promise((res, rej) => {
-  		fs.collection("gymClasses").where("title", "==", title)
+  		fs.collection("gymClasses")
+		.doc(boxID)
+		.collection("classes")
+		.where("title", "==", title)
   		.get().then(result => {
+			console.log(result)
   			if(result.empty){
-					let doc = fs.collection("gymClasses").doc()
+				let doc = fs
+				.collection("gymClasses")
+				.doc(boxID)
+				.collection("classes")
+				.doc()
+
 		  		doc.set({
 		  			gymClassID: doc.id,
 		  			boxID: boxID,
 		  			boxTitle: boxTitle,
 		  			title: title,
 		  			uid, uid,
+					isPrivate: isPrivate,
 		  			date: Date.now()
 		  		})
 		  		.then(()=>{
 		  			res("Added gymClass")
 		  		})
-
+				  .catch(err => { rej(err) })
   			}else{
-  				rej("Name Taken")
+  				res("Name Taken")
   			}
   		})
+		.catch(err => {rej(err)})
   	})
  }
 
@@ -61,8 +72,8 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 	res(1)
 }
 
-export function removeGymClass(gymClassID){
-	let collectionNames = ["wods", "scores", "gymClasses"]
+export function removeGymClass(boxID, gymClassID){
+	let collectionNames = ["wods", "scores", `gymClasses/${boxID}/classes`]
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {

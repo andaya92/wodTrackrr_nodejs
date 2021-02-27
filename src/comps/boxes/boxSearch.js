@@ -31,9 +31,9 @@ function BoxRaw(props){
   let boxID = props.info["boxID"]
 
   return(
-    <TableRow id={`box/${boxID}`} name="BoxRow" onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
+    <TableRow id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
       <TableCell align="left">
-        <Typography variant="subtitle" color="primary">
+        <Typography variant="subtitle1" color="primary">
           { title }
         </Typography>
       </TableCell>
@@ -72,7 +72,7 @@ class BoxSearch extends Component {
       userMD: props.userMD,
       isOwner: props.isOwner,
       allBoxes: props.allBoxes,
-      filteredBoxes: props.allBoxes,
+      filteredBoxes: props.filteredBoxes,
       userFollowing: {},
       redirect: false,
       redirectTo: ""
@@ -80,38 +80,42 @@ class BoxSearch extends Component {
   }
 
   componentDidMount(){
-    this.listenForFollowing(this.props)
+    this.listenForFollowing()
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
-    this.listenForFollowing(newProps)
-  }
-
-  onKeyUp(data){
-    if((data.keyCode || data.which) == 13){   
+  componentWillUnmount(){
+    if(this.followListener){
+      this.followListener()
     }
   }
 
-  listenForFollowing(props){
-    if(props.user){
-      fs.collection("following").where("uid", "==", props.user.uid)
+  static getDerivedStateFromProps(props, state){
+    return props
+  }
+
+  componentDidUpdate(){
+    this.listenForFollowing()
+  }
+  
+  listenForFollowing(){
+    if(this.state.user && !this.followListener){
+      this.followListener = fs.collection("following").where("uid", "==", this.state.user.uid)
       .onSnapshot(ss => {
         let following = {}
         if(!ss.empty){
           
           ss.forEach(doc =>{
             let data = doc.data()
-            console.log(data)
             following[data.boxID] = data.followID
           })
-      }
-      this.setState({userFollowing: following})
+        }
+        
+        this.setState({userFollowing: following})
       }, 
       err => console.log(err))
     }
   }
-
+  
   onChange(ev){
     let val = ev.target.value
     let filteredBoxes = this.state.allBoxes.filter(box =>{
@@ -119,7 +123,12 @@ class BoxSearch extends Component {
     })
     this.setState({filteredBoxes: filteredBoxes})
   }
-
+  
+  onKeyUp(data){
+    if((data.keyCode || data.which) == 13){   
+    }
+  }
+  
   isUserFollowing(boxID){
     return (this.state.userFollowing[boxID])? true: false
   }
@@ -144,8 +153,9 @@ class BoxSearch extends Component {
   }
 
   onRowClick(ev, id){
-    console.log(id)
-    if(ev.target.tagName === "TD"){
+    let tagName = ev.target.tagName
+    console.log(tagName)
+    if(["span", "svg", "path", "BUTTON", "SPAN"].indexOf(tagName) < 0){
       this.setState({redirect: true, redirectTo: id})
     }
   }

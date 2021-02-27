@@ -5,7 +5,7 @@ import "firebase/database";
 
 // React
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Redirect } from 'react-router-dom';
 
 import ReactMarkdown from 'react-markdown'
 
@@ -15,16 +15,24 @@ import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
+	Modal, InputAdornment, TableBody, Table, TableContainer,
 	TableHead, TableRow, TablePagination, TableSortLabel
 } from '@material-ui/core';
+import {TableCell as TC} from '@material-ui/core';
+
 import Delete from '@material-ui/icons/Delete'
 import Edit from '@material-ui/icons/Edit'
 import SearchIcon from '@material-ui/icons/Search';
 import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme, withStyles } from '@material-ui/core/styles';
 
 import {msToDate} from "../utils/formatting"
+
+
+
+const TableCell = withStyles({root:{
+	padding: "4px 0px 4px 4px"
+}})(TC)
 
 
 function WodRaw(props){
@@ -35,33 +43,24 @@ function WodRaw(props){
 	let boxID = props.info["boxID"]
 	let date = props.info["date"]
 	return(
-		<TableRow>
+		<TableRow onClick={(ev) => {
+			let tagName = ev.target.tagName
+			console.log("Clcick")
+			if(["path", "svg"].indexOf(tagName) > -1)
+				return
+			props.onViewScores(`/wod/${boxID}/${wodID}`)
+		}}>
 			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
+				<Typography variant="subtitle2" component="h2"gutterBottom>
 					{msToDate(date)}
 				</Typography>
 			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
+			<TableCell colSpan={2}>
+				<Typography variant="subtitle2" component="h2"gutterBottom>
 					{title}
 				</Typography>
 			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					{scoreType}
-				</Typography>
-			</TableCell>
-			<TableCell>
-				<Typography variant="h5" component="h2"gutterBottom>
-					<ReactMarkdown>{wodText}</ReactMarkdown>
-				</Typography>
-			</TableCell>
 			<TableCell align="right">
-				<Link to={`/wod/${boxID}/${wodID}`}
-					component={Button} color="primary" variant="outlined">
-					View
-				</Link>
-			
 			{ props.showOwnerBtns ?
 			    <React.Fragment>
 				    <Button size="small"
@@ -95,13 +94,15 @@ class SearchSortTable extends Component {
 			pageNum: 0,
 			rowsPerPage:5,
 			pageStart: 0,
-			pageEnd: 5
+			pageEnd: 5,
+			redirectUrl: "",
+			redirect: false
 
 		}
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+	static getDerivedStateFromProps(props, state){
+		return props
 	}
 
 	/*
@@ -183,11 +184,22 @@ class SearchSortTable extends Component {
 		})
 	}
 
+
+	onViewScores(url){
+		
+		this.setState({redirectUrl: url, redirect: true})
+	}
+
   render(){
 	return(
 		<Grid item xs={12} align="center">
-		<Paper elevation={2}>
-		    <Paper elevation={2} component="form">
+			{this.state.redirect?
+				<Redirect to={this.state.redirectUrl} />
+			:
+				<React.Fragment></React.Fragment>
+			}
+		
+		    <Paper style={{margin: "16px 0px 0px 0px"}} component="form">
 			<TextField
 			fullWidth
 			variant="outlined"
@@ -205,14 +217,14 @@ class SearchSortTable extends Component {
 			</Paper>
 
 			<Grid container item xs={12}>
-			<TableContainer>
+			<TableContainer style={{margin: "8px 0px 0px 0px"}}>
   			<Table>
 			<TableHead>
 		    	<TableRow>
 		    	{
-		    		this.state.headers.map((header)=>{
+		    		this.state.headers.map((header, i)=>{
 			        	return (
-			        	<TableCell>
+			        	<TableCell key={i}>
 			        		{
 			        			header.sortable?
 					        		<TableSortLabel
@@ -241,13 +253,14 @@ class SearchSortTable extends Component {
 						)
 					)
 					.slice(this.state.pageStart, this.state.pageEnd)
-					.map(row => {
-						return <Wod 
+					.map((row, i) => {
+						return <Wod key={i}
 							handleView={this.props.handleView}
 							handleRemove={this.props.handleRemove}
 							handleEdit={this.props.handleEdit}
 							info={row}
 							showOwnerBtns={this.props.showOwnerBtns}
+							onViewScores={this.onViewScores.bind(this)}
 						/>
 					})
 				:
@@ -266,9 +279,8 @@ class SearchSortTable extends Component {
 	          page={this.state.pageNum}
 	          onChangePage={this.handleChangePage.bind(this)}
 	          onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-	        />
+			  />
 			</Grid>
-		</Paper>
 		</Grid>
 	)
   }

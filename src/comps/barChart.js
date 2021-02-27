@@ -37,17 +37,23 @@ class BarChart extends Component {
 			scoreType: props.scoreType,
 			data: props.data, // x y values for chart
 			values: props.values, // raw score values
-			stats: new Map() // mean, median, SD
+			stats: {} // mean, median, SD
 		}
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({
-			...newProps,
-		}, () => {
-			if(this.state.values.length > 0)
-				this.createChart(this.binData(this.state.values))
-		})
+	static getDerivedStateFromProps(props, state){
+		console.log(props)
+		console.log(state)
+		return props
+	}
+
+	componentDidMount(){
+		this.createChart(this.binData(this.state.values))
+	}
+
+	componentDidUpdate(){
+		console.log(this.state)
+		this.createChart(this.binData(this.state.values))
 	}
 
 	createChart([labels, data]){
@@ -75,6 +81,7 @@ class BarChart extends Component {
 				maintainAspectRatio: false
 			}
 		});
+		this.barChart.update()
 	}
 
 	format(x){
@@ -135,7 +142,7 @@ class BarChart extends Component {
   render(){
 		return(
 			<Grid item xs={12}>
-				<div style={{height:"25vh", "max-width":"50vw"}}>
+				<div style={{width: "92vw", padding: "8px"}}>
 					<canvas id="barChart"></canvas>
 				</div>
 			</Grid>

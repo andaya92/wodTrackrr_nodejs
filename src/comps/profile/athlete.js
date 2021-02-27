@@ -1,6 +1,5 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database"; 
+import "firebase/firestore"; 
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
@@ -11,7 +10,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 import UserScoreList from '../scores/userScoreList'
 
-var db = firebase.database();
+let fs = firebase.firestore();
 
 class Athlete extends Component{
   constructor(props){
@@ -28,28 +27,35 @@ class Athlete extends Component{
   }
 
   listenForUserScores(){
-    db.ref(`scores`).orderByChild("uid").equalTo(this.state.user.uid)
-    .on("value", userScoresSS => {
-      if(userScoresSS && userScoresSS.exists()){
-        let value = userScoresSS.val()
-        let userScores = Object.keys(value).map(wodID => {
-          return value[wodID]
+    fs.collection("scores").where("uid", "==", this.state.user.uid)
+    .onSnapshot(ss => {
+      console.log(ss)
+      if(!ss.empty){
+        let scores = []
+        ss.forEach(doc => {
+          scores.push(doc.data())
         })
-        console.log(userScores)
-        this.setState({userScores: userScores})
+        console.log(scores[0])
+        scores.sort((a, b) => {
+         return (a.date > b.date)? 1 : -1
+        })
+        this.setState({userScores: scores })
+      }else{
+        this.setState({userScores: [] })
       }
-    })
+    },
+    err => {console.log(err)})
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+    return props
   }
 
   render(){
     return(
-      <Grid xs={12}>
-        <Grid xs={12}>
-          <Grid xs={12}>
+      <Grid item xs={12}>
+        <Grid item xs={12}>
+          <Grid item xs={12}>
             <Typography>Scores</Typography>
             <UserScoreList
               uid={this.state.user.uid}

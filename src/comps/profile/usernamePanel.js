@@ -28,14 +28,9 @@ class UsernamePanel extends Component {
     }
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+    return props
   }
-
- 
-
-  // <!-- TODO: Add SDKs for Firebase products that you want to use
-  //      https://firebase.google.com/docs/web/setup#available-libraries -->
 
   updateUsername(ev){
     let usernameInput = document.getElementById('updateUsernameInput')
@@ -92,6 +87,7 @@ class UsernamePanel extends Component {
       :
         <TableContainer>
             <Table>
+              <TableBody>
               <TableRow>
                 <TableCell>
                   Username
@@ -141,6 +137,7 @@ class UsernamePanel extends Component {
               :
                 <React.Fragment></React.Fragment>
               }
+              </TableBody>
             </Table>
         </TableContainer>
     }

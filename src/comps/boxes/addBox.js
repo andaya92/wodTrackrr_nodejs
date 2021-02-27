@@ -34,8 +34,8 @@ class AddBox extends Component {
   componentDidMount(){
   }
  
-  componentWillReceiveProps(newProps){
-	this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+	return props
   }
 
   onKeyUp(data){
@@ -57,41 +57,43 @@ class AddBox extends Component {
   render () {
     return (
     	<Grid item xs={12}>
-				<Table>
+			<Table>
+				<TableBody>
 					<TableRow>
 							<TableCell>Title</TableCell>
 							<TableCell>
 								<TextField
-		              id="ownerBoxAddBoxTitle"
-		              type="text"
-		              pattern="[\sA-Za-z0-9]{35}"
-		              inputProps={{
-		                title: "Letters only, max length 35",
-		                placeholder: "Name of gym"
-		              }}
-		              onKeyUp={this.onKeyUp.bind(this) }
-		              margin="normal"
-		              color="primary"
-		              style={{width: "100%"}}
-		              InputLabelProps={{
-		                shrink: true,
-		              }}
-		            />
+					id="ownerBoxAddBoxTitle"
+					type="text"
+					pattern="[\sA-Za-z0-9]{35}"
+					inputProps={{
+						title: "Letters only, max length 35",
+						placeholder: "Name of gym"
+					}}
+					onKeyUp={this.onKeyUp.bind(this) }
+					margin="normal"
+					color="primary"
+					style={{width: "100%"}}
+					InputLabelProps={{
+						shrink: true,
+					}}
+					/>
 							</TableCell>
 					</TableRow>
 					<TableRow>
 							<TableCell align="center" colSpan={2}>
 								<Button size="small" variant="outlined" color="primary" 
-				      		onClick={ () =>{
-				      			let el = document.getElementById("ownerBoxAddBoxTitle")
-				      			this.createBox(el.value)
-				      		}
-				      	}>
-				      	Submit
-				      </Button>
-      			</TableCell>
+									onClick={ () =>{
+										let el = document.getElementById("ownerBoxAddBoxTitle")
+										this.createBox(el.value)
+									}
+								}>
+								Submit
+							</Button>
+						</TableCell>
 					</TableRow>
-				</Table>
+				</TableBody>
+			</Table>
   		</Grid>
     );
   }

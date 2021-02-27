@@ -5,7 +5,7 @@ import "firebase/database";
 import ReactMarkdown from 'react-markdown'
 
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Redirect } from 'react-router-dom';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import 
@@ -16,7 +16,7 @@ import
 	TableCell, TableBody, Table, Modal
 } 
 from '@material-ui/core';
-import { DeleteOutlined, LooksOneOutlined, AddBoxOutlined } from '@material-ui/icons';
+import { Delete, LooksOneOutlined, AddBoxOutlined } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
@@ -34,7 +34,9 @@ class UserScoreList extends Component {
 			scores: props.scores,
 			uid: props.uid,
 			showRemoveAlert: false,
-			removeScoreID: ""
+			removeScoreID: "",
+			redirectUrl: "", 
+			redirect: false
 		}
 	}
 
@@ -62,8 +64,12 @@ class UserScoreList extends Component {
 		this.setState({showRemoveAlert: false})
 	}
 
-	componentWillReceiveProps(newProps){
-		this.setState({...newProps})
+	static getDerivedStateFromProps(props, state){
+		return props
+	}
+
+	onView(url){
+		this.setState({redirectUrl: url, redirect: true})
 	}
 	
   	render(){
@@ -71,22 +77,28 @@ class UserScoreList extends Component {
 			<React.Fragment>
 			{this.state.scores.length > 0?
 			<TableContainer component={Paper}>
+				{this.state.redirect?
+					<Redirect to={this.state.redirectUrl} />
+				:
+					<React.Fragment></React.Fragment>
+				}
 				<Table aria-label="score table">
 				<TableHead>
-					<TableCell>Username</TableCell>
-					<TableCell>Score</TableCell>
-					<TableCell>Box</TableCell>
-					<TableCell>Wod</TableCell>
-					<TableCell>Remove</TableCell>
+					<TableRow>
+						<TableCell>Title</TableCell>
+						<TableCell>Score</TableCell>
+						<TableCell></TableCell>
+					</TableRow>
 				</TableHead>
 				<TableBody>
 					{
-					this.state.scores.map(score => {
-						return <ScoreRow 
+					this.state.scores.map((score, i) => {
+						return <ScoreRow key={i}
 							info={score}
 							onViewBox={this.handleViewBox.bind(this)}
 							onViewWod={this.handleViewWod.bind(this)}
 							onRemove = {this.showRemoveAlert.bind(this)}
+							onView={this.onView.bind(this)}
 						/>
 					})
 					}
@@ -125,34 +137,28 @@ Show details of Box and its WODS
 */
 function ScoreRow(props){
 	let score = props.info["score"]
-	let username = props.info["username"]
+	let title = props.info["title"]
 	let wodID = props.info["wodID"]
 	let uid = props.info["uid"]
 	let scoreID = props.info["scoreID"]
 	let boxID = props.info["boxID"]
 	return(
-		<TableRow>
-				<TableCell>
-					{username}
-				</TableCell>
-				<TableCell>
-					{score} 
-				</TableCell>
-				<TableCell>
-			    <Link to={`box/${boxID}`}>
-			    	<AddBoxOutlined />
-			    </Link>
-	  		</TableCell>
-	  		<TableCell>
-			    <Link to={`wod/${boxID}/${wodID}`}>
-			    	<LooksOneOutlined />
-			    </Link>
-	  		</TableCell>
-	  		<TableCell>
-			    <Button size="small"
-			    	color="error" 
+		<TableRow onClick={(ev) => {
+			let tagName = ev.target.tagName
+			if(["path", "svg"].indexOf(tagName) > -1)
+				return
+			props.onView(`wod/${boxID}/${wodID}`)
+		}}>
+			<TableCell>
+				{title}
+			</TableCell>
+			<TableCell>
+				{score} 
+			</TableCell>
+			<TableCell align="right">
+				<Button size="small"
 			    	onClick={() => props.onRemove(scoreID)}>
-			    	<DeleteOutlined />
+			    	<Delete color="error" />
 			    </Button>
 	  		</TableCell>
 		</TableRow>

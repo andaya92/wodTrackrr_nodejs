@@ -53,25 +53,34 @@ class NewOwnerBox extends Component {
   	this.listenForBoxes()
   }
  
-  componentWillReceiveProps(newProps){
-	this.setState({...newProps})
-		if(newProps.userMD.accountType === "owner"){
-			this.listenForBoxes()
-		}
+  static getDerivedStateFromProps(props, state){
+	  return props
+  }
+  
+  componentDidUpdate(){
+    if(this.state.userMD.accountType === "owner"){
+      this.listenForBoxes()
+    }
+
   }
 
   componentWillUnmount(){
+    if(this.boxListener){
+      this.boxListener()
+    }
   }
 
   listenForBoxes(){
-  	if(!this.state.user)
+  	if(!this.state.user || this.boxListener)
   		return
-		fs.collection("boxes").where("uid", "==", this.state.user.uid)
+
+		this.boxListener = fs.collection("boxes").where("uid", "==", this.state.user.uid)
 		.onSnapshot(ss => {
 			let data = []
 			ss.forEach(doc => {
 				data.push(doc.data())
 			})
+      console.log("Setting new state for userBoxes")
 			this.setState({
 				hasBoxes: true, 
 				userBoxes: data
@@ -108,7 +117,7 @@ class NewOwnerBox extends Component {
           <Tab label="Add Gym" {...this.a11yProps(0)} />
           <Tab label="Add Class" {...this.a11yProps(1)} />
           <Tab label="Add Workout" {...this.a11yProps(2)} />
-          <Tab label="View Gyms & Workouts" {...this.a11yProps(3)} />
+          <Tab label="View Gyms" {...this.a11yProps(3)} />
         </Tabs>
       </AppBar>
       <SwipeableViews

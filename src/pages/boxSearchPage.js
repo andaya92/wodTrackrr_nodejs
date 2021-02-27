@@ -48,13 +48,13 @@ class BoxSearchPage extends Component {
   }
 
   componentWillUnmount(){
-    if(this.allBoxesListener !== undefined){
+    if(this.allBoxesListener){
       this.allBoxesListener()
     }
   }
 
-  componentWillReceiveProps(newProps){
-    this.setState({...newProps})
+  static getDerivedStateFromProps(props, state){
+    return props
   }
 
   render () {
@@ -66,12 +66,13 @@ class BoxSearchPage extends Component {
               user={this.state.user}
               userMD={this.state.userMD}
               allBoxes={this.state.allBoxes}
+              filteredBoxes={this.state.allBoxes}
               isOwner={false}
               isReadOnly={false}
               handleRemoveBox={this.props.handleRemoveBox}
           />
           :
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Paper elevation={2}>
               No boxes!
             </Paper>
