@@ -1,3 +1,6 @@
+import firebase from "../context/firebaseContext"
+import "firebase/firestore"
+
 import React, { Component } from 'react'
 
 import { Grid, Paper, Button, Typography, Collapse,
@@ -8,16 +11,17 @@ import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 
-import NewOwnerBox from "../comps/topNavigation"
-import UsernamePanel from "../comps/profile/usernamePanel"
+import OwnerControls from "../comps/ownerControls"
 import UserFollows from '../comps/followers/userFollows'
 import Athlete from '../comps/profile/athlete'
 import AdminInvites from "../comps/profile/adminInvites"
 import MemberInvites from "../comps/profile/memberInvites"
 import ClassAdminView from "../comps/profile/classAdminView"
 import ClassMemberView from "../comps/profile/classMemberView"
-
+import CalendarScoreView from "../comps/calendar/calendarView"
 import makeCancelable from "../utils/promises"
+
+let fs = firebase.firestore()
 
 class PageContentRaw extends Component {
   constructor(props){
@@ -25,11 +29,13 @@ class PageContentRaw extends Component {
     this.state = {
       user: props.user,
       userMD: props.userMD,
-      emailAlertOpen: false
+      emailAlertOpen: false,
+      scores: []
     }
   }
 
   static getDerivedStateFromProps(props, state){
+
     return props
   }
 
@@ -38,8 +44,37 @@ class PageContentRaw extends Component {
       console.log("email cancelled")
       this.cancelablePromise.cancel()
     }
+    if(this.listener)
+      this.listener()
   }
-  
+
+  componentDidMount(){
+    this.listenForUserScores()
+  }
+
+  listenForUserScores(){
+    if(!this.listener){
+      this.listener = fs.collection("scores").where("uid", "==", this.state.user.uid)
+      .onSnapshot(ss => {
+        console.log(ss)
+        if(!ss.empty){
+          let scores = []
+          ss.forEach(doc => {
+            scores.push(doc.data())
+          })
+          console.log(scores[0])
+          scores.sort((a, b) => {
+           return (a.date > b.date)? 1 : -1
+          })
+          this.setState({scores: scores })
+        }else{
+          this.setState({scores: [] })
+        }
+      },
+      err => {console.log(err)})
+    }
+  }
+
   sendVerificationEmail(){
     let emailVerifyPromise = new Promise(
       (res, rej) => {
@@ -49,9 +84,6 @@ class PageContentRaw extends Component {
     })
 
     this.cancelablePromise = makeCancelable(emailVerifyPromise)
-
-    
-    
   }
 
   render(){
@@ -65,25 +97,37 @@ class PageContentRaw extends Component {
           </Collapse>
         </Grid>
         <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-          <Paper elevation={4}>   
-            <UsernamePanel 
-              user={this.state.user} 
-              userMD={this.state.userMD} 
+          <Paper elevation={4}>
+            <Typography gutterBottom variant="h5" >
+              { this.state.userMD.username }
+            </Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
+          <Paper elevation={4}>
+            <CalendarScoreView
+              userMD={this.state.userMD}
+              scores={this.state.scores}
             />
           </Paper>
         </Grid>
-        <Grid item xs={12}> 
+        <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
+          <Paper elevation={4}>
+
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
           <Grid item container xs={12}>
               {!this.state.user.emailVerified ?
                 <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
                   <Paper elevation={4}>
                     <Typography >
                       Verification
-                    </Typography>         
-                    
-                    <Button variant="outlined" style={{margin: "0px 0px 4px 0px "}}
+                    </Typography>
+
+                    <Button color="secondary" style={{margin: "0px 0px 4px 0px "}}
                       onClick={this.sendVerificationEmail.bind(this)} >
-                      <Typography  variant="h5" component="h3">
+                      <Typography  variant="subtitle2">
                         Send Verification Email
                       </Typography>
                     </Button>
@@ -92,15 +136,14 @@ class PageContentRaw extends Component {
               :
                 <React.Fragment></React.Fragment>
               }
-              
+
               <AdminInvites userMD={this.state.userMD}/>
               <MemberInvites userMD={this.state.userMD}/>
               <ClassAdminView userMD={this.state.userMD}/>
               <ClassMemberView userMD={this.state.userMD}/>
-              
-                
+
              <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-               <Paper elevation={4}>       
+               <Paper elevation={4}>
                 <UserFollows
                   user={this.state.user}
                   userMD={this.state.userMD}
@@ -111,12 +154,21 @@ class PageContentRaw extends Component {
 
         <Paper elevation={2} style={{margin: "16px 0px 0px 0px"}}>
           {this.state.userMD.accountType === "owner" ?
-            <NewOwnerBox user={this.state.user} userMD={this.state.userMD} />
+            <OwnerControls
+              user={this.state.user}
+              userMD={this.state.userMD}
+              onAlert={this.props.onAlert}
+              />
           :
-            <Athlete user={this.state.user} userMD={this.state.userMD} />
+            <Athlete
+              user={this.state.user}
+              userMD={this.state.userMD}
+              onAlert={this.props.onAlert}
+              scores={this.state.scores}
+            />
           }
           </Paper>
-        </Grid>   
+        </Grid>
     </Grid>
     )
   }
@@ -130,9 +182,9 @@ class ProfilePage extends Component {
     this.state = {
       user: props.user,
       userMD: props.userMD
-    }  
+    }
   }
- 
+
   /*
     login.js has the form and does the login, calls this with the user obj
   */
@@ -147,9 +199,10 @@ class ProfilePage extends Component {
   render () {
     return (
     	<Grid item xs={12} id="profilepage">
-           <PageContent 
+           <PageContent
                 user= {this.state.user}
                 userMD={this.state.userMD}
+                onAlert={this.props.onAlert}
             />
   		</Grid>
     );

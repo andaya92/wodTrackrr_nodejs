@@ -1,4 +1,44 @@
 let apptheme = {
+   "overrides": {
+      "MuiContainer": {
+         "root":{
+            "background-color": "#212121"
+         }
+      },
+      "MuiSelect": {
+         "icon": {
+            "color": "white"
+         }
+      },
+      "MuiInputBase":{
+         "root": {
+
+         }
+      },
+      "PrivateTabIndicator":{
+         "colorSecondary":
+          {
+            "backgroundColor": "white"
+         }
+      },
+      "MuiInput":{
+         "underline":{
+            '&:before': {
+               borderBottomColor: "white"
+           }
+         }
+      },
+      "MuiBottomNavigation": {
+         "root": {
+            "zIndex": 100
+         }
+      },
+      "MuiBottomNavigation": {
+         "root": {
+            "zIndex": 100
+         }
+      }
+   },
    "palette":{
       "common":{
          "black":"#000",
@@ -8,13 +48,14 @@ let apptheme = {
          "main": "black"
         },
       "background":{
-         "paper":"#2e3134",
-         "toolbar": "#0d0e0e",
-         "tableHeader": "#1b1d1e",
+         "paper":"#212121",
+         "toolbar": "#333333",
+         "tableHeader": "#2e3134",
          "default":"rgba(48, 48, 48, 1)"
       },
       "primary":{
-         "main":"#0072fff7",
+         "main1":"#0072fff7",
+         "main":"#4ec5ff",
          "mainGrad": 'linear-gradient(90deg,#0890fd,#01d3fe)',
          "contrastText":"rgba(255, 255, 255, 1)"
       },
@@ -29,12 +70,6 @@ let apptheme = {
          "main":"#c43627",
          "dark":"#2d0d0b",
          "contrastText":"rgba(255, 255, 255, 1)"
-      },
-      "follow":{
-         "main": "#09e073"
-      },
-      "unfollow": {
-         "main": "#e07609"
       },
       "text":{
          "primary":"#ffffff",

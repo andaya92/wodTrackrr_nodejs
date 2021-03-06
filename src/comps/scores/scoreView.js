@@ -1,6 +1,6 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import ReactMarkdown from 'react-markdown'
 
@@ -8,20 +8,20 @@ import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
+import
 {   Grid, Paper, Button, Typography, Collapse, TextField, Select,
   Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
   CircularProgress, LinearProgress, CardActions, Card, CardContent,
   ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
   TableCell, TableBody, Table, Modal, GridListTileBar
-} 
+}
 from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
-import ScoreDataView from "./scoreDataView" 
+import ScoreDataView from "./scoreDataView"
 import ScoreList from "./scoreList"
-import AddScore from "./addScore" 
+import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 
 import { removeScore } from "../../utils/firestore/scores"
@@ -33,7 +33,6 @@ var db = firebase.database();
 
 function RenderWodTextRaw(props){
   let lines = props.wodText.split("\n")
-  console.log(lines)
   return(
     <Grid item xs={12}>
       {
@@ -92,7 +91,7 @@ class ScoreView extends Component {
         })
         let isTime = (scoreType && scoreType === "time") ? 1 : 0
         scores.sort((a,b) => {
-          return isTime 
+          return isTime
           ?
               parseFloat(a["score"]) < parseFloat(b["score"]) ? -1 : 1
           :
@@ -108,7 +107,7 @@ class ScoreView extends Component {
           userScore: {}
         })
       }
-    }, 
+    },
       err => {})
   }
 
@@ -128,34 +127,48 @@ class ScoreView extends Component {
   }
 
   handleRemoveScore(scoreID){
-    console.log(`Remove score with ID: ${scoreID}`)
     this.setState({curRemoveScoreID: scoreID, showRemoveAlert: true})
   }
 
   removeScore(){
     let scoreID = this.state.curRemoveScoreID
-    if(scoreID === "" || scoreID.length <=0){return}
+    if(scoreID === "" || scoreID.length <=0){
+      this.props.onAlert({
+        type: "warning",
+        message: "Invalid scoreID!"
+      })
+      return
+    }
+
 
     this.setState({showRemoveAlert: false})
-
     removeScore(scoreID)
     .then((res)=>{
-      console.log(res)
-      this.setState({showRemoveAlert: false})     
+      this.props.onAlert({
+        type: "success",
+        message: res
+      })
     })
-    .catch((err)=>{console.log(err)})
+    .catch((err)=>{
+      this.props.onAlert({
+        type: "error",
+        message: err
+      })
+    })
   }
 
   render(){
-    console.log(this.state.userMD)
+
   return(
     <React.Fragment>
       {Object.keys(this.state.wodMD).length > 0 ?
         <Grid item xs={12}>
           <Grid item align="center" xs={12}>
-            <Paper elevation={2}>
+            <Paper elevation={6}>
+            <Typography>{this.state.wodMD["boxTitle"]}</Typography>
+            <Typography>{this.state.wodMD["gymClassTitle"]}</Typography>
               <Typography>{this.state.wodMD["title"]}</Typography>
-              <Typography 
+              <Typography
                 variant="subtitle1"
                 color="primary">
                   For {this.state.wodMD["scoreType"]}
@@ -164,46 +177,44 @@ class ScoreView extends Component {
           </Grid>
 
           <Grid item xs={12}>
-            <Paper elevation={2} style={{
+            <Paper elevation={6} style={{
                 margin: "8px 0px 8px 0px",
                 padding: "8px"
             }}>
             <Grid item xs={12} align="center">
-            <Typography 
+            <Typography
                 variant="subtitle2"
                 color="primary">
                   Workout
               </Typography>
             </Grid>
             <Grid item container xs={12}>
-              <RenderWodTextRaw 
+              <RenderWodTextRaw
                 wodText={this.state.wodMD["wodText"]}
               />
               </Grid>
             </Paper>
           </Grid>
-         
+
           {Object.keys(this.state.userMD).length > 0?
-            <AddScore 
+            <AddScore
               userMD={this.state.userMD}
               wodMD={this.state.wodMD}
             />
           :
             <React.Fragment></React.Fragment>
           }
-          <Grid item xs={12}>
-            <Paper elevation={2}>   
-              {this.state.scores && this.state.scores.length > 1?
-                <ScoreDataView 
+          <Grid item xs={12} margin={{marginTop: "16px"}}>
+              {this.state.scores && this.state.scores.length > 0?
+                <ScoreDataView
                   scores={this.state.scores}
                 />
               :
                 <React.Fragment></React.Fragment>
               }
-            </Paper>
           </Grid>
           <Grid item xs={12}>
-            <Paper elevation={2}>   
+            <Paper elevation={6}>
             <ScoreList
               scores={this.state.scores}
               uid={this.state.userMD.uid}
@@ -229,7 +240,7 @@ class ScoreView extends Component {
   )
   }
 }
-  
+
 export default ScoreView = withTheme(ScoreView);
 
 

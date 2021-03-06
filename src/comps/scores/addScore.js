@@ -13,15 +13,22 @@ import
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-	TableCell, TableBody, Table, Modal
+	TableBody, Table, Modal, TableCell
 } 
 from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
 
-import ScoreDataView from "./scoreDataView" 
+import { withTheme, withStyles } from '@material-ui/core/styles';
+
+
+
 import { setScore } from "../../utils/firestore/scores"
 import "../../styles.css"
+
+
+
+const BorderlessTableCell = withStyles({root:{
+	borderBottom: "none"
+}})(TableCell)
 
 
 var db = firebase.database();
@@ -33,7 +40,6 @@ class AddScore extends Component{
 			userMD: props.userMD,
 			wodMD: props.wodMD
 		}
-		console.log(props)
 	}
 
 	static getDerivedStateFromProps(props, state){
@@ -122,7 +128,7 @@ class AddScore extends Component{
 		<Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
 			<Accordion>
 				<AccordionSummary
-					style={{background: this.props.theme.palette.primary.main}}
+					style={{background: this.props.theme.palette.primary.mainGrad}}
 					expandIcon={<ExpandMoreIcon />}
 					aria-label="Expand"
 					aria-controls="additional-actions2-content"
@@ -150,7 +156,7 @@ class AddScore extends Component{
 								<TableRow>
 									{this.state.wodMD.scoreType === "time" ?
 										<React.Fragment>
-										<TableCell align="center">
+										<BorderlessTableCell align="center">
 											<TextField
 												id="scoreViewUserScoreMins"
 												type="number"
@@ -167,8 +173,8 @@ class AddScore extends Component{
 													shrink: true,
 												}}
 												/>
-										</TableCell>
-										<TableCell align="center">
+										</BorderlessTableCell>
+										<BorderlessTableCell align="center">
 											<TextField
 												id="scoreViewUserScoreSecs"
 												type="number"
@@ -185,10 +191,10 @@ class AddScore extends Component{
 													shrink: true,
 												}}
 												/>
-										</TableCell>
+										</BorderlessTableCell>
 										</React.Fragment>
 									:	
-										<TableCell align="center" colSpan={2}>
+										<BorderlessTableCell align="center" colSpan={2}>
 											<TextField
 											id="scoreViewUserScore"
 											type="number"
@@ -205,16 +211,16 @@ class AddScore extends Component{
 												shrink: true,
 											}}
 											/>
-										</TableCell>	
+										</BorderlessTableCell>	
 									}
 								</TableRow>
 								<TableRow>
-									<TableCell colSpan={3} align="center">
+									<BorderlessTableCell colSpan={3} align="center">
 										<Button  color="primary" style={{width: "100%"}} variant="outlined"
 											onClick={this.handleAddScore.bind(this)}>
 											Add
 										</Button>
-									</TableCell>
+									</BorderlessTableCell>
 								</TableRow>
 								</TableBody>
 							</Table>

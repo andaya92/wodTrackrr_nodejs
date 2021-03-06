@@ -1,17 +1,36 @@
 let applighttheme = {
+   "overrides": {
+      "MuiContainer": {
+         "root":{
+            "background-color": "#ffffff"
+         }
+      },
+      "MuiSelect": {
+         "icon": {
+            "color": "black"
+         }
+      },
+      "PrivateTabIndicator":{
+         "colorSecondary":
+          {
+            "backgroundColor": "white"
+         }
+      },
+   },
     "palette":{
        "common":{
           "black":"#000",
           "white":"#fff"
        },
        "background":{
-          "paper":"#fcfdff",
+          "paper":"#ffffff",
           "toolbar": "#fffffff5",
-          "tableHeader": "#fffffff5",
-          "default":"#fffffff5"
+          "tableHeader": "#f1f1f1",
+          "default":"#f1f1f1"
        },
        "primary":{
-          "main":"#0072fff7",
+          "main1":"#0072fff7",
+          "main":"#4ec5ff",
           "mainGrad": 'linear-gradient(90deg,#0890fd,#01d3fe)',
           "contrastText":"rgba(255, 255, 255, 1)"
        },
@@ -41,5 +60,5 @@ let applighttheme = {
        }
     }
  };
- 
+
  export default applighttheme = applighttheme;

@@ -2,9 +2,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Grid, Paper, Button, Typography, Collapse,
+import { Grid, Paper, Button, Typography, IconButton,
         TableBody, Table, TableCell, TableContainer, TableRow } 
 from '@material-ui/core';
+
 import Whatshot from '@material-ui/icons/Whatshot'
 import { Alert } from '@material-ui/lab'
 import { withTheme } from '@material-ui/core/styles'
@@ -124,59 +125,62 @@ class UserFollows extends Component{
   render(){
     return(
       <Grid item xs={12}>
-          <Grid item xs={12}>
-            <Typography>Following</Typography>
-          </Grid>
-          <Grid item xs={12}>
-              {this.state.userFollows.length > 0 ?
-                <TableContainer>
-                  <Table>
-                    <TableBody>
-                      {this.state.userFollows.map((follow, i) => {
-                        return (
-                          <TableRow key={i}>
-                            <TableCell>
-                              {follow.boxID === "" ?
-                                <Button>
-                                  {follow.title} <Typography variant="caption" component="span">&nbsp;(deleted)</Typography>
-                                </Button>
-                              :  
-                                <Button
-                                  to={`box/${follow.boxID}`}
-                                  component={Link}
-                                >
-                                  {follow.title}
-                                </Button>
-                            }
-                            </TableCell>
-                              <TableCell align="right">
-                              { this.isUserFollowing(follow.boxID) ?
-                                  <Button variant="outlined"
-                                    onClick={()=>{
-                                      this.handleUnfollow(follow.boxID)}
-                                    }>
-                                    <Whatshot color="primary" />
+          <Paper elevation={6}>
+            <Grid item xs={12}>
+              <Typography>Following</Typography>
+            </Grid>
+            <Grid item xs={12}>
+                {this.state.userFollows.length > 0 ?
+                  <TableContainer>
+                    <Table>
+                      <TableBody>
+                        {this.state.userFollows.map((follow, i) => {
+                          return (
+                            <TableRow key={i}>
+                              <TableCell>
+                                {follow.boxID === "" ?
+                                  <Button>
+                                    {follow.title} <Typography variant="caption" component="span">&nbsp;(deleted)</Typography>
                                   </Button>
-                                :
-                                  <Button variant="outlined" 
-                                    onClick={()=>{
-                                      this.handleFollow(follow)
-                                    }}>
-                                    <Whatshot />
+                                :  
+                                  <Button
+                                    to={`box/${follow.boxID}`}
+                                    component={Link}
+                                  >
+                                    {follow.title}
                                   </Button>
                               }
-                            </TableCell>
-                          </TableRow>
-                        )
-                      })
-                      }
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              :
-                <React.Fragment>Not following anyone!</React.Fragment>
-              }
-        </Grid>
+                              </TableCell>
+                                <TableCell align="right">
+                                { this.isUserFollowing(follow.boxID) ?
+                                    <IconButton
+                                      onClick={()=>{
+                                        this.handleUnfollow(follow.boxID)}
+                                      }>
+                                      <Whatshot color="primary" />
+                                    </IconButton>
+                                  :
+                                    <IconButton 
+                                      onClick={()=>{
+                                        this.handleFollow(follow)
+                                      }}>
+                                      <Whatshot style={{fill: this.props.theme.palette.text.primary}}/>
+                                    </IconButton>
+                                }
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })
+                        }
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                :
+                  <React.Fragment>Not following anyone!</React.Fragment>
+                }
+          </Grid>
+
+          </Paper>
       </Grid>
     )
   }

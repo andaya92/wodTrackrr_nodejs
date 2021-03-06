@@ -1,5 +1,5 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth"; 
+import "firebase/auth";
 import "firebase/firestore";
 
 
@@ -10,19 +10,10 @@ export default function mTea(){}
 	Wods
 */
 
-export function setWod(boxID, gymClassID, title, wodText, scoreType){
+export function setWod(data){
 	let fs = firebase.firestore();
 	let doc = fs.collection("wods").doc()
-	let data = {
-		wodID: doc.id,
-		boxID: boxID,
-		gymClassID: gymClassID,
-		title: title,
-		scoreType: scoreType,
-		wodText: wodText,
-		date: Date.now()
-	}
-	return doc.set(data)
+	return doc.set({ ...data, date: Date.now(), wodID: doc.id })
 }
 
 export function editWod(boxID, wodID, title, wodText, scoreType){
@@ -48,14 +39,14 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 	.then(ss => {
 		let cnt = 0
 		if(ss.size == 0) res(1)
-		
+
 		ss.forEach(doc => {
 			console.log("delete")
 			console.log(doc.data())
 			batch.delete(doc.ref)
 			cnt++
 		})
-		
+
 		batch.commit().then(() => {
 			if(cnt >= 500)
 				getSnapshot(collectionName, fieldName, fieldID, res, rej)
@@ -74,7 +65,7 @@ export function removeWod(wodID){
 			getSnapshot(name, "wodID", wodID, res, rej)
 		})
 	})
-	
+
 	return Promise.all(promises)
 }
 

@@ -1,11 +1,11 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
 
-import 
+import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
   TableHead, TableRow }
@@ -22,10 +22,10 @@ import "../../styles.css"
 const fs = firebase.firestore()
 
 function MemberRowRaw(props){
-  
+
   // TODO redirect to wods whhoch is what boxView is
   return(
-    <TableRow> 
+    <TableRow>
       <TableCell align="left">
         <Typography variant="subtitle1" color="primary">
           { props.info.username }
@@ -46,6 +46,19 @@ function MemberRowRaw(props){
 }
 const MemberRow = withTheme(MemberRowRaw)
 
+function EmptyMemberRaw(props){
+  return(
+    <TableRow>
+      <TableCell colSpan={3} align="center">
+        <Typography variant="subtitle1" color="primary">
+          No Members!
+        </Typography>
+      </TableCell>
+    </TableRow>
+  )
+}
+const EmptyMember = withTheme(EmptyMemberRaw)
+
 class ClassMemberList extends Component {
   constructor(props){
     super(props)
@@ -64,11 +77,11 @@ class ClassMemberList extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    return props  
+    return state.members.length > 0? state : props
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){   
+    if((data.keyCode || data.which) == 13){
     }
   }
 
@@ -88,14 +101,22 @@ class ClassMemberList extends Component {
   handleRemoveMember(classMemberID, username){
     this.setState({classMemberID: classMemberID, removeUsername: username, showRemoveAlert: true})
   }
-  
+
   onRemoveMember(){
+    this.setState({showRemoveAlert: false})
     removeMember(this.state.classMemberID)
-    .then(() => { 
-      console.log("Removed member.") 
-      this.setState({showRemoveAlert: false})
-    })
-    .catch(err => { console.log(err) })
+    .then((res) => {
+			this.props.onAlert({
+				type: "success",
+				message: "Removed member!"
+			})
+		})
+		.catch(err => {
+			this.props.onAlert({
+				type: "error",
+				message: err
+			})
+		})
 
   }
 
@@ -103,7 +124,6 @@ class ClassMemberList extends Component {
     return (
       <Grid item xs={12}>
         <Grid item xs={12}>
-          {this.state.members.length > 0 ?
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
           <Paper elevation={2} component="form">
             <TextField
@@ -130,27 +150,25 @@ class ClassMemberList extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {
-                this.state.filteredMembers.map((member, i) => {
-                    return (
-                        <MemberRow 
-                            key={i} 
-                            info={member} 
-                            handleRemoveMember={this.handleRemoveMember.bind(this)}
-                            isOwner={this.props.isOwner}
-                        />
-                    )
-                })
+                {this.state.filteredMembers.length > 0 ?
+                  this.state.filteredMembers.map((member, i) => {
+                      return (
+                          <MemberRow
+                              key={i}
+                              info={member}
+                              handleRemoveMember={this.handleRemoveMember.bind(this)}
+                              isOwner={this.props.isOwner}
+                          />
+                      )
+                  })
+                :
+                  <EmptyMember />
                 }
                 </TableBody>
                 </Table>
             </TableContainer>
           </Paper>
           </Grid>
-
-          :
-            <Typography>No members</Typography>
-          }
         </Grid>
         <ActionCancelModal
 				  open={this.state.showRemoveAlert}

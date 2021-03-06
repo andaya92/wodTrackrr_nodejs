@@ -54,6 +54,8 @@ function NotificationRaw(props){
 }
 const Notification = withTheme(NotificationRaw)
 
+
+
 class AdminInvites extends Component {
 	constructor(props){
 		super(props)
@@ -114,6 +116,7 @@ class AdminInvites extends Component {
         let classTitle = notify.gymClassTitle
         let boxTitle = notify.boxTitle
         let boxID = notify.boxID
+        let notifyID = notify.adminInviteID
 
         let data = {            
             gymClassID: gymClassID,
@@ -129,12 +132,12 @@ class AdminInvites extends Component {
         setClassAdmin(this.state.userMD.uid, gymClassID, data)
         .then(res => {
             console.log(res)
+            this.onRemoveNotification(notifyID)
         })
         .catch(err => {
             console.log(err)
         })
        
-        // this.removeNotification(gymClassID)
 
     }
 

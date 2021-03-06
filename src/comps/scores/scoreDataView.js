@@ -101,7 +101,7 @@ class ScoreDataView extends Component {
   render(){
 	return(
 		<Grid item xs={12}>
-			<Grid item container align="center" xs={12}>
+			<Grid item container align="center" spacing={1} xs={12}>
 				<Grid item xs={4}>
 					<Paper elevation={6}>
 						<Typography>
@@ -129,22 +129,25 @@ class ScoreDataView extends Component {
 						</Typography>
 					</Paper>
 				</Grid>
-			</Grid>
+			</Grid> 
 
-			<Grid item xs={12}>
+			
+				<Grid item xs={12}>
 					<LineChart 
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType}
 						stats={this.state.stats} />
-			</Grid>
-			<Grid item xs={12}>
+				</Grid>
+				<Grid item xs={12}>
 					<BarChart 
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType}
 						stats={this.state.stats} />
-			</Grid>
+				</Grid>
+
+
 
 		</Grid>
 	)

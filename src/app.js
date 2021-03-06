@@ -3,9 +3,12 @@ import "firebase/auth"
 import "firebase/firestore"
 
 import React from "react";
-import { HashRouter, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { HashRouter, Switch, Route, Link, Redirect, Router, BrowserRouter } from 'react-router-dom';
 
-import { Paper, Button, BottomNavigation, BottomNavigationAction ,Grid, Container} from '@material-ui/core';
+import { Paper, Button, BottomNavigation, BottomNavigationAction,
+        Grid, Container, Box }
+from '@material-ui/core';
+import { createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
 
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
@@ -16,6 +19,7 @@ import "./styles.css";
 
 
 import BoxSearchPage from "./pages/boxSearchPage"
+import Settings from "./pages/settings"
 import BoxView from "./comps/boxes/boxView"
 import RegisterUser from "./comps/profile/registerUser"
 import GymClassView from "./comps/gymClasses/gymClassView"
@@ -23,14 +27,6 @@ import ScoreView from "./comps/scores/scoreView"
 import Profile from "./pages/profile"
 import Header from "./comps/header"
 import Login from "./comps/profile/login"
-
-
-import history from "./history"
-import { createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
-import blueGrey from '@material-ui/core/colors/blueGrey';
-import lightBlue from '@material-ui/core/colors/lightBlue';
-import pink from '@material-ui/core/colors/pink';
-import teal from '@material-ui/core/colors/teal';
 
 
 import apptheme from "./css/apptheme"
@@ -44,6 +40,12 @@ darkTheme = responsiveFontSizes(darkTheme)
 let lightTheme = createMuiTheme(lightapptheme)
 lightTheme = responsiveFontSizes(lightTheme)
 
+const BackgroundGrid = withStyles(theme =>({
+  root:{
+    backgroundColor: theme.palette.background.paper
+  }
+}))(Grid)
+
 
 export default class App extends React.Component {
   constructor(props){
@@ -53,9 +55,16 @@ export default class App extends React.Component {
       user: firebase.auth().currentUser,
       userMD: false,
       theme: darkTheme,
-      darkTheme: true
+      darkTheme: true,
+      alertOpen: false,
+      alertInfo: false
     }
   }
+
+  static getDerivedStateFromProps(props, state){
+    return state
+  }
+
 
   componentDidMount(){
     this.firebaseAuthListener = firebase.auth()
@@ -102,34 +111,47 @@ export default class App extends React.Component {
     this.setState({theme: newTheme, darkTheme: !this.state.darkTheme})
   }
 
+  onAlert(alert){
+    console.log(alert)
+    this.setState({alertInfo: alert, alertOpen: true})
+  }
+
+  onCloseAlert(){
+    this.setState({alertOpen: false, alertInfo: false})
+  }
+
+
+
   render(){
     return(
     <FirebaseAuthContext.Provider>
-    <HashRouter history={history} >
+    <BrowserRouter >
     <ThemeProvider theme={this.state.theme}>
-      <Grid container 
-        direction="row"
-        justify="center">
-        <Paper style={{ width: "100%" }}>
-        <Grid item xs={12} id="page-header">
-          <Header className="header" user={this.state.user}
-                userMD={this.state.userMD}
-                changeTheme={this.changeTheme.bind(this)}
-                handleLogout={this.handleLogout.bind(this)} />
-        </Grid>
-        <Grid item container xs={12} lg={10}
-          id="page-container"
-          style={{"minHeight": "100vh"}}
-          className="page-content">
+    <Header className="header" user={this.state.user}
+      userMD={this.state.userMD}
+      changeTheme={this.changeTheme.bind(this)}
+      handleLogout={this.handleLogout.bind(this)}
+      alertOpen={this.state.alertOpen}
+      alertInfo={this.state.alertInfo}
+      onCloseAlert={this.onCloseAlert.bind(this)}
+      />
+
+      <BackgroundGrid container id="testCont">
+        <Grid item container xs={12}
+          style={{"minHeight": "100vh", paddingTop: "8px"}}>
           <Switch>
             <Route exact path="/boxSearch">
               <BoxSearchPage user={this.state.user}
-                userMD={this.state.userMD} />
+                userMD={this.state.userMD}
+                onAlert={this.onAlert.bind(this)}
+                />
             </Route>
             <Route exact path="/profile">
               {this.state.user?
                 <Profile user={this.state.user}
-                  userMD={this.state.userMD} />
+                  userMD={this.state.userMD}
+                  onAlert={this.onAlert.bind(this)}
+                  />
               :
                 <Redirect to="/login" />
               }
@@ -139,65 +161,78 @@ export default class App extends React.Component {
               render= { props =>(
                 <BoxView
                   userMD={this.state.userMD}
-                  boxID={props.match.params.boxID}/>
-              )} 
+                  boxID={props.match.params.boxID}
+                  onAlert={this.onAlert.bind(this)}/>
+              )}
             />
             <Route path="/class/:boxID/:gymClassID"
               render= { props =>(
                 <GymClassView
                   userMD={this.state.userMD}
                   gymClassID={props.match.params.gymClassID}
-                  boxID={props.match.params.boxID}/>
-              )} 
+                  boxID={props.match.params.boxID}
+                  onAlert={this.onAlert.bind(this)}/>
+              )}
             />
            <Route path="/wod/:boxID/:wodID"
             render= { props =>(
                 <ScoreView userMD={this.state.userMD}
                   boxID={props.match.params.boxID}
                   wodID={props.match.params.wodID}
-                  isReadOnly={true}/>
+                  isReadOnly={true}
+                  onAlert={this.onAlert.bind(this)}/>
               )
-            } 
+            }
           />
           <Route exact path="/register"
             render= { props =>(
               this.state.user?
                 <Redirect to="/profile" />
               :
-                <RegisterUser />
+                <RegisterUser onAlert={this.onAlert.bind(this)}/>
               )
-            } 
+            }
           />
+
+          <Route exact path="/settings"
+            render= { props =>(
+                <Settings
+                  user={this.state.user}
+                  userMD={this.state.userMD}
+                  onAlert={this.onAlert.bind(this)}
+                />
+            )}
+          />
+
           <Route exact path="/login">
             {!this.state.user?
-              <Login 
-                onLogin={this.handleLogin.bind(this)} />
+              <Login
+                onLogin={this.handleLogin.bind(this)}
+                onAlert={this.onAlert.bind(this)}/>
             :
               <Redirect to="/boxSearch" />
             }
             </Route>
           </Switch>
-          <div style={{"margin": "10vh"}}></div>
+          <div style={{"margin": "5vh"}}></div>
         </Grid>
-        <Grid item xs={12} className="footer">
-          <BottomNavigation 
-            value = {this.state.btmnav}
-            onChange = {(event, newValue) => {
-                this.setState({btmnav: newValue})
-              }}
-              style={{background: this.state.theme.palette.background.toolbar}}
-            showLabels
-          >
-            <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
-            <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
-          </BottomNavigation>
-        </Grid>
-        </Paper>
-      </Grid>
+      </BackgroundGrid>
+
+      <BottomNavigation className="footer"
+        value = {this.state.btmnav}
+        onChange = {(event, newValue) => {
+            this.setState({btmnav: newValue})
+          }}
+          style={{background: this.state.theme.palette.primary.mainGrad}}
+        showLabels
+      >
+        <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
+        <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
+      </BottomNavigation>
       </ThemeProvider>
-      </HashRouter>
+      </BrowserRouter>
       </FirebaseAuthContext.Provider>
-  
+
     );
   }
 }

@@ -6,12 +6,12 @@ import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, TableRow, TableHead, TableContainer,
   	TableBody, Table
-} 
+}
 from '@material-ui/core';
 import {TableCell as TC} from '@material-ui/core';
 
@@ -19,8 +19,6 @@ import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import { setWod } from "../../utils/firestore/wods"
 import { getGymClasses } from "../../utils/firestore/gymClass"
-
-import AlertMessage from "../alertMessage"
 
 let fs = firebase.firestore()
 const SCORETYPES = ["reps", "rounds", "time", "total"]
@@ -33,26 +31,20 @@ class AddWod extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			user: props.user,
 			userMD: props.userMD,
 			userBoxes: props.userBoxes,
 			hasBoxes: props.hasBoxes,
 			gymClasses: [],
-			boxIDForm: "",
+			boxIDForm: props.userBoxes[0],
 			gymClassIDForm: {},
 			titleForm: "",
 			scoreTypeForm: SCORETYPES[0],
-			wodTextForm: "",
-			alertMsg: "",
-			showAlertMsg: false
+			wodTextForm: ""
 		}
 	}
 
 	static getDerivedStateFromProps(props, state){
-		return{
-			...props, 
-			boxIDForm: props.userBoxes[0].boxID
-		}
+		return state.userMD? state: props
 	}
 
 	componentDidUpdate(){
@@ -71,11 +63,13 @@ class AddWod extends Component {
 				})
 				let initClass = classes[0]
 
+				console.log("Inint class")
+				console.log(initClass)
 				this.setState({
 					gymClasses: classes,
-					gymClassIDForm: initClass.gymClassID
+					gymClassIDForm: initClass
 				})
-			
+
 			}else{
 				this.setState({gymClasses: []})
 			}
@@ -83,15 +77,23 @@ class AddWod extends Component {
 		err => {console.log(err)})
 	}
 
+	componentWillUnmount(){
+		if(this.gymClassListener){
+			this.gymClassListener()
+		}
+	}
+
 	onBoxSelectChange(ev){
-		let boxID = ev.target.value
-		console.log(ev.target.value)
-		this.setGymClassListner(boxID)
-		this.setState({boxIDForm: boxID})
+		let box = JSON.parse(ev.target.value)
+		console.log(box)
+		if(this.gymClassListener){
+			this.gymClassListener()
+		}
+		this.setGymClassListner(box.boxID)
+		this.setState({boxIDForm: box})
 	}
 
 	onClassSelectChange(ev){
-		console.log(ev.target.value)
 		let gymClass = JSON.parse(ev.target.value)
 		this.setState({gymClassIDForm: gymClass})
 	}
@@ -115,44 +117,52 @@ class AddWod extends Component {
 	}
 
 	createWOD(){
-	  	let boxID = this.state.boxIDForm
-	  	let gymClassID = this.state.gymClassIDForm
+	  	let boxID = this.state.boxIDForm.boxID
+		let boxTitle = this.state.boxIDForm.title
+	  	let gymClassID = this.state.gymClassIDForm.gymClassID
+		let gymClassTitle = this.state.gymClassIDForm.title
 	  	let title = this.state.titleForm
 	  	let scoreType = this.state.scoreTypeForm
 	  	let wodText = this.state.wodTextForm
-
+		console.log("Creating Wod")
+		console.log(boxID, gymClassID, title, scoreType, wodText)
 	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText){
 	  		console.log("Error with input createWod")
 	  		console.log(boxID, gymClassID, title, scoreType, wodText)
 	  		return
+
 	  	}
 
-	  	setWod(boxID, gymClassID, title, wodText, scoreType)
-	  	.then(()=> {
-			  console.log("Successfully added wod.")
-			 this.setState({
-				 showAlertMsg: true, 
-				 alertMsg: "Successfully added wod."
-				}) 
+		let data = {
+			boxID: boxID,
+			gymClassID: gymClassID,
+			title: title,
+			scoreType: scoreType,
+			wodText: wodText,
+			boxTitle: boxTitle,
+			gymClassTitle: gymClassTitle
+		}
+	  	setWod(data)
+	  	.then((res)=>{
+			this.props.onAlert({
+				type: "success",
+				message: "Added workout!"
 			})
-	  	.catch((err)=>{console.log(err)})
+		})
+		.catch((err)=>{
+		  this.props.onAlert({
+			  type: "error",
+			  message: err
+		  })
+	 	 })
 
 	  }
-
-	handleAlertClose(){
-        this.setState({showAlertMsg: false})
-    }
 
 
 
 	render(){
 		return(
 			<Grid item container xs={12}>
-				<AlertMessage 
-					message={this.state.alertMsg}
-					showBackdrop={this.state.showAlertMsg}
-					handleClose={this.handleAlertClose.bind(this)}
-				/>
 				<TableContainer>
 
 					<Table>
@@ -180,7 +190,7 @@ class AddWod extends Component {
 										id: 'ownerBoxAddWodBoxID'}}>
 						          	{this.state.hasBoxes ?
 							          	this.state.userBoxes.map((box, i) => {
-						        			return (<option key={i} value={box["boxID"]} >
+						        			return (<option key={i} value={JSON.stringify(box)} >
 						        								{box["title"]}
 						        							</option>)
 						        		})
@@ -222,7 +232,7 @@ class AddWod extends Component {
 								</Typography>
 							</TableCell>
 							<TableCell>
-								<Select native 
+								<Select native
 									style={{width: "100%"}}
 									onChange={this.onScoreTypeSelectChange.bind(this)}
 									inputProps={{
@@ -233,7 +243,7 @@ class AddWod extends Component {
 											SCORETYPES.map((scoreType, i) => {
 												return <option key={i} value={scoreType}>
 													{ scoreType.replace(
-																scoreType[0], 
+																scoreType[0],
 																scoreType[0].toUpperCase()) }
 												</option>
 											})
@@ -297,8 +307,8 @@ class AddWod extends Component {
 						</TableRow>
 						<TableRow>
 						<TableCell colSpan={2} align="center">
-							<Button 
-								variant="outlined" 
+							<Button
+								variant="outlined"
 								color="primary"
 								size="small"
 								onClick={this.createWOD.bind(this)}>

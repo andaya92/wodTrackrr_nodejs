@@ -1,11 +1,11 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
 
-import 
+import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
   TableHead, TableRow }
@@ -19,7 +19,7 @@ import Delete from '@material-ui/icons/Delete'
 import Waves from '@material-ui/icons/Waves'
 import Whatshot from '@material-ui/icons/Whatshot'
 
-import BoxView from "./boxView" 
+import BoxView from "./boxView"
 
 import { setFollow, removeFollow } from "../../utils/firestore/follows"
 import "../../styles.css"
@@ -39,15 +39,15 @@ function BoxRaw(props){
       </TableCell>
       <TableCell align="right">
         { props.isUserFollowing ?
-          <Button variant="outlined"
+          <IconButton variant="outlined"
               onClick={()=>{props.handleUnfollow(boxID)}}>
             <Whatshot color="primary" />
-          </Button>
+          </IconButton>
         :
-          <Button
+          <IconButton
             onClick={()=>{props.handleFollow(props.info)}}>
-            <Whatshot/>
-          </Button>
+            <Whatshot style={{fill: props.theme.palette.text.primary}}/>
+          </IconButton>
         }
         { props.isOwner ?
           <Button
@@ -60,15 +60,28 @@ function BoxRaw(props){
       </TableCell>
     </TableRow>
   )
- 
+
 }
 const Box = withTheme(BoxRaw)
+
+
+function EmptyBoxRaw(props){
+  return(
+    <TableRow>
+      <TableCell colSpan={3} align="center">
+        <Typography variant="subtitle1" color="primary">
+          No Gyms!
+        </Typography>
+      </TableCell>
+    </TableRow>
+  )
+}
+const EmptyBox = withTheme(EmptyBoxRaw)
 
 class BoxSearch extends Component {
   constructor(props){
     super(props)
     this.state = {
-      user: props.user,
       userMD: props.userMD,
       isOwner: props.isOwner,
       allBoxes: props.allBoxes,
@@ -90,51 +103,53 @@ class BoxSearch extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    return props
+    return state.userMD? state: props
   }
 
   componentDidUpdate(){
     this.listenForFollowing()
   }
-  
+
   listenForFollowing(){
-    if(this.state.user && !this.followListener){
-      this.followListener = fs.collection("following").where("uid", "==", this.state.user.uid)
+    if(this.state.userMD && !this.followListener){
+      this.followListener = fs.collection("following").where("uid", "==", this.state.userMD.uid)
       .onSnapshot(ss => {
         let following = {}
         if(!ss.empty){
-          
+
           ss.forEach(doc =>{
             let data = doc.data()
             following[data.boxID] = data.followID
           })
         }
-        
+
         this.setState({userFollowing: following})
-      }, 
+      },
       err => console.log(err))
     }
   }
-  
+
   onChange(ev){
     let val = ev.target.value
     let filteredBoxes = this.state.allBoxes.filter(box =>{
       return box["title"].toLowerCase().includes(val.toLowerCase())
     })
+    console.log("filteredBoxes")
+    console.log(filteredBoxes)
     this.setState({filteredBoxes: filteredBoxes})
   }
-  
+
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){   
+    if((data.keyCode || data.which) == 13){
     }
   }
-  
+
   isUserFollowing(boxID){
     return (this.state.userFollowing[boxID])? true: false
   }
-  
+
   handleFollow(boxInfo){
-    setFollow(this.state.user.uid, this.state.userMD.username, boxInfo.boxID,
+    setFollow(this.state.userMD.uid, this.state.userMD.username, boxInfo.boxID,
               boxInfo.title)
     .then(res => {console.log("Succefully followed.")})
     .catch(err => {console.log(err)})
@@ -154,7 +169,6 @@ class BoxSearch extends Component {
 
   onRowClick(ev, id){
     let tagName = ev.target.tagName
-    console.log(tagName)
     if(["span", "svg", "path", "BUTTON", "SPAN"].indexOf(tagName) < 0){
       this.setState({redirect: true, redirectTo: id})
     }
@@ -162,7 +176,7 @@ class BoxSearch extends Component {
 
   render () {
     return (
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{marginTop: "3vh"}}>
         {this.state.redirect ?
           <Redirect to={this.state.redirectTo} />
         :
@@ -196,11 +210,12 @@ class BoxSearch extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-    {
+    { this.state.filteredBoxes.length > 0?
       this.state.filteredBoxes.map((box, i) => {
-        return <Box 
-                key={i} 
-                info={box} 
+        return <Box
+                key={i}
+                theme={this.props.theme}
+                info={box}
                 color={this.props.theme.palette.primary.mainGrad}
                 handleBoxView={this.props.handleBoxView}
                 handleRemoveBox={this.props.handleRemoveBox}
@@ -211,7 +226,10 @@ class BoxSearch extends Component {
                 onRowClick={this.onRowClick.bind(this)}
                 />
       })
+    :
+      <EmptyBox />
     }
+
               </TableBody>
             </Table>
           </TableContainer>

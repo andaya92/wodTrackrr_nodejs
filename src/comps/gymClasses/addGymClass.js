@@ -1,15 +1,15 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 
 import React, { Component } from 'react'
 
-import 
+import
 { 	Grid, Paper, Button, Typography, TextField, Select,
 	TableRow, TableHead, TableContainer,
 	TableBody, Table, Checkbox
-} 
+}
 from '@material-ui/core';
 import {TableCell as TC} from '@material-ui/core';
 import { withTheme, withStyles } from '@material-ui/core/styles';
@@ -26,26 +26,20 @@ class AddGymClass extends Component {
   constructor(props){
     super(props)
     this.state = {
-      user: props.user,
       userMD: props.userMD,
       userBoxes: props.userBoxes,
       hasBoxes: props.hasBoxes,
 	  title: "",
-	  box: {},
+	  box: props.userBoxes[0],
 	  isPrivate: false
     }
   }
- 
+
   componentDidMount(){
   }
 
 
   static getDerivedStateFromProps(props, state){
-	if(props.userBoxes.length > 0){
-		return{...props,
-			 box: props.userBoxes[0]
-		}
-	}
 	return props
   }
 
@@ -59,28 +53,39 @@ class AddGymClass extends Component {
 	let title = this.state.title
 	let box = this.state.box
 	let isPrivate = this.state.isPrivate
-	
+
 	console.log("Creating class")
 	console.log(title, box, isPrivate)
 	if(!title || !box || isPrivate === null)
 		return
 
-	setGymClass(title, this.props.user.uid, box.boxID, box.title, isPrivate)
-	.then(res => {console.log(res)})
-	.catch(err => {console.log(err)})
+	setGymClass(title, this.props.userMD.uid, box.boxID, box.title, isPrivate)
+	.then((res)=>{
+		this.props.onAlert({
+			type: "success",
+			message: "Added class!"
+		})
+	})
+	.catch((err)=>{
+	  this.props.onAlert({
+		  type: "error",
+		  message: err
+	  })
+	})
   }
 
   handleCheckboxChange(ev){
 	  let checked = ev.target.checked
-	  console.log(checked)
 	  this.setState({isPrivate: checked})
   }
 
   onTitleChange(ev){
+	  console.log(ev.target.value)
 	this.setState({title: ev.target.value})
   }
 
   onSelectChange(ev){
+	console.log(ev.target.value)
 	this.setState({box: JSON.parse(ev.target.value)})
   }
 
@@ -146,8 +151,8 @@ class AddGymClass extends Component {
 					</TableRow>
 					<TableRow>
 							<TableCell align="center" colSpan={2}>
-								<Button size="small" variant="outlined" color="primary" 
-										onClick={ this.createGymClass.bind(this)} >
+								<Button size="small" variant="outlined" color="primary"
+										onClick={ () => { this.createGymClass()} } >
 									Submit
 								</Button>
 							</TableCell>

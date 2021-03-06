@@ -7,13 +7,16 @@ import React, { Component } from 'react'
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+	TableHead, TablePagination, TableRow, TableSortLabel, IconButton
 } from '@material-ui/core';
+
+import { ArrowBackIos } from '@material-ui/icons';
+
 
 import SearchIcon from '@material-ui/icons/Search';
 import { Alert } from '@material-ui/lab';
@@ -57,8 +60,8 @@ class GymClassView extends Component {
 			gymClassID: props.gymClassID,
 			gymClassMD: {},
 			gymClasses:[],
-			userBoxes: [], 
-			hasBoxes: false,  
+			userBoxes: [],
+			hasBoxes: false,
 			wods: [],
 			currentWodID: "",
 			currentWodMD: {},
@@ -91,7 +94,7 @@ class GymClassView extends Component {
 			.onSnapshot(ss => {
 				if(ss.exists){
 					this.setState({gymClassMD: ss.data()})
-	
+
 				}
 			})
 		}
@@ -115,7 +118,7 @@ class GymClassView extends Component {
 
 	getAdminListener(){
 		if(this.state.userMD.uid && !this.adminListener){
-			this.adminListener = 
+			this.adminListener =
 			getClassAdmins(this.state.gymClassID)
 			.onSnapshot(ss => {
 				let admins = []
@@ -189,7 +192,7 @@ class GymClassView extends Component {
 			this.getAdminListener()
 		if(!this.memberListener)
 			this.getMemberListener()
-		
+
 
 	}
 
@@ -200,9 +203,11 @@ class GymClassView extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state){
-		return props
+		console.log(props)
+		console.log(state)
+		return state.userMD? state: props
 	}
-	
+
 	componentDidUpdate(){
 		this.checkListeners()
 	}
@@ -235,23 +240,25 @@ class GymClassView extends Component {
 	}
 
 	deleteWod(){
+		this.setState({showRemoveAlert: false})
 		removeWod(this.state.curRemoveWodID)
 		.then((res) => {
-			console.log(res)
-			this.setState({showRemoveAlert: false})
+			this.props.onAlert({
+				type: "success",
+				message: "Deleted workout!"
+			})
+		})
+		.catch(err => {
+			this.props.onAlert({
+				type: "error",
+				message: err
+			})
 		})
 	}
 
-	onKeyUp(data){
-		if((data.keyCode || data.which) == 13){
-		    
-		}
-	}
+
 
 	onChange(ev){
-		/*
-			Search bar, filter by name
-		*/
 		let val = ev.target.value
 		let filteredWods = this.state.wods.filter(wod =>{
 		  return wod["title"].toLowerCase().includes(val.toLowerCase())
@@ -260,8 +267,6 @@ class GymClassView extends Component {
 	}
 
 	handleEdit(info){
-		console.log("Populate with info, show in modal with form")
-		console.log(info)
 		if(!this.userBoxesListener)
 			this.getUserBoxListener()
 		this.setState({
@@ -281,7 +286,7 @@ class GymClassView extends Component {
 	openAdminInvite(){
 		this.setState({inviteModalOpen: true})
 	}
-	
+
 	openMemberInvite(){
 		this.setState({inviteMemberModalOpen: true})
 	}
@@ -296,7 +301,7 @@ class GymClassView extends Component {
 
 	empty(obj){
 		return (obj
-		&& Object.keys(obj).length === 0 
+		&& Object.keys(obj).length === 0
 		&& obj.constructor === Object)
 	}
 
@@ -319,6 +324,9 @@ class GymClassView extends Component {
 	isMember(){
 		return (this.state.isMember || this.isAdmin()) && this.state.userMD
 	}
+	 isOnlyMember(){
+		 return this.state.isMember && this.state.userMD && !this.isAdmin()
+	 }
 
   	render(){
 	 	let sortableHeadersOwner = [
@@ -333,45 +341,54 @@ class GymClassView extends Component {
 			{id:"title2", sortable:true, label:""},
 	 		{id:"btns", sortable:false, label:""}
 	 	]
-	 
+		 let viewMemberBtnSize = this.isOnlyMember()? 12: 6
+
 		return this.empty(this.state.userMD) || this.empty(this.state.gymClassMD)
-			?  
+			?
 				<React.Fragment>Loading</React.Fragment>
 			:
 		 		this.state.gymClassMD.isPrivate && !this.isMember()
-				?
-				<Typography>Private Class</Typography>
+				?<Grid item xs={12} align="center">
+					<Paper elevation={6}>
+						<Typography>This is a Private Class</Typography>
+					</Paper>
+				</Grid>
 				:
 				this.state.showAdminList && this.isAdmin() ?
 		 			<Grid item xs={12}>
+						<Grid item xs={12}>
+							<IconButton onClick={this.closeViewLists.bind(this)}
+								style={{color: this.props.theme.palette.text.primary}}>
+								<ArrowBackIos />
+							</IconButton>
+						</Grid>
 						<Grid item xs={12}>
 							<ClassAdminList
 								gymClassID={this.state.gymClassID}
 								filteredAdmins={this.state.admins}
 								admins={this.state.admins}
-								isOwner={this.isOwner()} />
-						</Grid>
-						<Grid item xs={12}>
-							<Button fullWidth color="secondary" onClick={this.closeViewLists.bind(this)}>
-								Back
-							</Button>
+								isOwner={this.isOwner()}
+								onAlert={this.props.onAlert}
+							/>
 						</Grid>
 					 </Grid>
 				:
 				this.state.showMemberList && this.isMember()?
 		 			<Grid item xs={12}>
 						<Grid item xs={12}>
+							<IconButton onClick={this.closeViewLists.bind(this)}
+								style={{color: this.props.theme.palette.text.primary}}>
+								 <ArrowBackIos />
+							</IconButton>
+						</Grid>
+						<Grid item xs={12}>
 						<ClassMemberList
 							gymClassID={this.state.gymClassID}
 							filteredMembers={this.state.members}
 							members={this.state.members}
 							isOwner={this.isOwner()}
+							onAlert={this.props.onAlert}
 						/>
-						</Grid>
-						<Grid item xs={12}>
-							<Button fullWidth color="secondary" onClick={this.closeViewLists.bind(this)}>
-								Back
-							</Button>
 						</Grid>
 					 </Grid>
 				:
@@ -380,105 +397,104 @@ class GymClassView extends Component {
 			<Grid item xs={12}>
 
 				<Grid item align="center" xs={12}>
-					<Paper>
-						<Typography 
-							align="center" 
-							variant="h3">
+					<Paper elevation={6}>
+						<Typography align="center" variant="h3">
 							{this.state.gymClassMD['title']}
 						</Typography>
-						<Typography 
-							align="center" 
-							variant="h6">
+						<Typography align="center" variant="h6">
 							{this.state.gymClassMD['boxTitle']}
 						</Typography>
 					</Paper>
-					
 				</Grid>
-				{this.isAdmin()?
-					<Grid item xs={12}>
-						<Paper>
-							<Button color="primary" variant="outlined" style={{width: "100%"}}
-								onClick={ this.openAdminInvite.bind(this) }>
-								Invite Admin
-							</Button>
-							<Button color="primary" variant="outlined" style={{width: "100%"}}
-								onClick={ this.openViewAdmins.bind(this) }>
-								View Admins
-							</Button>
-							<InviteAdminView 
-								userMD={this.state.userMD}
-								gymClassMD={this.state.gymClassMD}
-								onModalClose={this.onInviteModalClose.bind(this)}
-								modalOpen={this.state.inviteModalOpen}
-							/>
-						</Paper>
-					</Grid>
-				:
-					<React.Fragment></React.Fragment>
-				}
-				
-				{ this.isMember() ?
-					<Grid item xs={12}>
-						<Paper>
-							{this.isAdmin()?
-								<Button color="secondary" variant="outlined" style={{width: "100%"}}
-									onClick={ this.openMemberInvite.bind(this) }>
-									Invite Member
+
+
+				<Grid item container spacing={1} xs={12}
+					style={{marginTop: "16px"}}>
+					{this.isAdmin()?
+						<React.Fragment>
+							<Grid item xs={6}>
+								<Button color="primary" variant="outlined" style={{width: "100%"}}
+									onClick={ this.openAdminInvite.bind(this) }>
+									Invite Admin
 								</Button>
+							</Grid>
+							<Grid item xs={6}>
+								<Button color="primary" variant="outlined" style={{width: "100%"}}
+									onClick={ this.openViewAdmins.bind(this) }>
+									View Admins
+								</Button>
+							</Grid>
+								<InviteAdminView
+									userMD={this.state.userMD}
+									gymClassMD={this.state.gymClassMD}
+									onModalClose={this.onInviteModalClose.bind(this)}
+									modalOpen={this.state.inviteModalOpen}
+									onAlert={this.props.onAlert}
+								/>
+						</React.Fragment>
+
+					:
+						<React.Fragment></React.Fragment>
+					}
+
+					{ this.isMember() ?
+						<React.Fragment>
+							{!this.isOnlyMember()?
+
+								<Grid item xs={6}>
+								<Button color="secondary" variant="outlined" style={{width: "100%"}}
+											onClick={ this.openMemberInvite.bind(this) }>
+											Invite Member
+										</Button>
+								</Grid>
 							:
 								<React.Fragment></React.Fragment>
+
 							}
-							<Button color="secondary" variant="outlined" style={{width: "100%"}}
-								onClick={ this.openViewMembers.bind(this) }>
-								View Members
-							</Button>
-							<InviteMemberView 
-								userMD={this.state.userMD}
-								gymClassMD={this.state.gymClassMD}
-								onModalClose={this.onInviteMemberModalClose.bind(this)}
-								modalOpen={this.state.inviteMemberModalOpen}
-							/>
-						</Paper>
-					</Grid>
-				:
-					<React.Fragment></React.Fragment>
-				}
+								<Grid item xs={viewMemberBtnSize}>
+								<Button color="secondary" variant="outlined" style={{width: "100%"}}
+										onClick={ this.openViewMembers.bind(this) }>
+										View Members
+									</Button>
+								</Grid>
+							<InviteMemberView
+									userMD={this.state.userMD}
+									gymClassMD={this.state.gymClassMD}
+									onModalClose={this.onInviteMemberModalClose.bind(this)}
+									modalOpen={this.state.inviteMemberModalOpen}
+									onAlert={this.props.onAlert}
+								/>
+						</React.Fragment>
+					:
+						<React.Fragment></React.Fragment>
+					}
+				</Grid>
 
-				{
-					this.state.wods.length > 0?
-					<SearchSortTable
-						rows = {this.state.wods}
-						filteredRows={this.state.wods}
-						headers={this.isOwner()? sortableHeadersOwner: sortableHeadersUser}
-						handleRemove={this.handleRemoveWod.bind(this)}
-						handleEdit={this.handleEdit.bind(this)}
-						showOwnerBtns={this.isOwner()}
-					/>
-				:
-					<Grid item xs={12}>
-						<Paper elevation={2}>
-							<Typography>No wods</Typography>
-						</Paper>
-					</Grid>
-				}
+				<SearchSortTable
+					rows = {this.state.wods}
+					filteredRows={this.state.wods}
+					headers={this.isOwner()? sortableHeadersOwner: sortableHeadersUser}
+					handleRemove={this.handleRemoveWod.bind(this)}
+					handleEdit={this.handleEdit.bind(this)}
+					showOwnerBtns={this.isOwner()}
+				/>
 
-			<ActionCancelModal
-				open={this.state.showRemoveAlert}
-		        onClose={this.handleModalClose.bind(this)}
-		        onAction={this.deleteWod.bind(this)}
-		        modalText={ `Remove ${this.state.curRemoveWodTitle} (${this.state.curRemoveWodID})?`}
-		        actionText={"Delete"}
-		        cancelText={"Cancel"}
-			/>
+				<ActionCancelModal
+					open={this.state.showRemoveAlert}
+					onClose={this.handleModalClose.bind(this)}
+					onAction={this.deleteWod.bind(this)}
+					modalText={ `Remove ${this.state.curRemoveWodTitle} (${this.state.curRemoveWodID})?`}
+					actionText={"Delete"}
+					cancelText={"Cancel"}
+				/>
 
-			<EditWod 
-				open={this.state.showEditModal}
-				onClose={this.handleEditModalClose.bind(this)}
-				userBoxes={this.state.userBoxes}
-				hasBoxes={this.state.hasBoxes}
-				wodInfo={this.state.editWodInfo}
-				title={this.state.editWodInfo["title"]}
-				wodText={this.state.editWodInfo["wodText"]}
+				<EditWod
+					open={this.state.showEditModal}
+					onClose={this.handleEditModalClose.bind(this)}
+					userBoxes={this.state.userBoxes}
+					hasBoxes={this.state.hasBoxes}
+					wodInfo={this.state.editWodInfo}
+					onAlert={this.props.onAlert}
 			/>
 			</Grid>
 		)

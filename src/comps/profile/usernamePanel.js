@@ -13,51 +13,53 @@ import "../../styles.css"
 const TableCell = withStyles({root:{
   borderBottom: "none"
 }})(TC)
-const usernameMaxLength = 12
-const usernameMaxLengthErrMsg = "Username cannot be longer than 12 characters"
-const usernameErrMsg = "Username can only contain letters & numbers" 
+const USERNAME_MAX_LEN = 12
+const USERNAME_MAX_LENGTH_ERR_MSG = "Username cannot be longer than 12 characters"
+const USERNAME_ERR_MSG = "Username can only contain letters & numbers"
 
 class UsernamePanel extends Component {
-  
+
   constructor(props){
     super(props)
     this.state = {
-      user: props.user,
-      userMD: props.userMD,
-      showUpdate: false
+      userMD: props.userMD
     }
   }
 
   static getDerivedStateFromProps(props, state){
+
     return props
   }
 
   updateUsername(ev){
     let usernameInput = document.getElementById('updateUsernameInput')
-    
+
     if(usernameInput.style.display === "none"){
       usernameInput.style.display = "block"
     }else{
       let re = /\W/g  // match non word characters ^[A-Za-z0-9]
-    
-      if(usernameInput.value.length > 12){
-        alert(usernameMaxLengthErrMsg)
-        return
-      } 
-      if(re.exec(usernameInput.value) !== null ){
-        alert(usernameErrMsg)
+
+      if(usernameInput.value.length > USERNAME_MAX_LEN){
+        this.props.onAlert({
+          type: "warning",
+          message: USERNAME_MAX_LENGTH_ERR_MSG
+        })
         return
       }
-      //update 
-      if(usernameInput.value.length <= 0){ 
-        this.hideUpdate()     
-        return 
+      if(re.exec(usernameInput.value) !== null ){
+        this.props.onAlert({
+          type: "warning",
+          message: USERNAME_ERR_MSG
+        })
+        return
+      }
+      if(usernameInput.value.length <= 0){
+        return
       }
 
-      setUsername(this.state.user.uid, usernameInput.value)
+      setUsername(this.state.userMD.uid, usernameInput.value)
       .then((res) => {
         console.log(res)
-        this.hideUpdate()
       })
       .catch(err => { console.log(err) })
     }
@@ -69,48 +71,36 @@ class UsernamePanel extends Component {
     }
   }
 
-  toggleUpdate(){
-    this.setState({showUpdate: !this.state.showUpdate})
-  }
 
-  hideUpdate(){
-    this.setState({showUpdate: false})
-  }
 
-  render () {    
+  render () {
     return (
     <Grid container id="usernamePanel" >
     {
       !this.state.userMD
-      ? 
+      ?
         <h1> Loading </h1>
       :
         <TableContainer>
             <Table>
               <TableBody>
               <TableRow>
-                <TableCell>
+                <TableCell align="left">
                   Username
                 </TableCell>
-                <TableCell>
+                <TableCell colSpan={2} align="left">
                   <Typography gutterBottom variant="h5">
-                    {this.state.userMD.username} 
-                  </Typography>  
-                </TableCell>
-                <TableCell>
-                  <Button size="small" 
-                    onClick={this.toggleUpdate.bind(this)}>
-                    <Edit color="primary" />
-                  </Button>
+                    {this.state.userMD.username}
+                  </Typography>
                 </TableCell>
               </TableRow>
-              {this.state.showUpdate ?
+
                 <TableRow>
-                  <TableCell colSpan={2}>
+                  <TableCell>
                     <TextField
                       id="updateUsernameInput"
                       type="text"
-                      style={{ margin: 8}}
+
                       pattern="[A-Za-z]{12}"
                       inputProps={{
                         title: "Letters only, max length 12",
@@ -122,21 +112,19 @@ class UsernamePanel extends Component {
                       InputLabelProps={{
                         shrink: true,
                       }}
-                    />    
+                    />
                   </TableCell>
-                  
-                  <TableCell align="right">
+
+                  <TableCell align="left">
                     <Typography gutterBottom variant="h5">
-                      <Button size="small" variant="outlined" color="primary" 
+                      <Button size="small" variant="outlined" color="primary"
                           onClick={this.updateUsername.bind(this)}>
                           Update
                       </Button>
-                    </Typography>  
+                    </Typography>
                   </TableCell>
                 </TableRow>
-              :
-                <React.Fragment></React.Fragment>
-              }
+
               </TableBody>
             </Table>
         </TableContainer>

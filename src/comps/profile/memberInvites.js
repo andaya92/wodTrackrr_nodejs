@@ -122,7 +122,8 @@ class MemberInvites extends Component {
         let classTitle = notify.gymClassTitle
         let boxTitle = notify.boxTitle
         let boxID = notify.boxID
-        
+        let notifyID = notify.memberInviteID
+
         let data = {            
             gymClassID: gymClassID,
             gymClassTitle: classTitle,
@@ -136,20 +137,21 @@ class MemberInvites extends Component {
         setClassMember(this.state.userMD.uid, gymClassID, data)
         .then(res => {
             console.log(res)
+            this.onRemoveNotification(notifyID)
         })
         .catch(err => {
             console.log(err)
         })
        
-        // this.removeNotification(notify.notifyID)
+        
 
     }
 
   render(){
 		return( 
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
             {this.state.notifications.length > 0?
-                <Paper style={{margin: "16px 0px 0px 0px "}}>
+                <Paper  elevation={6}>
                     <Grid item xs={12}>
                         <Typography variant="subtitle2">
                             Member Notifications

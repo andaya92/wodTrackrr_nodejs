@@ -125,7 +125,7 @@ class ClassMemberView extends Component {
                 }
                 {this.state.classes.length > 0?
                     <Grid item xs={12} style={{margin: "16px 0px 0px 0px"}}>
-                        <Paper>
+                        <Paper elevation={6}>
                             <Typography variant="subtitle1">Membership</Typography>
                             <Table size="small">
                                 <TableHead>

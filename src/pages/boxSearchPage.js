@@ -1,6 +1,6 @@
 import firebase from "../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
@@ -12,8 +12,8 @@ import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 
-import BoxView from "../comps/boxes/boxView" 
-import BoxSearch from "../comps/boxes/boxSearch" 
+import BoxView from "../comps/boxes/boxView"
+import BoxSearch from "../comps/boxes/boxSearch"
 
 import "../styles.css"
 
@@ -26,7 +26,7 @@ class BoxSearchPage extends Component {
       user: props.user,
       userMD: props.userMD,
       allBoxes: []
-    }  
+    }
   }
 
   componentDidMount(){
@@ -39,7 +39,7 @@ class BoxSearchPage extends Component {
         })
         boxes.sort((x, y) => {
           return x["title"].toLowerCase() > y["title"].toLowerCase() ? -1 : 1
-        })        
+        })
         this.setState({
           allBoxes: boxes
         })
@@ -62,7 +62,7 @@ class BoxSearchPage extends Component {
     	<Grid item xs={12} >
         {
           this.state.allBoxes.length > 0?
-          <BoxSearch 
+          <BoxSearch
               user={this.state.user}
               userMD={this.state.userMD}
               allBoxes={this.state.allBoxes}

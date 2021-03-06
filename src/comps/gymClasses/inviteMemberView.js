@@ -7,7 +7,7 @@ import React, { Component } from 'react'
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -20,6 +20,7 @@ import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import { sendMemberInvite } from "../../utils/firestore/classMember"
+import InviteView from "./inviteView"
 
 import "../../styles.css"
 
@@ -74,7 +75,7 @@ class InviteMemberView extends Component {
 
 	onKeyUp(data){
 		if((data.keyCode || data.which) == 13){
-		    
+
 		}
 	}
 
@@ -104,15 +105,21 @@ class InviteMemberView extends Component {
             uid: this.state.selectedUser.uid,
             date: Date.now()
         }
-
+        this.props.onModalClose()
         console.log(`Send invite to ${this.state.selectedUser.uid} from ${this.state.userMD.uid}`)
 
         sendMemberInvite(this.state.selectedUser.uid, data)
         .then((res) => {
-            console.log(res)
+            this.props.onAlert({
+				type: "success",
+				message: res
+			})
         })
         .catch(err => {
-            console.log(err)
+            this.props.onAlert({
+				type: "error",
+				message: err
+			})
         })
     }
 
@@ -123,83 +130,17 @@ class InviteMemberView extends Component {
     }
 
   render(){
-		return( 
-		<Grid item xs={12}>
-			<Modal
-                open={this.props.modalOpen}
-                onClose={this.props.onModalClose}
-                aria-labelledby="simple-modal-title"
-                aria-describedby="simple-modal-description">
-                <div style={{
-                    position: 'absolute',
-                    top: "50%",
-                    left: "50%",
-                    width: "80vw",
-                    transform: "translate(-50%, -50%)",
-                }}>
-                    <Grid item align="center" xs={12}>
-                    <Paper style={{height:"25vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-                    <Paper elevation={2} style={{padding: "8px"}} component="form">
-                        <Paper elevation={6}>
-                        <Typography variant="h6">Invite Member</Typography>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            onKeyUp={this.onKeyUp.bind(this)}
-                            onChange={this.onChange.bind(this)}
-                            placeholder="Search Users"
-                            style={{margin: "0px 0px 8px 0px"}}
-                            InputProps={{
-                                endAdornment: (
-                                <InputAdornment position="end">
-                                    <SearchIcon color="primary" />
-                                </InputAdornment>
-                                )
-                            }}
-                        />
-                        </Paper>
-                        
-                        <Paper elevation={6}>
-                            <Select native style={{
-                                    width: "100%",
-                                    margin: "0px 0px 8px 0px",
-                                    padding: "4px"
-                                }}
-                                color="primary"
-                                onChange={this.onSelectChange.bind(this)}>
-                                {this.state.filteredUsers ?
-                                    this.state.filteredUsers.map((user, i) => {
-                                        return (<option key={i} 
-                                                        value={JSON.stringify(user)} >
-                                                        {user["username"]}
-                                                </option>)
-                                    })
-                                :
-                                    <option aria-label="None" value="" >No users!</option>
-                                }
-                            </Select>
-                        </Paper>
-                        <Paper elevation={6}>
-                            <Button 
-                                color="primary"
-                                variant="outlined"
-                                size="small"
-                                onClick={this.sendInvite.bind(this)}>
-                                Invite
-                            </Button>
-                            <Button 
-                                variant="outlined" 
-                                size="small"
-                                onClick={this.props.onModalClose}>
-                                Cancel
-                            </Button>
-                        </Paper>
-                    </Paper>
-                    </Paper>
-                    </Grid>
-                </div>
-            </Modal>
-		</Grid>
+		return(
+            <InviteView
+            modalOpen={this.state.open}
+            title="Invite Member"
+            onChange={this.onChange.bind(this)}
+            onSelectChange={this.onSelectChange.bind(this)}
+            onModalClose={this.props.onModalClose}
+            sendInvite={this.sendInvite.bind(this)}
+            filteredUsers={this.state.filteredUsers}
+            modalOpen={this.props.modalOpen}
+        />
     )}
 }
 

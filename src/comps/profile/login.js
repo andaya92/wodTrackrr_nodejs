@@ -1,6 +1,6 @@
 import firebase from "../../context/firebaseContext"
 // import * as firebase from "firebase/app";
-import "firebase/auth"; 
+import "firebase/auth";
 
 import React, { Component } from 'react'
 import { Grid, TextField, Button, Typography, Paper } from '@material-ui/core';
@@ -11,27 +11,25 @@ import "../../styles.css"
 
 
 export default class Login extends Component {
-  
+
   handleSubmit(ev){
     let email = document.getElementById('email')
 
     let pass1 = document.getElementById('password')
     let pass2 = document.getElementById('passwordConfirm')
-    
+
     console.log(email.value, pass1)
-  
+
     firebase.auth().signInWithEmailAndPassword(email.value, pass1.value)
     .then(res=>{
-      console.log("Firebase res")
-      console.log(res)
       this.props.onLogin(res.user)
     })
-    .catch(function(error) {
-      console.log(error)
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
+    .catch((error) => {
+
+      this.props.onAlert({
+        type: "warning",
+        message: error.message
+      })
     });
   }
 
@@ -44,9 +42,9 @@ export default class Login extends Component {
             <Typography variant="h4">
               Login
             </Typography>
-          
+
             <br />
-        
+
             <TextField
             id="email"
             style={{ margin: 8 }}

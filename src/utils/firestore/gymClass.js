@@ -73,7 +73,7 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 }
 
 export function removeGymClass(boxID, gymClassID){
-	let collectionNames = ["wods", "scores", `gymClasses/${boxID}/classes`]
+	let collectionNames = ["wods", "scores", `gymClasses/${boxID}/classes`, 'classMembers', 'classAdmins']
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {

@@ -15,6 +15,8 @@ import SearchIcon from '@material-ui/icons/Search'
 import { withTheme } from '@material-ui/core/styles'
 
 import Delete from '@material-ui/icons/Delete'
+
+import ActionCancelModal from "../actionCancelModal"
 import { getGymClasses, removeGymClass } from '../../utils/firestore/gymClass'
 import "../../styles.css"
 
@@ -36,7 +38,7 @@ function GymClassRaw(props){
       <TableCell align="right">
         { props.isOwner ?
           <Button
-            onClick={()=>{props.handleRemoveGymClass(gymClassID)}}>
+            onClick={()=>{props.onRemove(props.info)}}>
             <Delete  color="error" />
           </Button>
         :
@@ -46,7 +48,24 @@ function GymClassRaw(props){
     </TableRow>
   )
 }
+
 const GymClass = withTheme(GymClassRaw)
+
+
+function EmptyClassRaw(props){
+  return(
+    <TableRow>
+      <TableCell colSpan={3} align="center">
+        <Typography variant="subtitle1" color="primary">
+          No Classes!
+        </Typography>
+      </TableCell>  
+    </TableRow>
+  )
+}
+const EmptyClass = withTheme(EmptyClassRaw)
+
+
 
 class GymClassList extends Component {
   constructor(props){
@@ -59,7 +78,10 @@ class GymClassList extends Component {
       redirect: false,
       redirectTo: "",
       filteredGymClasses:[],
-      gymClasses: []
+      gymClasses: [],
+      removeClassID: "",
+      removeClassTitle: "",
+      openModal: false
     }
   }
 
@@ -121,12 +143,26 @@ class GymClassList extends Component {
     }
   }
 
-  handleRemoveGymClass(gymClassID){
-    removeGymClass(this.state.boxID, gymClassID)
+  handleRemoveGymClass(){
+    this.closeModal()
+    if(!this.state.boxID && !this.state.removeClassID){
+      this.props.onAlert({type: "error", message: "Class info missing!"})
+      return
+    }
+    removeGymClass(this.state.boxID, this.state.removeClassID)
     .then((res) => {
       console.log(res)
+      this.props.onAlert({type: "success", message: "Deleted class!"})
     })
     .catch(err => {console.log(err)})
+  }
+
+  onRemove(gymClass){
+    this.setState({openModal: true, removeClassID: gymClass.gymClassID, removeClassTitle: gymClass.title})
+  }
+
+  closeModal(){
+    this.setState({openModal: false})
   }
 
   render () {
@@ -138,59 +174,65 @@ class GymClassList extends Component {
         :
           <React.Fragment></React.Fragment>
         }
-        {this.state.gymClasses.length > 0 ?
-          <Grid item xs={12}>
 
-            <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
-              <Paper elevation={2} component="form">
-                <TextField
-                  fullWidth
-                    variant="outlined"
-                    onKeyUp={this.onKeyUp.bind(this)}
-                    onChange={this.onChange.bind(this)}
-                    placeholder="Search Classes"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon color="primary" />
-                        </InputAdornment>
-                      )
-                    }}
-                />
-              </Paper>
-            </Grid>
+        <Grid item xs={12}>
 
-            <Grid item xs={12}>
-              <TableContainer>
-                <Table stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Classes</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                  {
-                    this.state.filteredGymClasses.map((gymClass, i) => {
-                      return <GymClass 
-                              key={i} 
-                              info={gymClass} 
-                              handleRemoveGymClass={this.handleRemoveGymClass.bind(this)}
-                              isOwner={this.props.isOwner}
-                              onRowClick={this.onRowClick.bind(this)}
-                              />
-                    })
-                  }
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
+          <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
+            <Paper elevation={2} component="form">
+              <TextField
+                fullWidth
+                  variant="outlined"
+                  onKeyUp={this.onKeyUp.bind(this)}
+                  onChange={this.onChange.bind(this)}
+                  placeholder="Search Classes"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="primary" />
+                      </InputAdornment>
+                    )
+                  }}
+              />
+            </Paper>
           </Grid>
-        :
-          <Typography>No Classes</Typography>
 
-        }
-
+          <Grid item xs={12}>
+            <TableContainer>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Classes</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                {this.state.filteredGymClasses.length > 0?
+                  this.state.filteredGymClasses.map((gymClass, i) => {
+                    return <GymClass 
+                            key={i} 
+                            info={gymClass} 
+                            onRemove={this.onRemove.bind(this)}
+                            isOwner={this.props.isOwner}
+                            onRowClick={this.onRowClick.bind(this)}
+                            />
+                  })
+                :
+                  <EmptyClass />
+                }
+                
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        </Grid>
+        <ActionCancelModal
+          open={this.state.openModal}
+          actionText="Remove"
+          cancelText="Cancel"
+          modalText={`Remove Class (${this.state.removeClassTitle})?`}
+          onAction={this.handleRemoveGymClass.bind(this)}
+          onClose={this.closeModal.bind(this)}
+        />
       </Grid>
     )
   }

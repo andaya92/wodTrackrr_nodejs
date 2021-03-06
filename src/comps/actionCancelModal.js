@@ -11,11 +11,15 @@ import
 	TableHead, TablePagination, TableRow, TableSortLabel
 } from '@material-ui/core';
 
+import { withTheme, withStyles } from '@material-ui/core/styles';
+
+
 import SearchIcon from '@material-ui/icons/Search';
 import { Alert } from '@material-ui/lab';
 
 
-export default class ActionCancelModal extends Component{
+
+class ActionCancelModal extends Component{
 
 	constructor(props){
 		super(props)
@@ -56,22 +60,30 @@ export default class ActionCancelModal extends Component{
 						xs={12}
 					>
 					<Paper style={{height:"25vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
-		    			<Typography style={{position: ""}}>
-		    				 {this.props.modalText}
-		    			</Typography>
+						<Grid item container xs={12}>
+							<Grid item xs={12}>
+								<Typography style={{marginTop: "32px"}}>
+									{this.props.modalText}
+								</Typography>
 
+							</Grid>
 
-		    			<Button 
-		    				color="primary"
-		    				variant="outlined" 
-		    				onClick={()=>{ this.props.onAction()}}>
-		    				{this.props.actionText}
-		    			</Button>
-		    			<Button 
-		    				variant="outlined" 
-		    				onClick={()=>{ this.props.onClose()}}>
-		    				{this.props.cancelText}
-		    			</Button>
+							<Grid item xs={6}>
+								<Button 
+									variant="outlined" 
+									onClick={()=>{ this.props.onClose()}}>
+									{this.props.cancelText}
+								</Button>
+							</Grid>
+							<Grid item xs={6}>
+								<Button 
+									color="primary"
+									variant="outlined" 
+									onClick={()=>{ this.props.onAction()}}>
+									{this.props.actionText}
+								</Button>
+							</Grid>
+						</Grid>
 					</Paper>
 					</Grid>
 				</div>
@@ -82,3 +94,4 @@ export default class ActionCancelModal extends Component{
 
 }
 
+export default ActionCancelModal = withTheme(ActionCancelModal);

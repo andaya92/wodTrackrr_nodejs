@@ -14,13 +14,13 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
+  box-shadow: inset 0 0 5px grey;
   border-radius: 4px;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #0895fe; 
+  background: #0895fe;
   border-radius: 4px;
 }
 
@@ -31,3 +31,65 @@ body {
   right: 0;
 }
 
+
+@keyframes flip-right {
+  0%{opacity: 0;}
+
+  100%{opacity: 1;}
+}
+
+@keyframes flip-left {
+  /* 0%{transform: translate(-60.0%, 0)}
+  100%{transform: translate(0.0%, 0)} */
+  0%{opacity: 0;}
+
+  100%{opacity: 1;}
+}
+
+
+@keyframes slide-right {
+  0%{transform: translate(100.0%, 0)}
+  100%{transform: translate(0.0%, 0)}
+}
+
+@keyframes slide-left {
+  0%{transform: translate(-100.0%, 0)}
+  100%{transform: translate(0.0%, 0)}
+}
+
+
+
+.flip-right{
+  animation: flip-right 0.5s ease-out 1;
+  will-change: animation;
+  position: relative;
+}
+.flip-left{
+  animation: flip-left 0.5s ease-out 1;
+  will-change: animation;
+  position: relative;
+}
+
+
+.slide-right{
+  animation: slide-right 0.3s ease-in 1;
+  will-change: animation;
+  position: relative;
+}
+.slide-left{
+  animation: slide-left 0.3s ease-in 1;
+  will-change: animation;
+  position: relative;
+}
+
+.hide {
+  display: none;
+}
+
+.show{
+  display:  block;
+}
+
+.whiteBorder{
+  border: 1px solid white;
+}

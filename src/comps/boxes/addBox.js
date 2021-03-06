@@ -1,15 +1,15 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 
 import React, { Component } from 'react'
 
-import 
+import
 { 	Grid, Paper, Button, Typography, TextField, Select,
 	TableRow, TableHead, TableContainer,
 	TableBody, Table
-} 
+}
 from '@material-ui/core';
 import {TableCell as TC} from '@material-ui/core';
 import { withTheme, withStyles } from '@material-ui/core/styles';
@@ -26,14 +26,13 @@ class AddBox extends Component {
   constructor(props){
     super(props)
     this.state = {
-      user: props.user,
       userMD: props.userMD
     }
   }
- 
+
   componentDidMount(){
   }
- 
+
   static getDerivedStateFromProps(props, state){
 	return props
   }
@@ -49,9 +48,19 @@ class AddBox extends Component {
   createBox(title){
 	  if(!title)
 	  	return
-		setBox(title, this.props.user.uid)
-		.then(res => {console.log(res)})
-		.catch(err => {console.log(err)})
+	setBox(title, this.props.userMD.uid)
+	.then((res)=>{
+		this.props.onAlert({
+			type: "success",
+			message: "Added gym!"
+		})
+	})
+	.catch((err)=>{
+	  this.props.onAlert({
+		  type: "error",
+		  message: err
+	  })
+	})
   }
 
   render () {
@@ -82,7 +91,7 @@ class AddBox extends Component {
 					</TableRow>
 					<TableRow>
 							<TableCell align="center" colSpan={2}>
-								<Button size="small" variant="outlined" color="primary" 
+								<Button size="small" variant="outlined" color="primary"
 									onClick={ () =>{
 										let el = document.getElementById("ownerBoxAddBoxTitle")
 										this.createBox(el.value)

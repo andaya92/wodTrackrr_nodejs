@@ -1,42 +1,54 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, Modal
-} 
+}
 from '@material-ui/core';
 
 import {editWod} from "../../utils/firestore/wods"
 
+import { withTheme, withStyles } from '@material-ui/core/styles';
 
 var db = firebase.database();
 
-export default class EditWod extends Component {
+const StyledGrid = withStyles((theme) => ({
+	root: {
+		marginTop: "2.5vh",
+		marginBottom: "2.5vh"
+	},
+}))(Grid);
+
+
+class EditWod extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
+			open: props.open,
 			wodInfo: props.wodInfo,
 			userBoxes: props.userBoxes,
 			hasBoxes: props.hasBoxes,
 			open: props.open,
-			onClose: props.onClose,
-			title: props.title,
-			wodText: props.wodText
+			onClose: props.onClose
 		}
 	}
 
 	static getDerivedStateFromProps(props, state){
+		console.log("Edit woood")
+		console.log(props)
+		console.log(state)
+
 		return props
 	}
-	
+
 	editWOD(){
 	  	let boxID = document.getElementById("editOwnerBoxAddWodBoxID").value
 	  	let title = document.getElementById("editOwnerBoxAddWodTitle").value
@@ -45,30 +57,39 @@ export default class EditWod extends Component {
 	  	let wodID = this.state.wodInfo["wodID"]
 
 	  	if(!boxID || !title || !scoreType || !wodText || !wodID){
-	  		console.log("Error with input editWod")
+	  		console.log("Error with input in editWod.")
 	  		console.log(boxID, title, scoreType, wodText)
 	  		return
 	  	}
+
+		this.props.onClose()
 	  	editWod(boxID, wodID, title, wodText, scoreType)
 	  	.then((res)=> {
-	  		console.log(res)
-	  		this.props.onClose()
+			this.props.onAlert({
+			type: "success",
+			message: res
+		})
 	  	})
-	  	.catch((err)=>{console.log(err)})
+	  	.catch((err)=>{
+			this.props.onAlert({
+				type: "error",
+				message: err
+			})
+		})
 	  }
 
-	handleValChange(ev, val){
-		const name = ev.target.name;
-		console.log(name, val)
-	    this.setState({
-	      [name]: ev.target.value
+	handleValChange(ev){
+	    let wodInfo = this.state.wodInfo
+		const {name, value} = ev.target
+		wodInfo[name] = value
+		this.setState({
+	      wodInfo: wodInfo
 	  	})
 	}
 
+
 	render(){
-		let oldScoreType = this.state.wodInfo["scoreType"]
 		let scoreTypes = ["time", "reps"]
-		let oldBoxID = this.state.wodInfo["boxID"]
 		return(
 
 			<Modal
@@ -83,121 +104,126 @@ export default class EditWod extends Component {
 					width: "80vw",
 				    transform: "translate(-50%, -50%)",
 				}}>
-					<Grid 
-						item 
-						align="center" 
-						xs={12}
-					>
-					<Paper style={{display: "flex", flexDirection: "column", justifyContent: "center"}}>
-		    			<Typography style={{position: ""}}>
-		    				 Edit Wod({this.state.wodInfo["wodID"]})
-		    			</Typography>
+					<Grid
+						item
+						align="center"
+						xs={12}>
+						<Paper style={{display: "flex", flexDirection: "column", justifyContent: "center"}}>
+							<Typography variant="h6">
+								Edit Wod ({this.state.wodInfo["wodID"]})
+							</Typography>
 
-		    			<Grid item container xs={12}>
-						<Grid item xs={6}>
-						    <Select
-					          native
-							  value={oldBoxID}
-					          inputProps={{
-					            name: 'Box',
-					            id: 'editOwnerBoxAddWodBoxID',
-					          }}
-					        >
-					          { this.state.hasBoxes ?
-					          	this.state.userBoxes.map((box, i) => {
-						        		let boxID = box["boxID"]
-						        		return (
-						        			<option key={i} value={boxID}>
-					        					{box["title"]}
-					        				</option>
-						        		)
-						        	})
-					        	:
-					        		<option aria-label="None" value="" >No boxes!</option>
-					          }
-					      </Select>
-					    </Grid>
-					    <Grid item xs={6}>
-							<Select
-							  native
-							  inputProps={{
-							    name: 'Score Type',
-							    id: 'editOwnerBoxAddWodScoreType',
-							  }}
-							  value={oldScoreType}
-							>
-								{
-									scoreTypes.map((scoreType, i) => {
-										return (
-											<option key={i} value={scoreType}>
-										  	{scoreType}
-										  </option>
-										)
-									})
-								}
-							</Select>
-					    </Grid>
-					    <Grid item xs={12}>
-			          <TextField
-			              id="editOwnerBoxAddWodTitle"
-			              type="text"
-			              name="title"
-			              style={{ margin: 8}}
-			              value= {this.state.title}
-			              onChange={this.handleValChange.bind(this)}
-			              pattern="[\sA-Za-z0-9]{35}"
-			              inputProps={{
-			                title: "Letters only, max length 35",
-			                placeholder: "Title"
-			              }}
-			              margin="normal"
-			              color="primary"
-			              InputLabelProps={{
-			                shrink: true,
-			              }}
-			            />
-				      </Grid>
-			        <Grid item xs={12}>
-	             	<TextField
-		              id="editOwnerBoxAddWodWodText"
-		              type="text"
-		              name="wodText"
-		              style={{ margin: 8}}
-		              value= {this.state.wodText}
-		              onChange={this.handleValChange.bind(this)}
-		              pattern="[\sA-Za-z0-9]{35}"
-		              inputProps={{
-		                title: "Letters only, max length 35",
-		                placeholder: "Workout here"
-		              }}
-		              margin="normal"
-		              color="primary"
-		              multiline
-				  		  	rows={5}
-		              InputLabelProps={{
-		                shrink: true,
-		              }}
-	            	/>
-			      	</Grid>
-				      <Grid item xs={12}>
-					      <Button 
-					      	variant="outlined" 
-					      	color="primary" 
-					      	onClick={this.editWOD.bind(this)}
-					      >
-					      	Update
-					      </Button>
-				      </Grid>
-				      <Grid item xs={12}>
-					      <Button 
-					      	variant="outlined" 
-					      	color="primary" 
-					      	onClick={this.props.onClose}
-					      >
-					      	Cancel
-					      </Button>
-				      </Grid>
-						</Grid>
+							<StyledGrid item container xs={12}>
+								<Grid item xs={6}>
+									<Select
+									native
+									value={this.state.wodInfo["wodID"]}
+									name="wodID"
+									onChange={this.handleValChange.bind(this)}
+									inputProps={{
+										name: 'Box',
+										id: 'editOwnerBoxAddWodBoxID',
+									}}
+									>
+									{ this.state.hasBoxes ?
+										this.state.userBoxes.map((box, i) => {
+												let boxID = box["boxID"]
+												return (
+													<option key={i} value={boxID}>
+														{box["title"]}
+													</option>
+												)
+											})
+										:
+											<option aria-label="None" value="" >No boxes!</option>
+									}
+								</Select>
+								</Grid>
+								<Grid item xs={6}>
+									<Select
+									native
+									inputProps={{
+										name: 'Score Type',
+										id: 'editOwnerBoxAddWodScoreType',
+									}}
+									name="scoreType"
+									value={this.state.wodInfo['scoreType']}
+									onChange={this.handleValChange.bind(this)}
+									>
+										{
+											scoreTypes.map((scoreType, i) => {
+												return (
+													<option key={i} value={scoreType}>
+													{scoreType}
+												</option>
+												)
+											})
+										}
+									</Select>
+								</Grid>
+							</StyledGrid>
+
+							<StyledGrid item xs={12}>
+								<TextField
+									id="editOwnerBoxAddWodTitle"
+									type="text"
+									name="title"
+									style={{ margin: 8}}
+									value= {this.state.wodInfo['title']}
+									onChange={this.handleValChange.bind(this)}
+									pattern="[\sA-Za-z0-9]{35}"
+									inputProps={{
+										title: "Letters only, max length 35",
+										placeholder: "Title"
+									}}
+									margin="normal"
+									color="primary"
+									InputLabelProps={{
+										shrink: true,
+									}}
+									/>
+							</StyledGrid>
+							<StyledGrid item xs={12}>
+								<TextField
+								id="editOwnerBoxAddWodWodText"
+								type="text"
+								name="wodText"
+								style={{ margin: 8}}
+								value= {this.state.wodInfo['wodText']}
+								onChange={this.handleValChange.bind(this)}
+								pattern="[\sA-Za-z0-9]{35}"
+								inputProps={{
+									title: "Letters only, max length 35",
+									placeholder: "Workout here"
+								}}
+								margin="normal"
+								color="primary"
+								multiline
+										rows={5}
+								InputLabelProps={{
+									shrink: true,
+								}}
+								/>
+							</StyledGrid>
+
+						<StyledGrid container item xs={12}>
+							<Grid item xs={6}>
+								<Button
+									variant="outlined"
+									color="primary"
+									onClick={this.props.onClose}>
+									Cancel
+								</Button>
+							</Grid>
+							<Grid item xs={6}>
+								<Button
+									variant="outlined"
+									color="primary"
+									onClick={this.editWOD.bind(this)}>
+									Update
+								</Button>
+							</Grid>
+						</StyledGrid>
 					</Paper>
 					</Grid>
 				</div>
@@ -205,3 +231,5 @@ export default class EditWod extends Component {
 		)
 	}
 }
+
+export default EditWod = withTheme(EditWod);

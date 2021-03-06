@@ -1,7 +1,7 @@
 // Firebase
 import firebase from "../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 // React
 import React, { Component } from 'react'
@@ -11,7 +11,7 @@ import ReactMarkdown from 'react-markdown'
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -64,11 +64,11 @@ function WodRaw(props){
 			{ props.showOwnerBtns ?
 			    <React.Fragment>
 				    <Button size="small"
-				    	color="secondary" 
+				    	color="secondary"
 				    	onClick={() => props.handleEdit(props.info)}>
 				    	<Edit />
 				    </Button>
-				    <Button size="small" 
+				    <Button size="small"
 				    	onClick={() => props.handleRemove(props.info)}>
 				    	<Delete color="error"/>
 			    	</Button>
@@ -82,12 +82,34 @@ function WodRaw(props){
 }
 const Wod = withTheme(WodRaw)
 
+function EmptyWodRaw(props){
+	return(
+	  <TableRow>
+		<TableCell colSpan={3} align="center">
+		  <Typography variant="subtitle1" color="primary">
+			No Workouts!
+		  </Typography>
+		</TableCell>
+	  </TableRow>
+	)
+  }
+const EmptyWod = withTheme(EmptyWodRaw)
+
+const StyledTablePagination = withStyles({
+	root:{
+		overflow: "hidden"
+	},
+	actions:{
+		margin: "0px"
+	}
+})(TablePagination)
+
 class SearchSortTable extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
 			headers: props.headers,
-			rows: props.rows,		
+			rows: props.rows,
 			filteredRows: props.filteredRows,
 			orderTableBy: "date",
 			orderTable: "asc",
@@ -102,7 +124,7 @@ class SearchSortTable extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state){
-		return props
+		return state.rows.length > 0? state: props
 	}
 
 	/*
@@ -110,7 +132,7 @@ class SearchSortTable extends Component {
 	*/
 	onKeyUp(data){
 		if((data.keyCode || data.which) == 13){
-		    
+
 		}
 	}
 
@@ -123,7 +145,7 @@ class SearchSortTable extends Component {
 
 		this.setState({filteredRows: filteredRows})
 	}
-	
+
 	descendingComparator(a, b, orderBy) {
 		if(b[orderBy] < a[orderBy]){
 			return -1;
@@ -146,7 +168,7 @@ class SearchSortTable extends Component {
 
 		stabilizedThis.sort((a, b) => {
 			const order = comparator(a[0], b[0]);
-			
+
 			if (order !== 0) return order;
 			return a[1] - b[1];
 		});
@@ -154,13 +176,13 @@ class SearchSortTable extends Component {
 	}
 
 	createSortHandler(orderBy){
-		let isAsc = 
+		let isAsc =
 			this.state.orderTableBy === orderBy &&
 			this.state.orderTable === "asc"
 		this.setState({
 			orderTableBy: orderBy,
 			orderTable: isAsc? "desc" : "asc"
-		}) 
+		})
 	}
 
 	handleChangePage(ev, newPage){
@@ -186,7 +208,7 @@ class SearchSortTable extends Component {
 
 
 	onViewScores(url){
-		
+
 		this.setState({redirectUrl: url, redirect: true})
 	}
 
@@ -198,7 +220,7 @@ class SearchSortTable extends Component {
 			:
 				<React.Fragment></React.Fragment>
 			}
-		
+
 		    <Paper style={{margin: "16px 0px 0px 0px"}} component="form">
 			<TextField
 			fullWidth
@@ -231,7 +253,7 @@ class SearchSortTable extends Component {
 						              active={header.id === this.state.orderTableBy}
 						              direction={header.id === this.state.orderTableBy?  this.state.orderTable: "asc"}
 						              onClick={()=>{ this.createSortHandler(header.id)}}
-						            >            
+						            >
 					        			{header.label}
 							        </TableSortLabel>
 							    :
@@ -264,22 +286,25 @@ class SearchSortTable extends Component {
 						/>
 					})
 				:
-					
-					<span>No data!</span>
-					
+
+					<EmptyWod />
+
 				}
 		    </TableBody>
   			</Table>
+				<StyledTablePagination
+				rowsPerPageOptions={[5, 10, 25]}
+				component={Grid}
+				count={this.state.filteredRows.length}
+				rowsPerPage={this.state.rowsPerPage}
+				page={this.state.pageNum}
+				onChangePage={this.handleChangePage.bind(this)}
+				onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+				/>
 		    </TableContainer>
-		     <TablePagination
-	          rowsPerPageOptions={[5, 10, 25]}
-	          component="div"
-	          count={this.state.filteredRows.length}
-	          rowsPerPage={this.state.rowsPerPage}
-	          page={this.state.pageNum}
-	          onChangePage={this.handleChangePage.bind(this)}
-	          onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-			  />
+			</Grid>
+			<Grid item xs ={12}>
+
 			</Grid>
 		</Grid>
 	)
@@ -287,3 +312,4 @@ class SearchSortTable extends Component {
 }
 
 export default SearchSortTable = withTheme(SearchSortTable)
+

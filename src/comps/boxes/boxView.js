@@ -107,6 +107,7 @@ class BoxView extends Component {
 						userMD={this.state.userMD}
 						boxID={this.state.boxID}
 						isOwner={showOwnerBtns}
+						onAlert={this.props.onAlert}
 					/>
 				:
 					<React.Fragment></React.Fragment>

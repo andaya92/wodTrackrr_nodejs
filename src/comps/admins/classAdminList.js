@@ -1,11 +1,11 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
 
-import 
+import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
   TableHead, TableRow }
@@ -22,10 +22,10 @@ import "../../styles.css"
 const fs = firebase.firestore()
 
 function AdminRowRaw(props){
-  
+
   // TODO redirect to wods whhoch is what boxView is
   return(
-    <TableRow> 
+    <TableRow>
       <TableCell align="left">
         <Typography variant="subtitle1" color="primary">
           { props.info.username }
@@ -46,6 +46,19 @@ function AdminRowRaw(props){
 }
 const AdminRow = withTheme(AdminRowRaw)
 
+function EmptyAdminRaw(props){
+  return(
+    <TableRow>
+      <TableCell colSpan={3} align="center">
+        <Typography variant="subtitle1" color="primary">
+          No Admins!
+        </Typography>
+      </TableCell>
+    </TableRow>
+  )
+}
+const EmptyAdmin = withTheme(EmptyAdminRaw)
+
 class ClassAdminList extends Component {
   constructor(props){
     super(props)
@@ -64,11 +77,11 @@ class ClassAdminList extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    return props  
+    return state.admins.length > 0? state : props
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){   
+    if((data.keyCode || data.which) == 13){
     }
   }
 
@@ -89,24 +102,31 @@ class ClassAdminList extends Component {
     console.log("remove member w/ uid: ", classAdminID)
     this.setState({removeClassAdminID: classAdminID, removeUsername: username, showRemoveAlert: true})
   }
-  
+
   onRemoveAdmin(){
+    this.setState({showRemoveAlert: false})
     removeAdmin(this.state.removeClassAdminID)
-    .then(() => { 
-      console.log("Removed admin.") 
-      this.setState({showRemoveAlert: false})
-    })
-    .catch(err => { console.log(err) })
+    .then((res) => {
+			this.props.onAlert({
+				type: "success",
+				message: "Removed admin!"
+			})
+		})
+		.catch(err => {
+			this.props.onAlert({
+				type: "error",
+				message: err
+			})
+		})
 
   }
 
-  
+
 
   render () {
     return (
       <Grid item xs={12}>
         <Grid item xs={12}>
-          {this.state.admins.length > 0 ?
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
           <Paper elevation={2} component="form">
             <TextField
@@ -133,27 +153,25 @@ class ClassAdminList extends Component {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {
-                this.state.filteredAdmins.map((admin, i) => {
-                    return (
-                        <AdminRow 
-                            key={i} 
-                            info={admin} 
-                            handleRemoveAdmin={this.handleRemoveAdmin.bind(this)}
-                            isOwner={this.props.isOwner}
-                        />
-                    )
-                })
+                {this.state.filteredAdmins.length > 0 ?
+                  this.state.filteredAdmins.map((admin, i) => {
+                      return (
+                          <AdminRow
+                              key={i}
+                              info={admin}
+                              handleRemoveAdmin={this.handleRemoveAdmin.bind(this)}
+                              isOwner={this.props.isOwner}
+                          />
+                      )
+                  })
+                :
+                  <EmptyAdmin />
                 }
                 </TableBody>
                 </Table>
             </TableContainer>
           </Paper>
           </Grid>
-
-          :
-            <Typography>No admins</Typography>
-          }
         </Grid>
         <ActionCancelModal
 				  open={this.state.showRemoveAlert}
