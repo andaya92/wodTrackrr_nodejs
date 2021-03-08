@@ -56,13 +56,11 @@ class PageContentRaw extends Component {
     if(!this.listener){
       this.listener = fs.collection("scores").where("uid", "==", this.state.user.uid)
       .onSnapshot(ss => {
-        console.log(ss)
         if(!ss.empty){
           let scores = []
           ss.forEach(doc => {
             scores.push(doc.data())
           })
-          console.log(scores[0])
           scores.sort((a, b) => {
            return (a.date > b.date)? 1 : -1
           })

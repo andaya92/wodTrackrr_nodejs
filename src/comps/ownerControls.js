@@ -138,6 +138,7 @@ class OwnerControls extends Component {
               </Grid>
               <Grid item xs={12} className={`slide-left ${this.state.tabs[1]}`}>
                   <AddWod
+                    isOwnerView={true}
                     userMD={this.state.userMD}
                     userBoxes = {this.state.userBoxes}
                     hasBoxes = {this.state.hasBoxes}

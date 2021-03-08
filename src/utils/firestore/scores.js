@@ -3,8 +3,8 @@
 */
 
 import firebase from "../../context/firebaseContext"
-import "firebase/auth"; 
-import "firebase/firestore"; 
+import "firebase/auth";
+import "firebase/firestore";
 
 let fs = firebase.firestore();
 
@@ -20,8 +20,7 @@ export function setScore(title, username, uid, userScore, wodID, gymClassID, box
 				username: username,
 				title: title,
 				score: userScore,
-				scoreType: scoreType,
-				date: Date.now()
+				scoreType: scoreType
 			}
 		fs.collection("scores")
 		.where("uid", "==", uid)
@@ -33,17 +32,25 @@ export function setScore(title, username, uid, userScore, wodID, gymClassID, box
 				ss.forEach(doc => {
 					key = doc.data().scoreID
 				})
-				data['scoreID'] = key
-				fs.collection("scores").doc(key).set(data)
+
+				fs.collection("scores")
+				.doc(key)
+				.update({
+					...data,
+					scoreID: key
+				})
 				.then(() => {res("Updated score.")})
 				.catch(err => {rej(err)})
 			}else{
 				let doc = fs.collection("scores").doc()
-				data['scoreID'] = doc.id
-				doc.set(data)
+				doc.set({
+					...data,
+					date: Date.now(),
+					scoreID: doc.id
+				})
 				.then(() => {res("Added new score.")})
 				.catch(err => {rej(err)})
-				// Create score 
+				// Create score
 			}
 		},
 			err => {
@@ -57,5 +64,5 @@ export function removeScore(scoreID){
 		fs.collection("scores").doc(scoreID).delete()
 		.then(()=>{res(`Successfully removed score: ${scoreID}`)})
 		.catch((err) => {rej(`Failed to remove score: ${scoreID}`)})
-	})	
+	})
 }

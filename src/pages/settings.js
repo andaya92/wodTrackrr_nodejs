@@ -76,7 +76,7 @@ class Settings extends Component {
   static getDerivedStateFromProps(props, state){
     let pageChange = props.userMD.currentPage !== state.userMD.currentPage
 
-	return pageChange? state: props
+	return pageChange || state.user? state: props
   }
 
   openSetting(id){

@@ -64,7 +64,7 @@ class UserScoreList extends Component {
         .catch(err => {
             this.props.onAlert({
 				type: "error",
-				message: err
+				message: err.message
 			})
         })
 	}
@@ -147,13 +147,14 @@ function ScoreRow(props){
 	let wodID = props.info["wodID"]
 	let uid = props.info["uid"]
 	let scoreID = props.info["scoreID"]
-	let boxID = props.info["boxID"]
+
+	let gymClassID = props.info["gymClassID"]
 	return(
 		<TableRow onClick={(ev) => {
 			let tagName = ev.target.tagName
 			if(["path", "svg"].indexOf(tagName) > -1)
 				return
-			props.onView(`wod/${boxID}/${wodID}`)
+			props.onView(`wod/${gymClassID}/${wodID}`)
 		}}>
 			<TableCell>
 				{title}

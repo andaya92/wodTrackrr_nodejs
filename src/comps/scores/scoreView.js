@@ -19,12 +19,15 @@ from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
+import { DateTime } from 'luxon'
+
 import ScoreDataView from "./scoreDataView"
 import ScoreList from "./scoreList"
 import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 
 import { removeScore } from "../../utils/firestore/scores"
+import { getWod } from "../../utils/firestore/wods"
 import { dupNewLine } from "../../utils/formatting"
 import "../../styles.css"
 
@@ -57,7 +60,7 @@ class ScoreView extends Component {
     super(props)
     this.state = {
       userMD: props.userMD,
-      boxID: props.boxID,
+      gymClassID: props.gymClassID,
       wodID: props.wodID,
       wodMD: {},
       scores: [],
@@ -68,8 +71,11 @@ class ScoreView extends Component {
   }
 
   componentDidMount(){
+    console.log(this.state.userMD)
+    console.log(this.state.gymClassID, this.state.wodID)
+
     let fs = firebase.firestore()
-    this.wodListener = fs.collection("wods").doc(this.state.wodID)
+    this.wodListener = getWod(this.state.gymClassID, this.state.wodID)
     .onSnapshot(ss => {
       this.setState({wodMD: ss.data()})
     },
@@ -158,6 +164,8 @@ class ScoreView extends Component {
   }
 
   render(){
+    let date = this.state.wodMD.date? DateTime.fromMillis(this.state.wodMD.date): {monthLong: "", day: "", year:""}
+
 
   return(
     <React.Fragment>
@@ -172,6 +180,11 @@ class ScoreView extends Component {
                 variant="subtitle1"
                 color="primary">
                   For {this.state.wodMD["scoreType"]}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="secondary">
+                  {date.monthLong} {date.day}, {date.year}
               </Typography>
             </Paper>
           </Grid>
@@ -232,9 +245,13 @@ class ScoreView extends Component {
             />
           </Grid>
         :
-          <React.Fragment>
-            Wod not found!
-          </React.Fragment>
+          <Grid item xs={12}>
+            <Paper elevation={6}>
+              <Typography>
+                Wod not found!
+              </Typography>
+            </Paper>
+          </Grid>
       }
     </React.Fragment>
   )

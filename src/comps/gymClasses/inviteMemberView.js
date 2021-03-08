@@ -118,7 +118,7 @@ class InviteMemberView extends Component {
         .catch(err => {
             this.props.onAlert({
 				type: "error",
-				message: err
+				message: err.message
 			})
         })
     }

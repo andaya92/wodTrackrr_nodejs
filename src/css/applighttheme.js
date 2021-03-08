@@ -16,6 +16,11 @@ let applighttheme = {
             "backgroundColor": "white"
          }
       },
+      "MuiBottomNavigation": {
+         "root": {
+            "zIndex": 100
+         }
+      }
    },
     "palette":{
        "common":{

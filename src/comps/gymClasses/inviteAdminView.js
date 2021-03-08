@@ -104,17 +104,19 @@ class InviteAdminView extends Component {
         }
 
         this.props.onModalClose()
+        console.log("Sending data")
+        console.log(data)
         sendAdminInvite(this.state.selectedUser.uid, data)
         .then((res) => {
             this.props.onAlert({
 				type: "success",
-				message: res
+				message: String(res)
 			})
         })
         .catch(err => {
             this.props.onAlert({
 				type: "error",
-				message: err
+				message: err.message
 			})
         })
     }

@@ -7,7 +7,7 @@ import React, { Component } from 'react'
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, IconButton, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -54,7 +54,7 @@ function NotificationRaw(props){
                 </IconButton>
             </Grid>
             <Grid item xs={2}>
-                <IconButton size="small" onClick={() => { props.removeNotification(memberInviteID) }} >
+                <IconButton size="small" onClick={() => { props.removeNotification(props.info) }} >
                     <Close color="error"/>
                 </IconButton>
             </Grid>
@@ -98,11 +98,11 @@ class MemberInvites extends Component {
                     ss.docs.forEach(doc => {
                         notifications.push(doc.data())
                     })
-    
+
                     notifications.sort((a, b) => {
                         return (a.date > b.date)? 1 : -1
                     })
-    
+
                     this.setState({ notifications: notifications })
                 }else{
                     this.setState({ notifications: notifications })
@@ -111,8 +111,8 @@ class MemberInvites extends Component {
         }
     }
 
-    onRemoveNotification(notifyID){
-        removeNotification(notifyID)
+    onRemoveNotification(notify){
+        removeNotification(notify)
         .then( res => { console.log(res) })
         .catch( err => { console.log(err) })
     }
@@ -124,7 +124,7 @@ class MemberInvites extends Component {
         let boxID = notify.boxID
         let notifyID = notify.memberInviteID
 
-        let data = {            
+        let data = {
             gymClassID: gymClassID,
             gymClassTitle: classTitle,
             boxTitle: boxTitle,
@@ -137,18 +137,18 @@ class MemberInvites extends Component {
         setClassMember(this.state.userMD.uid, gymClassID, data)
         .then(res => {
             console.log(res)
-            this.onRemoveNotification(notifyID)
+            this.onRemoveNotification(notify)
         })
         .catch(err => {
             console.log(err)
         })
-       
-        
+
+
 
     }
 
   render(){
-		return( 
+		return(
             <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
             {this.state.notifications.length > 0?
                 <Paper  elevation={6}>
@@ -161,7 +161,7 @@ class MemberInvites extends Component {
                     {this.state.notifications.map((notify, i) => {
                         return (
                             <Notification key={i}
-                                info={notify} 
+                                info={notify}
                                 removeNotification={this.onRemoveNotification.bind(this)}
                                 acceptInvite={this.acceptInvite.bind(this)}
                             />)
@@ -170,7 +170,7 @@ class MemberInvites extends Component {
                 </Paper>
             :
                 <React.Fragment></React.Fragment>
-            }    
+            }
             </Grid>
     )}
 }

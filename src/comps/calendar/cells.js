@@ -32,24 +32,44 @@ export const CellRow = withStyles(theme => ({
 
 export const RedCell = withStyles(theme => ({
     root:{
-        background: "linear-gradient(45deg, transparent, #ff0b0b, #6700c5)",
+        background: `linear-gradient(45deg, transparent, #ff0b0b, transparent)`,
     }
 }))(Cell)
 
-export const GreyCell = withStyles({
+export const GreyCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent, grey, #6700c5)`,
+        background: `linear-gradient(45deg, transparent, grey, transparent)`,
     }
-})(Cell)
+}))(Cell)
 
 export const GreenCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent, #00fb42, #00fb42, #6700c5)`,
+        background: `linear-gradient(45deg, transparent, #00fb42, #00fb42, ${theme.palette.primary.main})`,
     }
 }))(Cell)
 
 export const WhiteCell = withStyles(theme => ({
     root:{
+        background: `linear-gradient(45deg, transparent,  white, ${theme.palette.primary.main})`,
+    }
+}))(Cell)
+
+export const BlueCell = withStyles(theme => ({
+    root:{
         background: `linear-gradient(45deg, transparent,  ${theme.palette.primary.main}, #6700c5)`,
+    }
+}))(Cell)
+
+
+export const PurpleCell = withStyles(theme => ({
+    root:{
+        background: `linear-gradient(45deg, white, #1118f3, #1118f3, white)`,
+    }
+}))(Cell)
+
+
+export const GoldCell = withStyles(theme => ({
+    root:{
+        background: `linear-gradient(45deg, white, #ffeb00, #ffeb00, white)`,
     }
 }))(Cell)

@@ -9,22 +9,33 @@ export default function mTea(){}
 /*
 	Wods
 */
+let fs = firebase.firestore();
+
+export function getWods(gymClassID){
+	let doc = fs.collection("wods").doc(gymClassID).collection("wods")
+	console.log(doc)
+	return doc
+}
+
+export function getWod(gymClassID, wodID){
+	return fs.collection("wods").doc(gymClassID).collection("wods").doc(wodID)
+
+}
 
 export function setWod(data){
-	let fs = firebase.firestore();
-	let doc = fs.collection("wods").doc()
+
+	let doc = fs.collection("wods").doc(data.gymClassID).collection("wods").doc()
 	return doc.set({ ...data, date: Date.now(), wodID: doc.id })
 }
 
-export function editWod(boxID, wodID, title, wodText, scoreType){
+export function editWod(data){
 	let fs = firebase.firestore()
+	console.log("Edit wod")
+	console.log(data)
 	return new Promise((res, rej) => {
-		fs.collection("wods").doc(wodID).update({
-			boxID: boxID,
-			title: title,
-			wodText: wodText,
-			scoreType: scoreType
-		})
+		fs.collection("wods").doc(data.gymClassID)
+		.collection("wods").doc(data.wodID)
+		.update(data)
 		.then(()=> {res("Finished updating.")})
 		.catch(err => {rej(err)})
 	})
@@ -33,7 +44,7 @@ export function editWod(boxID, wodID, title, wodText, scoreType){
 
 
 function getSnapshot(collectionName, fieldName, fieldID, res, rej){
-	let fs = firebase.firestore();
+
 	const batch = fs.batch()
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
 	.then(ss => {
@@ -41,8 +52,6 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 		if(ss.size == 0) res(1)
 
 		ss.forEach(doc => {
-			console.log("delete")
-			console.log(doc.data())
 			batch.delete(doc.ref)
 			cnt++
 		})
@@ -56,13 +65,13 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 	res(1)
 }
 
-export function removeWod(wodID){
+export function removeWod(wodInfo){
 
-	let collectionNames = ["wods", "scores"]
+	let collectionNames = [`wods/${wodInfo.gymClassID}/wods`, "scores"]
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {
-			getSnapshot(name, "wodID", wodID, res, rej)
+			getSnapshot(name, "wodID", wodInfo.wodID, res, rej)
 		})
 	})
 

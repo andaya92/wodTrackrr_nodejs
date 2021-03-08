@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Grid, Paper, Button, Typography, IconButton,
-        TableBody, Table, TableCell, TableContainer, TableRow } 
+        TableBody, Table, TableCell, TableContainer, TableRow }
 from '@material-ui/core';
 
 import Whatshot from '@material-ui/icons/Whatshot'
@@ -27,7 +27,7 @@ class UserFollows extends Component{
   extractData(ss){
     let follows = []
     let following = {}
-    
+
     ss.forEach(doc => {
       let data = doc.data()
       follows.push(data)
@@ -41,12 +41,8 @@ class UserFollows extends Component{
     .onSnapshot(followingSS => {
       let [follows, following] = this.extractData(followingSS)
       followingSS.docChanges().forEach(change => {
-        switch(change.type){    
+        switch(change.type){
           case "added":
-            console.log("Case Added!")
-            
-
-
             this.setState({
               userFollows: follows,
               userFollowing: following
@@ -54,7 +50,6 @@ class UserFollows extends Component{
 
             break
           case "modified":
-            console.log("modififed")
             let modData = change.doc.data()
             console.log(modData)
 
@@ -63,10 +58,9 @@ class UserFollows extends Component{
               userFollowing: following
             })
 
-            
+
             break
           case "removed":
-            console.log("case Removed")
             let data = change.doc.data()
             let userFollowing = this.state.userFollowing
             userFollowing[data.boxID] = undefined
@@ -107,7 +101,7 @@ class UserFollows extends Component{
       if(res){
         let userFollowing = this.state.userFollowing
         userFollowing[boxID] = undefined
-        this.setState({userFollowing: userFollowing})        
+        this.setState({userFollowing: userFollowing})
         console.log("Succefully unfollowed.")
       }
     })
@@ -142,7 +136,7 @@ class UserFollows extends Component{
                                   <Button>
                                     {follow.title} <Typography variant="caption" component="span">&nbsp;(deleted)</Typography>
                                   </Button>
-                                :  
+                                :
                                   <Button
                                     to={`box/${follow.boxID}`}
                                     component={Link}
@@ -160,7 +154,7 @@ class UserFollows extends Component{
                                       <Whatshot color="primary" />
                                     </IconButton>
                                   :
-                                    <IconButton 
+                                    <IconButton
                                       onClick={()=>{
                                         this.handleFollow(follow)
                                       }}>

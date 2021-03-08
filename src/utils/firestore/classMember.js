@@ -1,34 +1,38 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth"; 
+import "firebase/auth";
 import "firebase/firestore";
 
 let fs = firebase.firestore()
 
 const CLASS_MEMBER = "classMembers"
+const CLASS_MEMBER_SHALLOW = "classMembersShallow"
 const MEMBERS = "members"
 const USERS = "users"
 const NOTIFICATIONS = "notifications"
 const INVITES = "invites"
 
 export default function mTea(){}
- 
+
 
 export function sendMemberInvite(uid, data){
-    
+
     let inviteRef = fs.collection(NOTIFICATIONS)
            .doc(MEMBERS)
            .collection(INVITES)
-           
 
-    
+
+
     return new Promise((res, rej) => {
+        console.log("isMember")
         isClassMember(uid, data.gymClassID).then(isMember => {
             if(!isMember){
+                console.log("isSent")
                 isNotificationSent(uid, data.gymClassID)
                 .then(isSent => {
                     if(isSent){
                         res("Member notified already.")
                     }else{
+                        console.log("Creating notification")
                         let doc = inviteRef.doc()
                         doc.set({ ...data, memberInviteID: doc.id })
                         .then(() => { res("Sent member invite.") })
@@ -43,7 +47,7 @@ export function sendMemberInvite(uid, data){
             }
         })
 
-    }) 
+    })
 }
 
 function isNotificationSent(uid, gymClassID){
@@ -72,10 +76,10 @@ export function getUserMemberInvites(uid){
 }
 
 
-export function removeNotification(notifyID){
+export function removeNotification(notify){
     return new Promise((res, rej) => {
         fs.collection(NOTIFICATIONS).doc(MEMBERS)
-        .collection(INVITES).where("memberInviteID", "==", notifyID)
+        .collection(INVITES).where("uid", "==", notify.uid).where("gymClassID", "==", notify.gymClassID)
         .get().then(ss => {
             if(!ss.empty){
                 ss.docs.forEach(doc => {
@@ -84,8 +88,8 @@ export function removeNotification(notifyID){
             res("Removed notifications.")
             }
             res("No notifications found.")
-        },
-        err => { rej(err) })
+        })
+        .catch(err => { rej(err) })
     })
 }
 
@@ -100,7 +104,7 @@ export function getClassMembers(gymClassID){
 export function getUserClassMembers(uid){
     return fs.collection(CLASS_MEMBER).where("uid", "==", uid)
 }
- 
+
 
 export function isClassMember (uid, gymClassID){
     return new Promise((res, rej) => {
@@ -131,7 +135,13 @@ export function setClassMember(uid, gymClassID, data){
                 let doc = fs.collection(CLASS_MEMBER)
                 .doc()
 
-                doc.set({ ...data, classMemberID: doc.id })
+                let shallow = fs.collection(CLASS_MEMBER_SHALLOW)
+                .doc(data.gymClassID).collection("users").doc(data.uid)
+
+                Promise.all([
+                    doc.set({ ...data, classMemberID: doc.id }),
+                    shallow.set({uid: data.uid, gymClassID: data.gymClassID, classMemberID: doc.id})
+                ])
                 .then(result => {
                     res("Added user as a member.")
                 })
@@ -146,8 +156,16 @@ export function setClassMember(uid, gymClassID, data){
 }
 
 
-export function removeMember(classMemberID){
-    return fs.collection(CLASS_MEMBER)
-    .doc(classMemberID)
-    .delete()
+
+export function removeMember(classMember){
+
+    return Promise.all([
+        fs.collection(CLASS_MEMBER)
+        .doc(classMember.classMemberID)
+        .delete(),
+        fs.collection(CLASS_MEMBER_SHALLOW).doc(classMember.gymClassID)
+        .collection("users").doc(classMember.uid)
+        .delete()
+
+    ])
 }

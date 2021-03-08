@@ -5,6 +5,9 @@ let fs = firebase.firestore();
 
 export default function mTea(){}
 
+const GYM_CLASSES = "gymClasses"
+const CLASSES = "classes"
+const CLASS_OWNERS ="classOwners"
 /*
 	GymClasses
 */
@@ -15,18 +18,27 @@ export function getGymClasses(boxID){
 
 export function setGymClass(title, uid, boxID, boxTitle, isPrivate){
   	return new Promise((res, rej) => {
-  		fs.collection("gymClasses")
+  		fs.collection(GYM_CLASSES)
 		.doc(boxID)
-		.collection("classes")
+		.collection(CLASSES)
 		.where("title", "==", title)
   		.get().then(result => {
-			console.log(result)
   			if(result.empty){
 				let doc = fs
-				.collection("gymClasses")
+				.collection(GYM_CLASSES)
 				.doc(boxID)
-				.collection("classes")
+				.collection(CLASSES)
 				.doc()
+
+				fs.collection(CLASS_OWNERS)
+				.doc(doc.id).collection("users").doc(uid)
+				.set({
+					owner: uid,
+					boxID: boxID,
+					gymClassID: doc.id,
+					isPrivate: isPrivate,
+				})
+
 
 		  		doc.set({
 		  			gymClassID: doc.id,
@@ -57,12 +69,12 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 	.then(ss => {
 		let cnt = 0
 		snapshotSize = ss.size
-		
+
 		ss.forEach(doc => {
 			batch.delete(doc.ref)
 			cnt++
 		})
-		
+
 		batch.commit().then(() => {
 			if(cnt >= 500)
 				getSnapshot(collectionName, fieldName, fieldID, res, rej)
@@ -73,13 +85,22 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 }
 
 export function removeGymClass(boxID, gymClassID){
-	let collectionNames = ["wods", "scores", `gymClasses/${boxID}/classes`, 'classMembers', 'classAdmins']
+	// let collectionNames = ['classMembers', 'classAdmins']
+	let collectionNames = [
+		`scores`,
+		`wods/${gymClassID}/wods`,
+		`classAdmins`, `classMembers`,
+		"notifications/admins/invites", "notifications/members/invites",
+		`classAdminsShallow/${gymClassID}/users`,
+		`classMembersShallow/${gymClassID}/users`,
+		`classOwners/${gymClassID}/users/`,
+		`gymClasses/${boxID}/classes`]
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {
 			getSnapshot(name, "gymClassID", gymClassID, res, rej)
 		})
 	})
-	
+
 	return Promise.all(promises)
 }

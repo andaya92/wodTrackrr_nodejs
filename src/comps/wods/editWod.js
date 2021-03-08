@@ -42,28 +42,13 @@ class EditWod extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state){
-		console.log("Edit woood")
-		console.log(props)
-		console.log(state)
-
 		return props
 	}
 
 	editWOD(){
-	  	let boxID = document.getElementById("editOwnerBoxAddWodBoxID").value
-	  	let title = document.getElementById("editOwnerBoxAddWodTitle").value
-	  	let scoreType = document.getElementById("editOwnerBoxAddWodScoreType").value
-	  	let wodText = document.getElementById("editOwnerBoxAddWodWodText").value
-	  	let wodID = this.state.wodInfo["wodID"]
-
-	  	if(!boxID || !title || !scoreType || !wodText || !wodID){
-	  		console.log("Error with input in editWod.")
-	  		console.log(boxID, title, scoreType, wodText)
-	  		return
-	  	}
-
 		this.props.onClose()
-	  	editWod(boxID, wodID, title, wodText, scoreType)
+
+	  	editWod(this.state.wodInfo)
 	  	.then((res)=> {
 			this.props.onAlert({
 			type: "success",
@@ -73,7 +58,7 @@ class EditWod extends Component {
 	  	.catch((err)=>{
 			this.props.onAlert({
 				type: "error",
-				message: err
+				message: err.message
 			})
 		})
 	  }
@@ -112,60 +97,8 @@ class EditWod extends Component {
 							<Typography variant="h6">
 								Edit Wod ({this.state.wodInfo["wodID"]})
 							</Typography>
-
-							<StyledGrid item container xs={12}>
-								<Grid item xs={6}>
-									<Select
-									native
-									value={this.state.wodInfo["wodID"]}
-									name="wodID"
-									onChange={this.handleValChange.bind(this)}
-									inputProps={{
-										name: 'Box',
-										id: 'editOwnerBoxAddWodBoxID',
-									}}
-									>
-									{ this.state.hasBoxes ?
-										this.state.userBoxes.map((box, i) => {
-												let boxID = box["boxID"]
-												return (
-													<option key={i} value={boxID}>
-														{box["title"]}
-													</option>
-												)
-											})
-										:
-											<option aria-label="None" value="" >No boxes!</option>
-									}
-								</Select>
-								</Grid>
-								<Grid item xs={6}>
-									<Select
-									native
-									inputProps={{
-										name: 'Score Type',
-										id: 'editOwnerBoxAddWodScoreType',
-									}}
-									name="scoreType"
-									value={this.state.wodInfo['scoreType']}
-									onChange={this.handleValChange.bind(this)}
-									>
-										{
-											scoreTypes.map((scoreType, i) => {
-												return (
-													<option key={i} value={scoreType}>
-													{scoreType}
-												</option>
-												)
-											})
-										}
-									</Select>
-								</Grid>
-							</StyledGrid>
-
 							<StyledGrid item xs={12}>
 								<TextField
-									id="editOwnerBoxAddWodTitle"
 									type="text"
 									name="title"
 									style={{ margin: 8}}
@@ -185,7 +118,6 @@ class EditWod extends Component {
 							</StyledGrid>
 							<StyledGrid item xs={12}>
 								<TextField
-								id="editOwnerBoxAddWodWodText"
 								type="text"
 								name="wodText"
 								style={{ margin: 8}}

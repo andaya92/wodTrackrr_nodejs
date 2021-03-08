@@ -34,7 +34,7 @@ function MemberRowRaw(props){
       <TableCell align="right">
         { props.isOwner ?
           <Button
-            onClick={()=>{props.handleRemoveMember(props.info.classMemberID, props.info.username)}}>
+            onClick={()=>{props.handleRemoveMember(props.info)}}>
             <Delete  color="error" />
           </Button>
         :
@@ -68,8 +68,7 @@ class ClassMemberList extends Component {
         filteredMembers: props.filteredMembers,
         members: props.members,
         showRemoveAlert: false,
-        removeUsername: "",
-        classMemberID: ""
+        classMember: ""
     }
   }
 
@@ -98,13 +97,15 @@ class ClassMemberList extends Component {
     this.setState({showRemoveAlert: false})
   }
 
-  handleRemoveMember(classMemberID, username){
-    this.setState({classMemberID: classMemberID, removeUsername: username, showRemoveAlert: true})
+  handleRemoveMember(classMember){
+    this.setState({classMember: classMember, showRemoveAlert: true})
   }
 
   onRemoveMember(){
     this.setState({showRemoveAlert: false})
-    removeMember(this.state.classMemberID)
+    console.log("Remvoing")
+    console.log(this.state.classMember)
+    removeMember(this.state.classMember)
     .then((res) => {
 			this.props.onAlert({
 				type: "success",
@@ -174,7 +175,7 @@ class ClassMemberList extends Component {
 				  open={this.state.showRemoveAlert}
           onClose={this.handleModalClose.bind(this)}
           onAction={this.onRemoveMember.bind(this)}
-          modalText={ `Remove member, ${this.state.removeUsername}?`}
+          modalText={ `Remove member, ${this.state.classMember.username}?`}
           actionText={"Remove"}
           cancelText={"Cancel"}
 			/>

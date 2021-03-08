@@ -22,7 +22,7 @@ import "../../styles.css"
 const fs = firebase.firestore()
 
 function AdminRowRaw(props){
-
+  console.log(props)
   // TODO redirect to wods whhoch is what boxView is
   return(
     <TableRow>
@@ -34,7 +34,7 @@ function AdminRowRaw(props){
       <TableCell align="right">
         { props.isOwner ?
           <Button
-            onClick={()=>{props.handleRemoveAdmin(props.info.classAdminID, props.info.username)}}>
+            onClick={()=>{props.handleRemoveAdmin(props.info)}}>
             <Delete  color="error" />
           </Button>
         :
@@ -68,8 +68,7 @@ class ClassAdminList extends Component {
         filteredAdmins: props.filteredAdmins,
         admins: props.admins,
         showRemoveAlert: false,
-        removeUsername: "",
-        removeClassAdminID: ""
+        removeClassAdmin: {}
     }
   }
 
@@ -98,14 +97,14 @@ class ClassAdminList extends Component {
     this.setState({showRemoveAlert: false})
   }
 
-  handleRemoveAdmin(classAdminID, username){
-    console.log("remove member w/ uid: ", classAdminID)
-    this.setState({removeClassAdminID: classAdminID, removeUsername: username, showRemoveAlert: true})
+  handleRemoveAdmin(removeClassAdmin){
+    console.log("remove admin w/ data: ", removeClassAdmin)
+    this.setState({removeClassAdmin: removeClassAdmin, showRemoveAlert: true})
   }
 
   onRemoveAdmin(){
     this.setState({showRemoveAlert: false})
-    removeAdmin(this.state.removeClassAdminID)
+    removeAdmin(this.state.removeClassAdmin)
     .then((res) => {
 			this.props.onAlert({
 				type: "success",
@@ -115,7 +114,7 @@ class ClassAdminList extends Component {
 		.catch(err => {
 			this.props.onAlert({
 				type: "error",
-				message: err
+				message: err.message
 			})
 		})
 

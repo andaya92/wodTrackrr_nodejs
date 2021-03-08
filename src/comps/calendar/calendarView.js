@@ -8,7 +8,7 @@ from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 
-import {CellRow, SuperCell, RedCell, GreenCell, WhiteCell, GreyCell} from "./cells"
+import {CellRow, SuperCell, RedCell, GreenCell, WhiteCell, GreyCell, BlueCell, PurpleCell, GoldCell} from "./cells"
 import "../../styles.css"
 
 import { DateTime } from 'luxon'
@@ -18,7 +18,8 @@ function cellData(color="grey", valid=false, isToday=false){
     return {
         color: color,
         valid: valid,
-        isToday: isToday
+        isToday: isToday,
+        count: 1
     }
 }
 
@@ -27,10 +28,11 @@ class CalendarScoreView extends Component {
 	constructor(props){
 		super(props)
         let today = DateTime.now()
+        this.calendar = this.createCalendar(today)
+        console.log(today)
 		this.state = {
 			userMD: props.userMD,
             scores: props.scores,
-            calendar: this.createCalendar(today),
             today: today
 		}
 	}
@@ -55,7 +57,6 @@ class CalendarScoreView extends Component {
     getFirstAndLast(today){
         let first = this.getFirstOfMonth(today)
         let last = this.getEndOfMonth(today)
-        console.log(last)
         return [first, last]
     }
 
@@ -85,14 +86,16 @@ class CalendarScoreView extends Component {
         for(let i=0; i<first.weekday; i++){
             firstWeek.push(cellData())
         }
+
         for(let i=first.weekday; i<7; i++){
-            firstWeek.push(cellData("white", true, false))
+            firstWeek[i] = cellData("white", true, false)
         }
+
         for(let i=0; i<=last.weekday; i++){
             lastWeek.push(cellData("white", true, false))
         }
         for(let i=last.weekday + 1; i<7; i++){
-            lastWeek.push(cellData())
+            lastWeek[i] = cellData()
         }
 
         let calendar = [[...firstWeek], [...fullWeek], [...fullWeek1], [...fullWeek2], [...lastWeek]]
@@ -103,8 +106,9 @@ class CalendarScoreView extends Component {
         let endOffset = this.getOffsetDayOfMonthFromDate(today)
 
         // convert to 1d array start and end position
-        let start = (startOffset[0] * startOffset[1]) + startOffset[1]
-        let end = (endOffset[0] * endOffset[1]) + endOffset[1]
+        let start = (startOffset[0] * 7) + startOffset[1]
+
+        let end = (endOffset[0] * 7) + endOffset[1]
 
         for(let i=start; i<end; i++){
             // convert back to 2d array offsets
@@ -115,9 +119,17 @@ class CalendarScoreView extends Component {
         }
 
         // Mark cell as today
-        let r = parseInt(end/7)
-        let c = end%7
-        calendar[r][c] = cellData("white", true, true)
+        let row = parseInt(end/7)
+        let col = end%7
+
+
+        calendar[row][col] = cellData("white", true, true)
+
+        // console.log("Base calendar")
+        // console.log(startOffset, endOffset)
+        // console.log(start, end)
+        // console.log("tdoay", row, col)
+        // console.log(calendar)
 
         return calendar
     }
@@ -135,7 +147,11 @@ class CalendarScoreView extends Component {
 
     // Fill calendar with user's scores.
     fillCalendar(){
-        let calendar = [...this.state.calendar]
+        let calendar = []
+        for(let week of this.calendar){
+            calendar.push([...week])
+        }
+
 
         for(let score of this.state.scores){
             let scoreDate = DateTime.fromMillis(score.date)
@@ -144,7 +160,11 @@ class CalendarScoreView extends Component {
                 && scoreDate.month === this.state.today.month
                 && scoreDate.year === this.state.today.year)
 
-            calendar[row][col] = cellData("green", true, isToday)
+            if(calendar[row][col].color !== "green"){
+                calendar[row][col] = cellData("green", true, isToday)
+            }else{
+                calendar[row][col].count += 1
+            }
         }
         return calendar
     }
@@ -163,18 +183,26 @@ class CalendarScoreView extends Component {
 
                     {
                     this.fillCalendar().map((week, i) => {
-                        let flipDir = i%2==0? "flip-right": "flip-left"
 
-                        return <CellRow className={flipDir}
+
+                        return <CellRow className="appearSlow"
                                 item xs={12}
                                 key={i}>
 
                                 {week.map((day, j) => {
                                     let border = day.isToday? "whiteBorder": ""
-                                    console.log(border)
                                     if(day.color === 'green'){
-                                        return <SuperCell key={j}>
-                                            <GreenCell className={border}/>
+                                        let Cell = null
+                                        if(day.count == 1)
+                                            Cell = BlueCell
+                                        if(day.count == 2)
+                                            Cell = PurpleCell
+                                        if(day.count == 3)
+                                            Cell = GreenCell
+                                        if(day.count > 3)
+                                            Cell = GoldCell
+                                        return <SuperCell key={j} className="appearFast">
+                                            <Cell className={border}/>
                                         </SuperCell>
                                     }else if(day.color === 'white'){
                                         return <SuperCell key={j}>

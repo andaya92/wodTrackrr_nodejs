@@ -12,7 +12,7 @@ import ReactMarkdown from 'react-markdown'
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
+{ 	Grid, Paper, IconButton, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	Modal, InputAdornment, TableBody, Table, TableContainer,
@@ -35,49 +35,63 @@ const TableCell = withStyles({root:{
 }})(TC)
 
 
+const WodRow = withStyles(theme => ({root:{
+	margin: "8px 0px 8px 0px",
+	padding: "4px 0px 4px 4px",
+	backgroundColor: theme.palette.primary.main,
+	borderRadius: "8px"
+}}))(Grid)
+
+
 function WodRaw(props){
 	let title = props.info["title"]
 	let scoreType = props.info["scoreType"]
 	let wodText = props.info["wodText"]
 	let wodID = props.info["wodID"]
-	let boxID = props.info["boxID"]
+	let gymClassID = props.info["gymClassID"]
 	let date = props.info["date"]
 	return(
-		<TableRow onClick={(ev) => {
+		<WodRow container item xs={12} style={{margin: "8px 0px 8px 0px"}}
+			onClick={(ev) => {
 			let tagName = ev.target.tagName
-			console.log("Clcick")
 			if(["path", "svg"].indexOf(tagName) > -1)
 				return
-			props.onViewScores(`/wod/${boxID}/${wodID}`)
+			props.onViewScores(`/wod/${gymClassID}/${wodID}`)
 		}}>
-			<TableCell>
-				<Typography variant="subtitle2" component="h2"gutterBottom>
+
+			<Grid item xs={10} align="left">
+				<Typography variant="subtitle2" component="h2"gutterBottom style={{overflowWrap: "break-word"}} >
+				{title}
+				</Typography>
+				<Typography variant="caption" component="h2"gutterBottom>
 					{msToDate(date)}
 				</Typography>
-			</TableCell>
-			<TableCell colSpan={2}>
-				<Typography variant="subtitle2" component="h2"gutterBottom>
-					{title}
-				</Typography>
-			</TableCell>
-			<TableCell align="right">
-			{ props.showOwnerBtns ?
-			    <React.Fragment>
-				    <Button size="small"
-				    	color="secondary"
-				    	onClick={() => props.handleEdit(props.info)}>
-				    	<Edit />
-				    </Button>
-				    <Button size="small"
-				    	onClick={() => props.handleRemove(props.info)}>
-				    	<Delete color="error"/>
-			    	</Button>
-			    </React.Fragment>
-		  		:
-		  		<React.Fragment></React.Fragment>
-	  		}
-			</TableCell>
-		</TableRow>
+			</Grid>
+
+
+			<Grid item alignItems="center" container xs={2} align="right" justify="center">
+
+				{ props.showOwnerBtns ?
+						<Grid item container xs={12}>
+							<Grid item xs={6}>
+								<IconButton size="small"
+									color="secondary"
+									onClick={() => props.handleEdit(props.info)}>
+									<Edit />
+								</IconButton>
+							</Grid>
+							<Grid item xs={6}>
+								<IconButton size="small"
+									onClick={() => props.handleRemove(props.info)}>
+									<Delete color="error"/>
+								</IconButton>
+							</Grid>
+						</Grid>
+					:
+					<React.Fragment></React.Fragment>
+				}
+			</Grid>
+		</WodRow>
 	)
 }
 const Wod = withTheme(WodRaw)
@@ -264,44 +278,43 @@ class SearchSortTable extends Component {
 		    	}
 		    	</TableRow>
 		    </TableHead>
+			</Table>
+			</TableContainer>
 
-		    <TableBody>
-				{this.state.filteredRows.length > 0
-				?
-					this.stableSort(
-						this.getComparator(
-							this.state.orderTable,
-							this.state.orderTableBy
-						)
+			{this.state.filteredRows.length > 0
+			?
+				this.stableSort(
+					this.getComparator(
+						this.state.orderTable,
+						this.state.orderTableBy
 					)
-					.slice(this.state.pageStart, this.state.pageEnd)
-					.map((row, i) => {
-						return <Wod key={i}
-							handleView={this.props.handleView}
-							handleRemove={this.props.handleRemove}
-							handleEdit={this.props.handleEdit}
-							info={row}
-							showOwnerBtns={this.props.showOwnerBtns}
-							onViewScores={this.onViewScores.bind(this)}
-						/>
-					})
-				:
+				)
+				.slice(this.state.pageStart, this.state.pageEnd)
+				.map((row, i) => {
+					return <Wod key={i}
+						handleView={this.props.handleView}
+						handleRemove={this.props.handleRemove}
+						handleEdit={this.props.handleEdit}
+						info={row}
+						showOwnerBtns={this.props.showOwnerBtns}
+						onViewScores={this.onViewScores.bind(this)}
+					/>
+				})
+			:
 
-					<EmptyWod />
+				<EmptyWod />
 
-				}
-		    </TableBody>
-  			</Table>
-				<StyledTablePagination
-				rowsPerPageOptions={[5, 10, 25]}
-				component={Grid}
-				count={this.state.filteredRows.length}
-				rowsPerPage={this.state.rowsPerPage}
-				page={this.state.pageNum}
-				onChangePage={this.handleChangePage.bind(this)}
-				onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
-				/>
-		    </TableContainer>
+			}
+
+			<StyledTablePagination
+			rowsPerPageOptions={[5, 10, 25]}
+			component={Grid}
+			count={this.state.filteredRows.length}
+			rowsPerPage={this.state.rowsPerPage}
+			page={this.state.pageNum}
+			onChangePage={this.handleChangePage.bind(this)}
+			onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+			/>
 			</Grid>
 			<Grid item xs ={12}>
 

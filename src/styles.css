@@ -32,13 +32,13 @@ body {
 }
 
 
-@keyframes flip-right {
+@keyframes appearSlow {
   0%{opacity: 0;}
 
   100%{opacity: 1;}
 }
 
-@keyframes flip-left {
+@keyframes appearFast {
   /* 0%{transform: translate(-60.0%, 0)}
   100%{transform: translate(0.0%, 0)} */
   0%{opacity: 0;}
@@ -59,13 +59,13 @@ body {
 
 
 
-.flip-right{
-  animation: flip-right 0.5s ease-out 1;
+.appearSlow{
+  animation: appearSlow 1.2s ease-out 1;
   will-change: animation;
   position: relative;
 }
-.flip-left{
-  animation: flip-left 0.5s ease-out 1;
+.appearFast{
+  animation: appearFast 0.75s ease-out 1;
   will-change: animation;
   position: relative;
 }
@@ -91,5 +91,6 @@ body {
 }
 
 .whiteBorder{
-  border: 1px solid white;
+  border-left: 1px solid white;
+  border-right: 1px solid white;
 }

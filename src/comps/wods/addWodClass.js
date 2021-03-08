@@ -27,15 +27,11 @@ const TableCell = withStyles({root:{
 	borderBottom: "none"
 }})(TC)
 
-class AddWod extends Component {
+class AddWodClass extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-			userBoxes: props.userBoxes,
-			hasBoxes: props.hasBoxes,
-			gymClasses: [],
-			box: props.userBoxes[0],
-			gymClass: {},
+            gymClassMD: props.gymClassMD,
 			titleForm: "",
 			scoreTypeForm: SCORETYPES[0],
 			wodTextForm: ""
@@ -46,59 +42,20 @@ class AddWod extends Component {
 		return props
 	}
 
-	componentDidUpdate(){
-		if(!this.gymClassListener && this.state.userBoxes){
-			this.setGymClassListner(this.state.userBoxes[0].boxID)
-		}
-	}
 
-	setGymClassListner(boxID){
-		this.gymClassListener = getGymClasses(boxID)
-		.onSnapshot(ss => {
-			if(!ss.empty){
-				let classes = []
-				ss.forEach(doc => {
-					classes.push(doc.data())
-				})
-				let initClass = classes[0]
-				this.setState({
-					gymClasses: classes,
-					gymClass: initClass
-				})
 
-			}else{
-				this.setState({gymClasses: []})
-			}
-		},
-		err => {console.log(err)})
-	}
 
-	componentWillUnmount(){
-		if(this.gymClassListener){
-			this.gymClassListener()
-		}
-	}
 
-	onBoxSelectChange(ev){
-		let box = JSON.parse(ev.target.value)
-		if(this.gymClassListener){
-			this.gymClassListener()
-		}
-		this.setGymClassListner(box.boxID)
-		this.setState({box: box})
-	}
 
-	onClassSelectChange(ev){
-		let gymClass = JSON.parse(ev.target.value)
-		this.setState({gymClass: gymClass})
-	}
 
 	onTitleChange(ev){
+		console.log(ev.target.value)
 		let title = ev.target.value
 		this.setState({titleForm: title})
 	}
 
 	onScoreTypeSelectChange(ev){
+		console.log(ev.target.value)
 		let scoreType = ev.target.value
 		this.setState({scoreTypeForm: scoreType})
 	}
@@ -110,15 +67,17 @@ class AddWod extends Component {
 	}
 
 	createWOD(){
-	  	let boxID = this.state.box.boxID
-		let boxTitle = this.state.box.title
-	  	let gymClassID = this.state.gymClass.gymClassID
-		let isPrivate = this.state.gymClass.isPrivate
-		let gymClassTitle = this.state.gymClass.title
+	  	let boxID = this.state.gymClassMD.boxID
+		let boxTitle = this.state.gymClassMD.boxTitle
+	  	let gymClassID = this.state.gymClassMD.gymClassID
+		let gymClassTitle = this.state.gymClassMD.title
 	  	let title = this.state.titleForm
 	  	let scoreType = this.state.scoreTypeForm
 	  	let wodText = this.state.wodTextForm
 
+
+		console.log("Creating Wod")
+		console.log(boxID, gymClassID, title, scoreType, wodText)
 	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText){
 	  		console.log("Error with input createWod")
 	  		console.log(boxID, gymClassID, title, scoreType, wodText)
@@ -133,8 +92,7 @@ class AddWod extends Component {
 			scoreType: scoreType,
 			wodText: wodText,
 			boxTitle: boxTitle,
-			gymClassTitle: gymClassTitle,
-			isPrivate: isPrivate
+			gymClassTitle: gymClassTitle
 		}
 	  	setWod(data)
 	  	.then((res)=>{
@@ -162,63 +120,12 @@ class AddWod extends Component {
 					<Table>
 					<TableHead>
 						<TableRow>
-							<TableCell>
-							</TableCell>
-							<TableCell>
+							<TableCell colSpan={2} align="center">
+                                Add Workout
 							</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						<TableRow>
-							<TableCell>
-								<Typography color="primary" variant="caption">
-									Box
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
-									style={{width: "100%"}}
-									onChange={this.onBoxSelectChange.bind(this)}
-									inputProps={{
-										name: 'Box',
-										id: 'ownerBoxAddWodBoxID'}}>
-						          	{this.state.hasBoxes ?
-							          	this.state.userBoxes.map((box, i) => {
-						        			return (<option key={i} value={JSON.stringify(box)} >
-						        								{box["title"]}
-						        							</option>)
-						        		})
-						        	:
-						        		<option aria-label="None" value="" >No boxes!</option>
-						          }
-				      			</Select>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell>
-								<Typography color="primary" variant="caption">
-									Class
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
-									style={{width: "100%"}}
-									onChange={this.onClassSelectChange.bind(this)}
-									inputProps={{
-										name: 'gymClass',
-										id: 'AddWodGymClassID'}}>
-						          	{this.state.gymClasses.length > 0 ?
-							          	this.state.gymClasses.map((gymClass, i) => {
-						        			return (<option key={i} value={JSON.stringify(gymClass)} >
-						        								{gymClass["title"]}
-						        							</option>)
-						        		})
-						        	:
-						        		<option aria-label="None" value="" >No Classes!</option>
-						          }
-				      			</Select>
-							</TableCell>
-						</TableRow>
 						<TableRow>
 							<TableCell>
 								<Typography color="primary" variant="caption">
@@ -318,4 +225,4 @@ class AddWod extends Component {
 	}
 }
 
-export default AddWod = withTheme(AddWod)
+export default AddWodClass = withTheme(AddWodClass)

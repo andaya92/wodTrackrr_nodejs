@@ -32,11 +32,6 @@ let apptheme = {
          "root": {
             "zIndex": 100
          }
-      },
-      "MuiBottomNavigation": {
-         "root": {
-            "zIndex": 100
-         }
       }
    },
    "palette":{
