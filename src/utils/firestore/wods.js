@@ -11,30 +11,62 @@ export default function mTea(){}
 */
 let fs = firebase.firestore();
 
-export function getWods(gymClassID){
-	let doc = fs.collection("wods").doc(gymClassID).collection("wods")
+export function getWods(boxID, gymClassMD){
+	let doc = fs.collection("wods").doc(boxID)
+	.collection("classes").doc(gymClassMD.gymClassID)
+	.collection("wods").where("isPrivate", "==", gymClassMD.isPrivate)
 	console.log(doc)
 	return doc
 }
 
-export function getWod(gymClassID, wodID){
-	return fs.collection("wods").doc(gymClassID).collection("wods").doc(wodID)
+export function getWod(boxID, gymClassID, wodID){
+	return fs.collection("wods").doc(boxID)
+	.collection("classes").doc(gymClassID)
+	.collection("wods").doc(wodID)
 
 }
 
-export function setWod(data){
+export function setWod(title, boxID, gymClassID, owner, boxTitle, classTitle, scoreType, wodText, isPrivate){
 
-	let doc = fs.collection("wods").doc(data.gymClassID).collection("wods").doc()
-	return doc.set({ ...data, date: Date.now(), wodID: doc.id })
-}
+	let doc = fs.collection("wods").doc(boxID)
+	.collection("classes").doc(gymClassID)
+	.collection("wods").doc()
 
-export function editWod(data){
-	let fs = firebase.firestore()
-	console.log("Edit wod")
-	console.log(data)
+	let data = {
+		title: title,
+		boxID: boxID,
+		gymClassID: gymClassID,
+		owner: owner,
+		boxTitle: boxTitle,
+		classTitle: classTitle,
+		scoreType: scoreType,
+		wodText: wodText,
+		isPrivate: isPrivate,
+		date: Date.now(),
+		wodID: doc.id
+	}
 	return new Promise((res, rej) => {
-		fs.collection("wods").doc(data.gymClassID)
-		.collection("wods").doc(data.wodID)
+		doc.set(data)
+		.then(() => {
+			res(doc.id)
+		})
+		.catch(err => {
+			rej(err)
+		})
+	})
+}
+
+export function editWod(boxID, gymClassID, wodID, title, wodText){
+	let fs = firebase.firestore()
+	let data = {
+		title: title,
+		wodText: wodText,
+	}
+
+	return new Promise((res, rej) => {
+		fs.collection("wods").doc(boxID)
+		.collection("classes").doc(gymClassID)
+		.collection("wods").doc(wodID)
 		.update(data)
 		.then(()=> {res("Finished updating.")})
 		.catch(err => {rej(err)})
@@ -67,7 +99,7 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 
 export function removeWod(wodInfo){
 
-	let collectionNames = [`wods/${wodInfo.gymClassID}/wods`, "scores"]
+	let collectionNames = [`wods/${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods/${wodInfo.wodID}`, "scores"]
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {

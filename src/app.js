@@ -174,11 +174,12 @@ export default class App extends React.Component {
                   onAlert={this.onAlert.bind(this)}/>
               )}
             />
-           <Route path="/wod/:gymClassID/:wodID"
+           <Route path="/wod/:boxID/:gymClassID/:wodID"
             render= { props =>(
                 <ScoreView userMD={this.state.userMD}
                   gymClassID={props.match.params.gymClassID}
                   wodID={props.match.params.wodID}
+                  boxID={props.match.params.boxID}
                   isReadOnly={true}
                   onAlert={this.onAlert.bind(this)}/>
               )

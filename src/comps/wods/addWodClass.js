@@ -18,7 +18,6 @@ import {TableCell as TC} from '@material-ui/core';
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import { setWod } from "../../utils/firestore/wods"
-import { getGymClasses } from "../../utils/firestore/gymClass"
 
 let fs = firebase.firestore()
 const SCORETYPES = ["reps", "rounds", "time", "total"]
@@ -68,9 +67,11 @@ class AddWodClass extends Component {
 
 	createWOD(){
 	  	let boxID = this.state.gymClassMD.boxID
+		let owner = this.state.gymClassMD.owner
 		let boxTitle = this.state.gymClassMD.boxTitle
 	  	let gymClassID = this.state.gymClassMD.gymClassID
-		let gymClassTitle = this.state.gymClassMD.title
+		let classTitle = this.state.gymClassMD.title
+		let isPrivate = this.state.gymClassMD.isPrivate
 	  	let title = this.state.titleForm
 	  	let scoreType = this.state.scoreTypeForm
 	  	let wodText = this.state.wodTextForm
@@ -78,23 +79,14 @@ class AddWodClass extends Component {
 
 		console.log("Creating Wod")
 		console.log(boxID, gymClassID, title, scoreType, wodText)
-	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText){
+	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText || !owner){
 	  		console.log("Error with input createWod")
-	  		console.log(boxID, gymClassID, title, scoreType, wodText)
+	  		console.log(boxID, gymClassID, title, scoreType, wodText, owner)
 	  		return
 
 	  	}
 
-		let data = {
-			boxID: boxID,
-			gymClassID: gymClassID,
-			title: title,
-			scoreType: scoreType,
-			wodText: wodText,
-			boxTitle: boxTitle,
-			gymClassTitle: gymClassTitle
-		}
-	  	setWod(data)
+	  	setWod(title, boxID, gymClassID, owner, boxTitle, classTitle, scoreType, wodText, isPrivate)
 	  	.then((res)=>{
 			this.props.onAlert({
 				type: "success",

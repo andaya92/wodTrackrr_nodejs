@@ -14,7 +14,7 @@ import
 }
 from '@material-ui/core';
 
-import {editWod} from "../../utils/firestore/wods"
+import { editWod } from "../../utils/firestore/wods"
 
 import { withTheme, withStyles } from '@material-ui/core/styles';
 
@@ -47,8 +47,19 @@ class EditWod extends Component {
 
 	editWOD(){
 		this.props.onClose()
+		let boxID = this.state.wodInfo.boxID
+		let gymClassID = this.state.wodInfo.gymClassID
+		let wodID = this.state.wodInfo.wodID
+		let title = this.state.wodInfo.title
+		let wodText = this.state.wodInfo.wodText
 
-	  	editWod(this.state.wodInfo)
+		if(!boxID || !gymClassID || !wodID || !title || !wodText){
+			console.log("Missing edit wod info: ")
+			console.log(boxID, gymClassID, wodID, title, wodText)
+			return
+		}
+
+	  	editWod(boxID, gymClassID, wodID, title, wodText)
 	  	.then((res)=> {
 			this.props.onAlert({
 			type: "success",

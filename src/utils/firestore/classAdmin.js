@@ -5,41 +5,50 @@ import "firebase/firestore";
 let fs = firebase.firestore()
 
 const CLASS_ADMIN = "classAdmins"
-const CLASS_ADMIN_SHALLOW = "classAdminsShallow"
+const USER_CLASS_ADMIN = "userClassAdmins"
 const ADMINS = "admins"
-const USERS = "users"
-const NOTIFICATIONS = "notifications"
+const NOTIFICATIONS = "adminNotifications"
+const USER_NOTIFICATIONS = "userAdminNotifications"
 const INVITES = "invites"
-
+const CLASSES = "classes"
+const USERS = "users"
 
 
 export default function mTea(){}
 
 
 
-export function sendAdminInvite(uid, data){
+export function sendAdminInvite(uid, boxID, gymClassID, owner, boxTitle, username){
 
-    let inviteRef = fs.collection(NOTIFICATIONS)
-           .doc(ADMINS)
-           .collection(INVITES)
+    let inviteRef = fs.collection(NOTIFICATIONS).doc(boxID)
+    .collection(CLASSES).doc(gymClassID)
+    .collection(NOTIFICATIONS)
 
+
+    let data = {
+        uid: uid,
+        owner: owner,
+        boxID: boxID,
+        boxTitle: boxTitle,
+        username: username
+    }
 
 
     return new Promise((res, rej) => {
         console.log("idAdmin?")
-        isClassAdmin(uid, data.gymClassID).then(isAdmin => {
+        isClassAdmin(uid, boxID, gymClassID).then(isAdmin => {
             if(!isAdmin){
                 console.log("isSent?")
-                isNotificationSent(uid, data.gymClassID)
+                isNotificationSent(uid, boxID, gymClassID)
                 .then(isSent => {
                     if(isSent){
                         res("Admin notified already.")
                     }else{
 
                         console.log("Setting adminf notify data")
-                        let doc = inviteRef.doc()
+                        let doc = inviteRef.doc(uid)
 
-                        doc.set({ ...data, adminInviteID: doc.id })
+                        doc.set(data)
                         .then(() => { res("Sent admin invite.") })
                         .catch(err => { rej(err) })
                     }
@@ -55,7 +64,7 @@ export function sendAdminInvite(uid, data){
     })
 }
 
-function isNotificationSent(uid, gymClassID){
+function isNotificationSent(uid, boxID, gymClassID){
     /* Checks if notifications has been sent to the user for a class invite.
 
     Queries "notifications/admins/invites/" for uid and gymClassID.
@@ -67,11 +76,9 @@ function isNotificationSent(uid, gymClassID){
      */
     return new Promise((res, rej) => {
         console.log("isSent: start")
-        fs.collection(NOTIFICATIONS)
-        .doc(ADMINS)
-        .collection(INVITES)
-        .where("uid", "==", uid)
-        .where("gymClassID", "==", gymClassID)
+        fs.collection(NOTIFICATIONS).doc(boxID)
+        .collection(CLASSES).doc(gymClassID)
+        .collection(NOTIFICATIONS).doc(uid)
         .get().then(ss => {
             console.log("isSent: snapshot")
             if(ss.empty){
@@ -85,74 +92,83 @@ function isNotificationSent(uid, gymClassID){
 }
 
 export function getUserAdminInvites(uid){
-    return fs.collection(NOTIFICATIONS).doc(ADMINS)
-        .collection(INVITES).where("uid", "==", uid)
+    // go through boxes and classes to find all invites.
+    return  fs.collection(USER_NOTIFICATIONS).doc(uid)
+    .collection("boxes")
+
 }
 
 
 export function removeNotification(notify){
     return new Promise((res, rej) => {
-        fs.collection(NOTIFICATIONS).doc(ADMINS)
-        .collection(INVITES).where("uid", "==", notify.uid)
-        .get().then(ss => {
-            if(!ss.empty){
-                ss.docs.forEach(doc => {
-                    if(doc.data().gymClassID === notify.gymClassID){
-                        doc.ref.delete()
-                    }
-                })
-            res("Removed notifications.")
-            }
             res("No notifications found.")
-        },
-        err => { rej(err) })
     })
 }
 
 
 
-export function getClassAdmins(gymClassID){
-    return fs.collection(CLASS_ADMIN)
-    .where("gymClassID", "==", gymClassID)
+export function getClassAdmins(boxID, gymClassID){
+    return fs.collection(CLASS_ADMIN).doc(boxID)
+    .collection("classes").doc(gymClassID)
+    .collection("admins")
+
 }
 
 export function getUserClassAdmins(uid){
-    return fs.collection(CLASS_ADMIN)
-    .where("uid", "==", uid)
+    // Need to proccess
+    return fs.collection(USER_CLASS_ADMIN).doc(uid)
+    .collection("boxes")
+
+
+
 }
 
-export function isClassAdmin (uid, gymClassID){
+export function isClassAdmin (uid, boxID, gymClassID){
     return new Promise((res, rej) => {
-        fs.collection(CLASS_ADMIN)
-        .where("gymClassID", "==", gymClassID)
-        .get().then(classSS => {
-            if(!classSS.empty){
-                classSS.forEach(classDoc => {
-                    if(classDoc.data().uid == uid){
-                        res(true)
-                    }
-                })
+        fs.collection(CLASS_ADMIN).doc(boxID)
+        .collection("classes").doc(gymClassID)
+        .collection("admins").doc(uid)
+        .get()
+        .then(adminSS => {
+            if(!adminSS.empty){
+                res(true)
+            }else{
+                res(false)
             }
-            res(false)
-        },
-        err => {
+        })
+        .catch(err => {
             rej(err)
         })
     })
 }
 
-export function setClassAdmin(uid, gymClassID, data){
+export function setClassAdmin(uid, boxID, gymClassID, owner){
     return new Promise((res, rej) => {
         isClassAdmin(uid, gymClassID)
         .then(isMember => {
             if(!isMember){
-                let doc = fs.collection(CLASS_ADMIN).doc()
-                let shallow = fs.collection(CLASS_ADMIN_SHALLOW)
-                .doc(data.gymClassID).collection("users").doc(data.uid)
+                let data = {
+                    uid: uid,
+                    boxID: boxID,
+                    gymClassID: gymClassID,
+                    owner: owner
+                }
+
+                let doc = fs.collection(CLASS_ADMIN).doc(boxID)
+                .collection(CLASS_ADMIN).doc(boxID)
+                .collection("classes").doc(gymClassID)
+                .collection("admins").doc(uid)
+
+                let shallow = fs.collection(USER_CLASS_ADMIN).doc(uid)
+                .collection("boxes").doc(boxID)
+                .collection("classes").doc(gymClassID)
+                .collection("admins").doc(uid)
+
+
 
                 Promise.all([
                     doc.set({ ...data, classAdminID: doc.id }),
-                    shallow.set({uid: data.uid, gymClassID: data.gymClassID, classAdminID: doc.id})
+                    shallow.set({...data, classAdminID: doc.id})
                 ])
                 .then( () => {
                     res("Added user as an admin.")
@@ -180,7 +196,7 @@ export function removeAdmin(classAdmin){
         .doc(classAdmin.classAdminID)
         .delete(),
 
-        fs.collection(CLASS_ADMIN_SHALLOW).doc(classAdmin.gymClassID)
+        fs.collection(USER_CLASS_ADMIN).doc(classAdmin.gymClassID)
         .collection("users").doc(classAdmin.uid)
         .delete()
 

@@ -54,12 +54,14 @@ class AddGymClass extends Component {
 	let box = this.state.box
 	let isPrivate = this.state.isPrivate
 
-	console.log("Creating class")
-	console.log(title, box, isPrivate)
-	if(!title || !box || isPrivate === null)
+	if(!title || !box || isPrivate === null){
+		console.log("Error adding class: ")
+		console.log(title, this.props.userMD.uid, box.boxID, box.title, isPrivate, box.uid)
 		return
 
-	setGymClass(title, this.props.userMD.uid, box.boxID, box.title, isPrivate)
+	}
+
+	setGymClass(title, this.props.userMD.uid, box.boxID, box.title, isPrivate, box.uid)
 	.then((res)=>{
 		this.props.onAlert({
 			type: "success",

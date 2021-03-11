@@ -47,20 +47,22 @@ function WodRaw(props){
 	let title = props.info["title"]
 	let scoreType = props.info["scoreType"]
 	let wodText = props.info["wodText"]
+	let boxID = props.info.boxID
 	let wodID = props.info["wodID"]
 	let gymClassID = props.info["gymClassID"]
 	let date = props.info["date"]
+
 	return(
 		<WodRow container item xs={12} style={{margin: "8px 0px 8px 0px"}}
 			onClick={(ev) => {
 			let tagName = ev.target.tagName
 			if(["path", "svg"].indexOf(tagName) > -1)
 				return
-			props.onViewScores(`/wod/${gymClassID}/${wodID}`)
+			props.onViewScores(`/wod/${boxID}/${gymClassID}/${wodID}`)
 		}}>
 
 			<Grid item xs={10} align="left">
-				<Typography variant="subtitle2" component="h2"gutterBottom style={{overflowWrap: "break-word"}} >
+				<Typography variant="subtitle2" component="h2" gutterBottom style={{overflowWrap: "break-word"}} >
 				{title}
 				</Typography>
 				<Typography variant="caption" component="h2"gutterBottom>
@@ -98,13 +100,11 @@ const Wod = withTheme(WodRaw)
 
 function EmptyWodRaw(props){
 	return(
-	  <TableRow>
-		<TableCell colSpan={3} align="center">
-		  <Typography variant="subtitle1" color="primary">
-			No Workouts!
-		  </Typography>
-		</TableCell>
-	  </TableRow>
+	  <Grid item xs={12} align="center">
+		<Typography variant="subtitle1" color="primary">
+		No Workouts!
+		</Typography>
+	  </Grid>
 	)
   }
 const EmptyWod = withTheme(EmptyWodRaw)

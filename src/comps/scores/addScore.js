@@ -1,6 +1,6 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 import ReactMarkdown from 'react-markdown'
 
@@ -8,13 +8,13 @@ import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
 	TableBody, Table, Modal, TableCell
-} 
+}
 from '@material-ui/core';
 
 import { withTheme, withStyles } from '@material-ui/core/styles';
@@ -55,9 +55,9 @@ class AddScore extends Component{
 
 	isNumInSane(s){
 		let hasNonDigitRegex = /\D/
-		let res = s.search(hasNonDigitRegex) 
+		let res = s.search(hasNonDigitRegex)
 		let isSane = (res === -1) ? true: false
-		return isSane 
+		return isSane
 	}
 
 	handleAddScore(){
@@ -83,7 +83,7 @@ class AddScore extends Component{
 				return
 			}
 			if(mins.length > 2){
-				alert(`Minutes must be 99 or below, entered: ${mins}`)	
+				alert(`Minutes must be 99 or below, entered: ${mins}`)
 				return
 			}
 			if(mins.length === 0){
@@ -113,12 +113,18 @@ class AddScore extends Component{
 		let username = this.state.userMD.username
 		let uid = this.state.userMD.uid
 		let wodID = this.state.wodMD["wodID"]
+		let owner = this.state.wodMD["owner"]
 		let gymClassID = this.state.wodMD["gymClassID"]
 		let boxID = this.state.wodMD["boxID"]
 		let title = this.state.wodMD["title"]
 		let scoreType = this.state.wodMD["scoreType"]
-		
-		setScore(title, username, uid, userScore, wodID, gymClassID, boxID, scoreType)
+
+		if(!title || !boxID || !gymClassID || !wodID || !owner || !uid || !username || !userScore || !scoreType){
+			console.log("Score info not found: ")
+			console.log(title, boxID, gymClassID, wodID, owner, uid, username, userScore, scoreType)
+		}
+
+		setScore(title, boxID, gymClassID, wodID, owner, uid, username, userScore, scoreType)
 		.then((res) => console.log(res))
 		.catch((err) => console.log(err))
 	}
@@ -135,7 +141,7 @@ class AddScore extends Component{
 					id="additional-actions2-header">
 					<Typography >
 						Add Score
-					</Typography>	        
+					</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
 					<Grid item container xs={12}>
@@ -193,7 +199,7 @@ class AddScore extends Component{
 												/>
 										</BorderlessTableCell>
 										</React.Fragment>
-									:	
+									:
 										<BorderlessTableCell align="center" colSpan={2}>
 											<TextField
 											id="scoreViewUserScore"
@@ -211,7 +217,7 @@ class AddScore extends Component{
 												shrink: true,
 											}}
 											/>
-										</BorderlessTableCell>	
+										</BorderlessTableCell>
 									}
 								</TableRow>
 								<TableRow>
@@ -225,16 +231,16 @@ class AddScore extends Component{
 								</TableBody>
 							</Table>
 							</TableContainer>
-							
+
 						</Grid>
 					</Grid>
 				</AccordionDetails>
-			</Accordion>		
+			</Accordion>
 		</Grid>
 	)
   }
 }
 
-  
+
 export default AddScore = withTheme(AddScore);
 

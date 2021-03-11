@@ -26,9 +26,9 @@ import ScoreList from "./scoreList"
 import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 
-import { removeScore } from "../../utils/firestore/scores"
+import { getWodScores, removeScore } from "../../utils/firestore/scores"
 import { getWod } from "../../utils/firestore/wods"
-import { dupNewLine } from "../../utils/formatting"
+
 import "../../styles.css"
 
 
@@ -60,6 +60,7 @@ class ScoreView extends Component {
     super(props)
     this.state = {
       userMD: props.userMD,
+      boxID: props.boxID,
       gymClassID: props.gymClassID,
       wodID: props.wodID,
       wodMD: {},
@@ -71,18 +72,18 @@ class ScoreView extends Component {
   }
 
   componentDidMount(){
-    console.log(this.state.userMD)
-    console.log(this.state.gymClassID, this.state.wodID)
+
 
     let fs = firebase.firestore()
-    this.wodListener = getWod(this.state.gymClassID, this.state.wodID)
+
+    this.wodListener = getWod(this.state.boxID, this.state.gymClassID, this.state.wodID)
     .onSnapshot(ss => {
       this.setState({wodMD: ss.data()})
     },
       err => {console.log(err)})
 
-    this.scoreListener = fs.collection("scores")
-    .where("wodID", "==", this.state.wodID)
+
+    this.scoreListener = getWodScores(this.state.boxID, this.state.gymClassID, this.state.wodID)
     .onSnapshot(ss => {
       if(!ss.empty){
         let scores = []
@@ -115,6 +116,18 @@ class ScoreView extends Component {
       }
     },
       err => {})
+  }
+
+
+  getWodListener(){
+    let fs = firebase.firestore()
+
+    this.wodListener = getWod(this.state.wodMD.boxID, this.state.gymClassID, this.state.wodID)
+    .onSnapshot(ss => {
+      this.setState({wodMD: ss.data()})
+    },
+      err => {console.log(err)})
+
   }
 
   static getDerivedStateFromProps(props, state){
@@ -164,7 +177,8 @@ class ScoreView extends Component {
   }
 
   render(){
-    let date = this.state.wodMD.date? DateTime.fromMillis(this.state.wodMD.date): {monthLong: "", day: "", year:""}
+
+   let date = this.state.wodMD && this.state.wodMD.date?  DateTime.fromMillis(this.state.wodMD.date) : {monthLong: "", day: "", year:""}
 
 
   return(

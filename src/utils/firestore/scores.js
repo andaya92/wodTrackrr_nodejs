@@ -8,9 +8,24 @@ import "firebase/firestore";
 
 let fs = firebase.firestore();
 
+export function getWodScores(boxID, gymClassID, wodID){
+	return fs.collection("scores").doc(boxID)
+			.collection("classes").doc(gymClassID)
+			.collection("wods").doc(wodID)
+			.collection("scores")
+}
 
-export function setScore(title, username, uid, userScore, wodID, gymClassID, boxID,
-						scoreType){
+
+export function getUserScores(uid, field, value){
+	return fs.collection("userScores").doc(uid)
+		.collection("scores").orderBy("date", "asc")
+		.where(field, "==", value)
+
+}
+
+
+
+export function setScore(title, boxID, gymClassID, wodID, owner, uid, username, userScore, scoreType){
 	return new Promise((res, rej) => {
 		let data = {
 				uid: uid,
@@ -20,49 +35,66 @@ export function setScore(title, username, uid, userScore, wodID, gymClassID, box
 				username: username,
 				title: title,
 				score: userScore,
-				scoreType: scoreType
+				scoreType: scoreType,
+				owner: owner,
+				date: Date.now()
 			}
-		fs.collection("scores")
-		.where("uid", "==", uid)
-		.where("wodID", "==", wodID)
-		.get().then(ss => {
-			let key = ""
-			console.log(ss)
-			if(!ss.empty){
-				ss.forEach(doc => {
-					key = doc.data().scoreID
-				})
 
-				fs.collection("scores")
-				.doc(key)
-				.update({
+		let doc = fs.collection("scores").doc(boxID)
+		.collection("classes").doc(gymClassID)
+		.collection("wods").doc(wodID)
+		.collection("scores").doc(uid)
+
+		let userDoc = fs.collection("userScores").doc(uid)
+		.collection("scores")
+
+
+		userDoc.where("wodID", "==", wodID)
+		.get().then( ss => {
+			console.log(ss)
+			if(ss.empty){
+				let scoreDoc = userDoc.doc()
+
+				scoreDoc.set({
 					...data,
-					scoreID: key
+					scoreID: scoreDoc.id
 				})
-				.then(() => {res("Updated score.")})
-				.catch(err => {rej(err)})
 			}else{
-				let doc = fs.collection("scores").doc()
-				doc.set({
-					...data,
-					date: Date.now(),
-					scoreID: doc.id
-				})
-				.then(() => {res("Added new score.")})
-				.catch(err => {rej(err)})
-				// Create score
+				let scoreID = ss.docs[0].data().scoreID
+				userDoc.doc(scoreID).update(data)
 			}
-		},
-			err => {
-				rej(err)
+			doc.set(data)
+			.then(() => {res("Added new score.")})
+			.catch(err => {rej(err)})
 		})
+		.catch(err => {
+			console.log(err)
+		})
+
+
 	})
 }
 
-export function removeScore(scoreID){
+export function updateScore(score, boxID, gymClassID, wodID, uid){
 	return new Promise((res, rej) => {
-		fs.collection("scores").doc(scoreID).delete()
-		.then(()=>{res(`Successfully removed score: ${scoreID}`)})
-		.catch((err) => {rej(`Failed to remove score: ${scoreID}`)})
+		fs.collection("scores").doc(boxID)
+		.collection("classes").doc(gymClassID)
+		.collection("wods").doc(wodID)
+		.collection("scores").doc(uid)
+		.update({score: score})
+		.then(() => {res("Updated score.")})
+		.catch(err => {rej(err)})
+	})
+}
+
+export function removeScore(boxID, gymClassID, wodID, uid){
+	return new Promise((res, rej) => {
+		fs.collection("scores").doc(boxID)
+		.collection("classes").doc(gymClassID)
+		.collection("wods").doc(wodID)
+		.collection("scores").doc(uid)
+		.delete()
+		.then(()=>{res(`Successfully removed score: ${wodID}`)})
+		.catch((err) => {rej(`Failed to remove score: ${wodID}`)})
 	})
 }

@@ -10,7 +10,7 @@ import Whatshot from '@material-ui/icons/Whatshot'
 import { Alert } from '@material-ui/lab'
 import { withTheme } from '@material-ui/core/styles'
 
-import { getFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
+import { getUserFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
 
 
 class UserFollows extends Component{
@@ -20,64 +20,29 @@ class UserFollows extends Component{
       user: props.user,
       userMD: props.userMD,
       userFollows: [],
-      userFollowing: {}
     }
   }
 
   extractData(ss){
     let follows = []
-    let following = {}
-
     ss.forEach(doc => {
-      let data = doc.data()
-      follows.push(data)
-      following[data.boxID] = data.followID
+      follows.push(doc.data())
     })
-    return [follows, following]
+    return follows
   }
 
   componentDidMount(){
-   this.getFollowers = getFollowers(this.state.user.uid)
-    .onSnapshot(followingSS => {
-      let [follows, following] = this.extractData(followingSS)
-      followingSS.docChanges().forEach(change => {
-        switch(change.type){
-          case "added":
-            this.setState({
-              userFollows: follows,
-              userFollowing: following
-            })
-
-            break
-          case "modified":
-            let modData = change.doc.data()
-            console.log(modData)
-
-            this.setState({
-              userFollows: follows,
-              userFollowing: following
-            })
-
-
-            break
-          case "removed":
-            let data = change.doc.data()
-            let userFollowing = this.state.userFollowing
-            userFollowing[data.boxID] = undefined
-            this.setState({userFollowing: userFollowing})
-
-
-            break
-          default:
-            console.log("Uncaught change.")
-        }
-      })
+    this.getUserFollowers = getUserFollowers(this.state.user.uid)
+   .onSnapshot(followingSS => {
+      let follows = this.extractData(followingSS)
+      this.setState({userFollows: follows})
     })
   }
 
+
   componentWillUnmount(){
-    if(this.getFollowers){
-      this.getFollowers()
+    if(this.getUserFollowers){
+      this.getUserFollowers()
     }
   }
 
@@ -87,16 +52,14 @@ class UserFollows extends Component{
       return
     }
 
-    setFollow(this.state.user.uid, this.state.userMD.username, follow.boxID,
-              follow.title)
+    setFollow(this.state.userMD.uid, this.state.userMD.username, follow.boxID,
+      follow.title, follow.owner)
     .then(res => {console.log("Succefully followed.")})
     .catch(err => {console.log(err)})
   }
 
   handleUnfollow(boxID){
-    let followID = this.state.userFollowing[boxID]
-
-    removeFollow(followID)
+    removeFollow(this.state.userMD.uid, boxID)
     .then(res => {
       if(res){
         let userFollowing = this.state.userFollowing
@@ -106,10 +69,6 @@ class UserFollows extends Component{
       }
     })
     .catch(err => {console.log(err)})
-  }
-
-  isUserFollowing(boxID){
-    return (this.state.userFollowing[boxID])? true: false
   }
 
   static getDerivedStateFromProps(props, state){
@@ -146,21 +105,12 @@ class UserFollows extends Component{
                               }
                               </TableCell>
                                 <TableCell align="right">
-                                { this.isUserFollowing(follow.boxID) ?
-                                    <IconButton
+                                <IconButton
                                       onClick={()=>{
                                         this.handleUnfollow(follow.boxID)}
                                       }>
                                       <Whatshot color="primary" />
                                     </IconButton>
-                                  :
-                                    <IconButton
-                                      onClick={()=>{
-                                        this.handleFollow(follow)
-                                      }}>
-                                      <Whatshot style={{fill: this.props.theme.palette.text.primary}}/>
-                                    </IconButton>
-                                }
                               </TableCell>
                             </TableRow>
                           )

@@ -21,6 +21,8 @@ import ClassMemberView from "../comps/profile/classMemberView"
 import CalendarScoreView from "../comps/calendar/calendarView"
 import makeCancelable from "../utils/promises"
 
+import { getUserScores } from "../utils/firestore/scores"
+
 let fs = firebase.firestore()
 
 class PageContentRaw extends Component {
@@ -54,7 +56,7 @@ class PageContentRaw extends Component {
 
   listenForUserScores(){
     if(!this.listener){
-      this.listener = fs.collection("scores").where("uid", "==", this.state.user.uid)
+      this.listener = getUserScores(this.state.user.uid, "uid", this.state.user.uid)
       .onSnapshot(ss => {
         if(!ss.empty){
           let scores = []

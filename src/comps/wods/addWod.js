@@ -47,7 +47,7 @@ class AddWod extends Component {
 	}
 
 	componentDidUpdate(){
-		if(!this.gymClassListener && this.state.userBoxes){
+		if(!this.gymClassListener && this.state.userBoxes && this.state.userBoxes.length > 0){
 			this.setGymClassListner(this.state.userBoxes[0].boxID)
 		}
 	}
@@ -110,33 +110,29 @@ class AddWod extends Component {
 	}
 
 	createWOD(){
+
+		if(!this.state.box || !this.state.gymClass)
+			return
+
 	  	let boxID = this.state.box.boxID
+		let owner = this.state.box.uid
 		let boxTitle = this.state.box.title
 	  	let gymClassID = this.state.gymClass.gymClassID
 		let isPrivate = this.state.gymClass.isPrivate
-		let gymClassTitle = this.state.gymClass.title
+
+		let classTitle = this.state.gymClass.title
 	  	let title = this.state.titleForm
 	  	let scoreType = this.state.scoreTypeForm
 	  	let wodText = this.state.wodTextForm
 
-	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText){
+	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText || !owner || !classTitle || isPrivate === undefined){
 	  		console.log("Error with input createWod")
-	  		console.log(boxID, gymClassID, title, scoreType, wodText)
+	  		console.log(boxID, gymClassID, title, scoreType, wodText, owner, classTitle, isPrivate)
 	  		return
 
 	  	}
 
-		let data = {
-			boxID: boxID,
-			gymClassID: gymClassID,
-			title: title,
-			scoreType: scoreType,
-			wodText: wodText,
-			boxTitle: boxTitle,
-			gymClassTitle: gymClassTitle,
-			isPrivate: isPrivate
-		}
-	  	setWod(data)
+		setWod(title, boxID, gymClassID, owner, boxTitle, classTitle, scoreType, wodText, isPrivate)
 	  	.then((res)=>{
 			this.props.onAlert({
 				type: "success",

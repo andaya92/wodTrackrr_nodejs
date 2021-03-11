@@ -1,7 +1,7 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/firestore";
+import "firebase/firestore"
 
-let fs = firebase.firestore();
+let fs = firebase.firestore()
 
 export default function mTea(){}
 
@@ -16,43 +16,40 @@ export function getGymClasses(boxID){
 	return fs.collection("gymClasses").doc(boxID).collection("classes")
 }
 
-export function setGymClass(title, uid, boxID, boxTitle, isPrivate){
+
+
+export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner){
+	/* Sets the data for a new class.
+
+		Adds two entries:
+		THe first is for the list of class owners and the second entry is for
+		the list of classes
+
+	*/
   	return new Promise((res, rej) => {
-  		fs.collection(GYM_CLASSES)
-		.doc(boxID)
+  		fs.collection(GYM_CLASSES).doc(boxID)
 		.collection(CLASSES)
 		.where("title", "==", title)
   		.get().then(result => {
   			if(result.empty){
-				let doc = fs
-				.collection(GYM_CLASSES)
-				.doc(boxID)
-				.collection(CLASSES)
-				.doc()
+				let doc = fs.collection(GYM_CLASSES).doc(boxID)
+				.collection(CLASSES).doc()
 
-				fs.collection(CLASS_OWNERS)
-				.doc(doc.id).collection("users").doc(uid)
-				.set({
-					owner: uid,
-					boxID: boxID,
+				doc.set({
 					gymClassID: doc.id,
+					boxID: boxID,
+					boxTitle: boxTitle,
+					title: title,
+					uid, uid,
 					isPrivate: isPrivate,
+					owner: owner,
+					date: Date.now(),
+
 				})
-
-
-		  		doc.set({
-		  			gymClassID: doc.id,
-		  			boxID: boxID,
-		  			boxTitle: boxTitle,
-		  			title: title,
-		  			uid, uid,
-					isPrivate: isPrivate,
-		  			date: Date.now()
-		  		})
 		  		.then(()=>{
-		  			res("Added gymClass")
+		  			res(doc.id)
 		  		})
-				  .catch(err => { rej(err) })
+				.catch(err => { rej(err) })
   			}else{
   				res("Name Taken")
   			}
@@ -93,7 +90,6 @@ export function removeGymClass(boxID, gymClassID){
 		"notifications/admins/invites", "notifications/members/invites",
 		`classAdminsShallow/${gymClassID}/users`,
 		`classMembersShallow/${gymClassID}/users`,
-		`classOwners/${gymClassID}/users/`,
 		`gymClasses/${boxID}/classes`]
 
 	let promises = collectionNames.map(name => {
@@ -102,5 +98,9 @@ export function removeGymClass(boxID, gymClassID){
 		})
 	})
 
-	return Promise.all(promises)
+	return Promise.all(promises).then(()=> {
+		new Promise((res, rej) => {
+			getSnapshot("classOwners", "gymClassID", gymClassID, res, rej)
+		})
+	})
 }

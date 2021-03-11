@@ -95,7 +95,9 @@ class GymClassView extends Component {
 			.doc(this.state.gymClassID)
 			.onSnapshot(ss => {
 				if(ss.exists){
-					this.setState({gymClassMD: ss.data()})
+					let gymClassMD = ss.data()
+					this.setState({ gymClassMD: gymClassMD })
+					this.getWodListener(gymClassMD)
 
 				}
 			})
@@ -121,7 +123,7 @@ class GymClassView extends Component {
 	getAdminListener(){
 		if(this.state.userMD.uid && !this.adminListener){
 			this.adminListener =
-			getClassAdmins(this.state.gymClassID)
+			getClassAdmins(this.state.boxID, this.state.gymClassID)
 			.onSnapshot(ss => {
 				let admins = []
 				let adminUids = []
@@ -165,10 +167,10 @@ class GymClassView extends Component {
 		}
 	}
 
-	getWodListener(){
-		console.log(`Getting wods for user: ${this.state.gymClassID}`)
+	getWodListener(gymClassMD){
+		console.log(`Getting wods for user: ${gymClassMD}`)
 		if(!this.wodListener){
-			this.wodListener = getWods(this.state.gymClassID)
+			this.wodListener = getWods(this.props.boxID, gymClassMD)
 			.onSnapshot(ss => {
 				console.log(ss)
 
@@ -209,7 +211,7 @@ class GymClassView extends Component {
 	componentDidMount(){
 		this.checkListeners()
 		this.getGymClassListener()
-		this.getWodListener()
+
 	}
 
 	static getDerivedStateFromProps(props, state){

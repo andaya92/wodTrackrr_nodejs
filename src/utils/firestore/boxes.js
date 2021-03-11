@@ -1,5 +1,5 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth"; 
+import "firebase/auth";
 import "firebase/firestore";
 
 let fs = firebase.firestore();
@@ -24,7 +24,7 @@ export function setBox(title, uid){
 		  			date: Date.now()
 		  		})
 		  		.then(()=>{
-		  			res("Added box")
+		  			res(doc.id)
 		  		})
 
   			}else{
@@ -40,12 +40,12 @@ function batchDelete(collectionName, fieldName, fieldID, res, rej){
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
 	.then(ss => {
 		let cnt = 0
-		
+
 		ss.forEach(doc => {
 			batch.delete(doc.ref)
 			cnt++
 		})
-		
+
 		batch.commit().then(() => {
 			if(cnt >= 500)  // bacth limits to 500 changes
 			batchDelete(collectionName, fieldName, fieldID, res, rej)
@@ -60,14 +60,14 @@ function batchUpdate(collectionName, fieldName, fieldID, res, rej){
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
 	.then(ss => {
 		let cnt = 0
-		
+
 		ss.forEach(doc => {
 			batch.update(doc.ref, {
 				boxID: ""
 			})
 			cnt++
 		})
-		
+
 		batch.commit().then(() => {
 			if(cnt >= 500)  // bacth limits to 500 changes
 			batchUpdate(collectionName, fieldName, fieldID, res, rej)
@@ -95,11 +95,13 @@ export function removeBox(boxID){
 
 	let collectionNames = ["notifications/admins/invites",
 						  "notifications/members/invites",
-						  "classAdmins", "classMembers",
-						  `gymClasses/${boxID}/classes`,
-						  "wods",
-						  "scores",
-						  "boxes"]
+						  "classAdmins",
+						//   "classMembers",
+						  "classAdminsShallow",
+						  "classMembersShallow",
+
+						  "following",
+						  "scores"]
 
 	let promises = collectionNames.map(name => {
 		return new Promise((res, rej) => {
@@ -107,9 +109,25 @@ export function removeBox(boxID){
 		})
 	})
 
+	//delete classes
+
+	fs.collection(`gmyClasses/${boxID}/classes`)
+
+
+
 	promises.push(new Promise((res, rej) => {
 		batchUpdate("following", "boxID", boxID, res, rej)
 	}))
 
-	return Promise.all(promises)
+	return Promise.all(promises).then(()=> {
+		console.log("Waiting...")
+		new Promise(resolve => setTimeout(resolve, 5000)).then(() => {
+			console.log("Waited 5 seconds")
+			new Promise((res, rej) => {
+				// batchDelete("classOwners", "boxID", boxID, res, rej)
+				// batchDelete("boxes", "boxID", boxID, res, rej)
+				// batchDelete(`gymClasses/${boxID}/classes`, "boxID", boxID, res, rej)
+			})
+		})
+	})
 }

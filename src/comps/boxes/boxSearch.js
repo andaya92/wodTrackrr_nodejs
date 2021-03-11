@@ -21,7 +21,7 @@ import Whatshot from '@material-ui/icons/Whatshot'
 
 import BoxView from "./boxView"
 
-import { setFollow, removeFollow } from "../../utils/firestore/follows"
+import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import "../../styles.css"
 
 const fs = firebase.firestore()
@@ -112,20 +112,21 @@ class BoxSearch extends Component {
 
   listenForFollowing(){
     if(this.state.userMD && !this.followListener){
-      this.followListener = fs.collection("following").where("uid", "==", this.state.userMD.uid)
-      .onSnapshot(ss => {
+      this.followListener = getUserFollowers(this.state.userMD.uid)
+      .onSnapshot( ss => {
+        let boxIDs = getFollowsFromSS(ss)
         let following = {}
-        if(!ss.empty){
+        boxIDs.forEach(id =>{
+          following[id] = true
+        })
 
-          ss.forEach(doc =>{
-            let data = doc.data()
-            following[data.boxID] = data.followID
-          })
-        }
+
 
         this.setState({userFollowing: following})
       },
-      err => console.log(err))
+      err => { console.log(err) })
+
+
     }
   }
 
@@ -150,15 +151,14 @@ class BoxSearch extends Component {
 
   handleFollow(boxInfo){
     setFollow(this.state.userMD.uid, this.state.userMD.username, boxInfo.boxID,
-              boxInfo.title)
+              boxInfo.title, boxInfo.uid)
     .then(res => {console.log("Succefully followed.")})
     .catch(err => {console.log(err)})
   }
 
   handleUnfollow(boxID){
-    let followID = this.state.userFollowing[boxID]
 
-    removeFollow(followID)
+    removeFollow(this.state.userMD.uid, boxID)
     .then(res => {
       if(res){
         console.log("Succefully unfollowed.")

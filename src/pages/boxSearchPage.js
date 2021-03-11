@@ -5,15 +5,16 @@ import "firebase/database";
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 
-import { Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
-InputBase, InputAdornment }
+import { Grid, Paper, Button }
 from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
 
-import BoxView from "../comps/boxes/boxView"
+import { withTheme } from '@material-ui/core/styles';
+
+
+
 import BoxSearch from "../comps/boxes/boxSearch"
+
+import { createTestData } from "../utils/firestore/testData"
 
 import "../styles.css"
 
@@ -60,6 +61,7 @@ class BoxSearchPage extends Component {
   render () {
     return (
     	<Grid item xs={12} >
+        <Button onClick={createTestData}>Test Data</Button>
         {
           this.state.allBoxes.length > 0?
           <BoxSearch
