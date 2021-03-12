@@ -7,7 +7,7 @@ import React, { Component } from 'react'
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -68,7 +68,7 @@ class ClassMemberView extends Component {
 		this.state = {
             userMD: props.userMD,
             classes: [],
-            redirect: false, 
+            redirect: false,
             redirectUrl: ""
 		}
 	}
@@ -93,8 +93,10 @@ class ClassMemberView extends Component {
 
     getListener(){
         if(this.state.userMD && !this.userClassMembersListener){
+            console.log(`Looking for members for ${this.state.userMD.uid}`)
             this.userClassMembersListener = getUserClassMembers(this.state.userMD.uid)
             .onSnapshot(ss => {
+                console.log(ss)
                 let classes = []
                 if(!ss.empty){
                     ss.forEach(doc => {
@@ -107,6 +109,9 @@ class ClassMemberView extends Component {
                 }else{
                     this.setState({ classes: classes })
                 }
+            },
+            err => {
+                console.log(err)
             })
         }
     }
@@ -116,7 +121,7 @@ class ClassMemberView extends Component {
     }
 
   render(){
-		return( 
+		return(
             <React.Fragment>
                 {this.state.redirect?
                     <Redirect key={"redirectClassMemberView"} to={this.state.redirectUrl}/>
@@ -138,14 +143,14 @@ class ClassMemberView extends Component {
                                     {this.state.classes.map((classMember, i) => {
                                         return (
                                             <MemberRow key={i}
-                                                info={classMember} 
+                                                info={classMember}
                                                 onView={this.onView.bind(this)}
                                             />)
                                     })}
                                 </TableBody>
                             </Table>
-                        </Paper>      
-                    </Grid>    
+                        </Paper>
+                    </Grid>
                 :
                     <React.Fragment></React.Fragment>
                 }

@@ -108,7 +108,12 @@ class InviteMemberView extends Component {
         this.props.onModalClose()
         console.log(`Send invite to ${this.state.selectedUser.uid} from ${this.state.userMD.uid}`)
 
-        sendMemberInvite(this.state.selectedUser.uid, data)
+        sendMemberInvite(
+            this.state.selectedUser.uid,
+            this.state.gymClassMD,
+            this.state.userMD.uid,
+            this.state.userMD.username
+        )
         .then((res) => {
             this.props.onAlert({
 				type: "success",

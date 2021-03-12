@@ -15,6 +15,7 @@ export function getWods(boxID, gymClassMD){
 	let doc = fs.collection("wods").doc(boxID)
 	.collection("classes").doc(gymClassMD.gymClassID)
 	.collection("wods").where("isPrivate", "==", gymClassMD.isPrivate)
+	.where("owner", "==", gymClassMD.owner)
 	console.log(doc)
 	return doc
 }

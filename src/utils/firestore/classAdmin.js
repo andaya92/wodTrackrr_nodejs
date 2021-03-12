@@ -1,14 +1,16 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
 import "firebase/firestore";
+import { ContactsOutlined } from "@material-ui/icons";
 
 let fs = firebase.firestore()
 
 const CLASS_ADMIN = "classAdmins"
 const USER_CLASS_ADMIN = "userClassAdmins"
 const ADMINS = "admins"
-const NOTIFICATIONS = "adminNotifications"
+const ADMIN_NOTIFICATIONS = "adminNotifications"
 const USER_NOTIFICATIONS = "userAdminNotifications"
+const NOTIFICATIONS = "notifications"
 const INVITES = "invites"
 const CLASSES = "classes"
 const USERS = "users"
@@ -18,37 +20,48 @@ export default function mTea(){}
 
 
 
-export function sendAdminInvite(uid, boxID, gymClassID, owner, boxTitle, username){
+export function sendAdminInvite(uid, gymClassMD, sender, senderUsername){
 
-    let inviteRef = fs.collection(NOTIFICATIONS).doc(boxID)
-    .collection(CLASSES).doc(gymClassID)
-    .collection(NOTIFICATIONS)
+
+    let inviteRef = fs.collection(ADMIN_NOTIFICATIONS).doc(gymClassMD.boxID)
+    .collection(CLASSES).doc(gymClassMD.gymClassID)
+    .collection(ADMIN_NOTIFICATIONS)
+
+    let userInviteRef = fs.collection(USER_NOTIFICATIONS).doc(uid)
+    .collection(NOTIFICATIONS).doc()
+
+
 
 
     let data = {
         uid: uid,
-        owner: owner,
-        boxID: boxID,
-        boxTitle: boxTitle,
-        username: username
+        sender: sender,
+        senderUsername: senderUsername,
+        owner: gymClassMD.owner,
+        boxID: gymClassMD.boxID,
+        gymClassID: gymClassMD.gymClassID,
+        boxTitle: gymClassMD.boxTitle,
+        gymClassTitle: gymClassMD.title,
+        date: Date.now()
     }
-
 
     return new Promise((res, rej) => {
         console.log("idAdmin?")
-        isClassAdmin(uid, boxID, gymClassID).then(isAdmin => {
+        isClassAdmin(uid, gymClassMD.boxID, gymClassMD.gymClassID).then(isAdmin => {
             if(!isAdmin){
                 console.log("isSent?")
-                isNotificationSent(uid, boxID, gymClassID)
+                isNotificationSent(uid, gymClassMD.boxID, gymClassMD.gymClassID)
                 .then(isSent => {
                     if(isSent){
                         res("Admin notified already.")
                     }else{
 
                         console.log("Setting adminf notify data")
-                        let doc = inviteRef.doc(uid)
 
-                        doc.set(data)
+                        Promise.all([
+                            userInviteRef.set({ ...data, notifyID: userInviteRef.id }),
+                            inviteRef.doc(uid).set(data)
+                        ])
                         .then(() => { res("Sent admin invite.") })
                         .catch(err => { rej(err) })
                     }
@@ -76,16 +89,13 @@ function isNotificationSent(uid, boxID, gymClassID){
      */
     return new Promise((res, rej) => {
         console.log("isSent: start")
-        fs.collection(NOTIFICATIONS).doc(boxID)
+        fs.collection(ADMIN_NOTIFICATIONS).doc(boxID)
         .collection(CLASSES).doc(gymClassID)
-        .collection(NOTIFICATIONS).doc(uid)
+        .collection(ADMIN_NOTIFICATIONS).doc(uid)
         .get().then(ss => {
             console.log("isSent: snapshot")
-            if(ss.empty){
-                res(false)
-            }else{
-                res(true)
-            }
+            console.log(ss)
+            res(ss.exists)
         },
         err => { rej(err) })
     })
@@ -93,15 +103,31 @@ function isNotificationSent(uid, boxID, gymClassID){
 
 export function getUserAdminInvites(uid){
     // go through boxes and classes to find all invites.
-    return  fs.collection(USER_NOTIFICATIONS).doc(uid)
-    .collection("boxes")
-
+    return fs.collection(USER_NOTIFICATIONS).doc(uid)
+    .collection(NOTIFICATIONS)
 }
 
 
 export function removeNotification(notify){
     return new Promise((res, rej) => {
-            res("No notifications found.")
+
+            Promise.all([
+                fs.collection(ADMIN_NOTIFICATIONS).doc(notify.boxID)
+                .collection(CLASSES).doc(notify.gymClassID)
+                .collection(ADMIN_NOTIFICATIONS).doc(notify.uid)
+                .delete(),
+
+                fs.collection(USER_NOTIFICATIONS).doc(notify.uid)
+                .collection(NOTIFICATIONS).doc(notify.notifyID).delete()
+
+            ])
+            .then( () => {
+                res("Removed notification.")
+            })
+            .catch(err => {
+                rej(err)
+            })
+
     })
 }
 
@@ -109,8 +135,8 @@ export function removeNotification(notify){
 
 export function getClassAdmins(boxID, gymClassID){
     return fs.collection(CLASS_ADMIN).doc(boxID)
-    .collection("classes").doc(gymClassID)
-    .collection("admins")
+    .collection(CLASSES).doc(gymClassID)
+    .collection(ADMINS)
 
 }
 
@@ -126,11 +152,12 @@ export function getUserClassAdmins(uid){
 export function isClassAdmin (uid, boxID, gymClassID){
     return new Promise((res, rej) => {
         fs.collection(CLASS_ADMIN).doc(boxID)
-        .collection("classes").doc(gymClassID)
-        .collection("admins").doc(uid)
+        .collection(CLASSES).doc(gymClassID)
+        .collection(ADMINS).doc(uid)
         .get()
         .then(adminSS => {
-            if(!adminSS.empty){
+            console.log(adminSS)
+            if(adminSS.exists){
                 res(true)
             }else{
                 res(false)
@@ -142,27 +169,29 @@ export function isClassAdmin (uid, boxID, gymClassID){
     })
 }
 
-export function setClassAdmin(uid, boxID, gymClassID, owner){
+export function setClassAdmin(uid, boxID, gymClassID, owner, username, boxTitle, classTitle){
     return new Promise((res, rej) => {
-        isClassAdmin(uid, gymClassID)
+        isClassAdmin(uid, boxID, gymClassID)
         .then(isMember => {
             if(!isMember){
                 let data = {
                     uid: uid,
                     boxID: boxID,
                     gymClassID: gymClassID,
-                    owner: owner
+                    owner: owner,
+                    username: username,
+                    boxTitle: boxTitle,
+                    classTitle: classTitle,
+                    date: Date.now()
                 }
 
                 let doc = fs.collection(CLASS_ADMIN).doc(boxID)
-                .collection(CLASS_ADMIN).doc(boxID)
-                .collection("classes").doc(gymClassID)
-                .collection("admins").doc(uid)
+                .collection(CLASSES).doc(gymClassID)
+                .collection(ADMINS).doc(uid)
 
                 let shallow = fs.collection(USER_CLASS_ADMIN).doc(uid)
                 .collection("boxes").doc(boxID)
-                .collection("classes").doc(gymClassID)
-                .collection("admins").doc(uid)
+                .collection(CLASSES).doc(gymClassID)
 
 
 
@@ -189,16 +218,15 @@ export function setClassAdmin(uid, boxID, gymClassID, owner){
     })
 }
 
-export function removeAdmin(classAdmin){
+export function removeAdmin({boxID, gymClassID, uid}){
 
     return Promise.all([
-        fs.collection(CLASS_ADMIN)
-        .doc(classAdmin.classAdminID)
-        .delete(),
+        fs.collection(CLASS_ADMIN).doc(boxID)
+        .collection(CLASSES).doc(gymClassID)
+        .collection(ADMINS).doc(uid).delete(),
 
-        fs.collection(USER_CLASS_ADMIN).doc(classAdmin.gymClassID)
-        .collection("users").doc(classAdmin.uid)
-        .delete()
-
+        fs.collection(USER_CLASS_ADMIN).doc(uid)
+        .collection("boxes").doc(boxID)
+        .collection(CLASSES).doc(gymClassID).delete()
     ])
 }

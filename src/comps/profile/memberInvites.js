@@ -107,6 +107,9 @@ class MemberInvites extends Component {
                 }else{
                     this.setState({ notifications: notifications })
                 }
+            },
+            err => {
+                console.log(err)
             })
         }
     }
@@ -122,19 +125,17 @@ class MemberInvites extends Component {
         let classTitle = notify.gymClassTitle
         let boxTitle = notify.boxTitle
         let boxID = notify.boxID
-        let notifyID = notify.memberInviteID
+        let owner = notify.owner
 
-        let data = {
-            gymClassID: gymClassID,
-            gymClassTitle: classTitle,
-            boxTitle: boxTitle,
-            uid: this.state.userMD.uid,
-            boxID: boxID,
-            username: this.state.userMD.username,
-            date: Date.now()
-        }
-
-        setClassMember(this.state.userMD.uid, gymClassID, data)
+        setClassMember(
+            this.state.userMD.uid,
+            boxID,
+            gymClassID,
+            owner,
+            this.state.userMD.username,
+            boxTitle,
+            classTitle
+        )
         .then(res => {
             console.log(res)
             this.onRemoveNotification(notify)
@@ -142,9 +143,6 @@ class MemberInvites extends Component {
         .catch(err => {
             console.log(err)
         })
-
-
-
     }
 
   render(){

@@ -91,22 +91,21 @@ class InviteAdminView extends Component {
             return
 
         console.log(`Send invite to ${this.state.selectedUser.uid} from ${this.state.userMD.uid}`)
-        let data = {
-            msg: "Accept invite?",
-            gymClassID: this.state.gymClassMD.gymClassID,
-            senderUID: this.state.userMD.uid,
-            senderUsername: this.state.userMD.username,
-            gymClassTitle: this.state.gymClassMD.title,
-            boxTitle: this.state.gymClassMD.boxTitle,
-            boxID: this.state.gymClassMD.boxID,
-            uid: this.state.selectedUser.uid,
-            date: Date.now()
-        }
+
 
         this.props.onModalClose()
-        console.log("Sending data")
-        console.log(data)
-        sendAdminInvite(this.state.selectedUser.uid, data)
+        console.log("Sending data",
+            this.state.selectedUser.uid,
+            this.state.gymClassMD,
+            this.state.userMD.uid,
+            this.state.userMD.username)
+
+        sendAdminInvite(
+            this.state.selectedUser.uid,
+            this.state.gymClassMD,
+            this.state.userMD.uid,
+            this.state.userMD.username
+        )
         .then((res) => {
             this.props.onAlert({
 				type: "success",

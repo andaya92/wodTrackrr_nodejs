@@ -93,6 +93,7 @@ class OwnerControls extends Component {
 			})
 		},
 		err => {
+      console.log(err)
   		this.setState({
 				hasBoxes: false,
 				userBoxes: []

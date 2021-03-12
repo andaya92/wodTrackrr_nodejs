@@ -146,7 +146,7 @@ class GymClassView extends Component {
 
 	getMemberListener(){
 		if(this.state.userMD.uid && !this.memberListener){
-			this.memberListener = getClassMembers(this.state.gymClassID)
+			this.memberListener = getClassMembers(this.state.boxID, this.state.gymClassID)
 			.onSnapshot(ss => {
 				let members = []
 				let memberUids = []
@@ -168,7 +168,8 @@ class GymClassView extends Component {
 	}
 
 	getWodListener(gymClassMD){
-		console.log(`Getting wods for user: ${gymClassMD}`)
+		console.log(`Getting wods for user: `)
+		console.log(gymClassMD)
 		if(!this.wodListener){
 			this.wodListener = getWods(this.props.boxID, gymClassMD)
 			.onSnapshot(ss => {

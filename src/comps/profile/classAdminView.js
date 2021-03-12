@@ -8,7 +8,7 @@ import { Redirect } from "react-router";
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -61,7 +61,7 @@ class ClassAdminView extends Component {
 		this.state = {
             userMD: props.userMD,
             classes: [],
-            redirect: false, 
+            redirect: false,
             redirectUrl: ""
 		}
 	}
@@ -82,6 +82,7 @@ class ClassAdminView extends Component {
         if(this.state.userMD.uid && !this.userClassAdminsListener){
             this.userClassAdminsListener = getUserClassAdmins(this.state.userMD.uid)
             .onSnapshot(ss => {
+                console.log(ss)
                 let classes = []
                 if(!ss.empty){
                     ss.forEach(doc => {
@@ -94,6 +95,9 @@ class ClassAdminView extends Component {
                 }else{
                     this.setState({ classes: classes })
                 }
+            },
+            err => {
+                console.log(err)
             })
         }
     }
@@ -108,7 +112,7 @@ class ClassAdminView extends Component {
     }
 
   render(){
-		return( 
+		return(
             <React.Fragment>
                 {this.state.redirect?
                     <Redirect to={this.state.redirectUrl}/>
@@ -130,14 +134,14 @@ class ClassAdminView extends Component {
                                     {this.state.classes.map((classAdmin, i) => {
                                         return (
                                             <AdminRow key={i}
-                                                info={classAdmin} 
+                                                info={classAdmin}
                                                 onView={this.onView.bind(this)}
                                             />)
                                     })}
                                 </TableBody>
                             </Table>
-                        </Paper>      
-                    </Grid>    
+                        </Paper>
+                    </Grid>
                 :
                     <React.Fragment></React.Fragment>
                 }

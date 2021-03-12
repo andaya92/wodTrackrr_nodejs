@@ -87,6 +87,7 @@ class AdminInvites extends Component {
             this.notificationsListener = getUserAdminInvites(this.state.userMD.uid)
             .onSnapshot(ss => {
                 let notifications = []
+
                 if(!ss.empty){
                     ss.docs.forEach(doc => {
                         notifications.push(doc.data())
@@ -99,6 +100,9 @@ class AdminInvites extends Component {
                 }else{
                     this.setState({ notifications: notifications })
                 }
+            },
+            err => {
+                console.log(err)
             })
         }
     }
@@ -110,22 +114,23 @@ class AdminInvites extends Component {
     }
 
     acceptInvite(notify){
+        console.log(notify)
+        let boxID = notify.boxID
         let gymClassID = notify.gymClassID
         let classTitle = notify.gymClassTitle
         let boxTitle = notify.boxTitle
-        let boxID = notify.boxID
-        let notifyID = notify.adminInviteID
+        let owner = notify.owner
 
-        let data = {
-            gymClassID: gymClassID,
-            gymClassTitle: classTitle,
-            boxTitle: boxTitle,
-            boxID: boxID,
-            uid: this.state.userMD.uid,
-            username: this.state.userMD.username,
-            date: Date.now()
-        }
-        setClassAdmin(this.state.userMD.uid, gymClassID, data)
+
+        setClassAdmin(
+            this.state.userMD.uid,
+            boxID,
+            gymClassID,
+            owner,
+            this.state.userMD.username,
+            boxTitle,
+            classTitle
+        )
         .then(res => {
             console.log(res)
             this.onRemoveNotification(notify)

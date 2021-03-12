@@ -104,6 +104,7 @@ class ClassAdminList extends Component {
 
   onRemoveAdmin(){
     this.setState({showRemoveAlert: false})
+    console.log(this.state.removeClassAdmin)
     removeAdmin(this.state.removeClassAdmin)
     .then((res) => {
 			this.props.onAlert({
@@ -176,7 +177,7 @@ class ClassAdminList extends Component {
 				  open={this.state.showRemoveAlert}
           onClose={this.handleModalClose.bind(this)}
           onAction={this.onRemoveAdmin.bind(this)}
-          modalText={ `Remove admin, ${this.state.removeUsername}?`}
+          modalText={ `Remove admin: ${this.state.removeClassAdmin.username}?`}
           actionText={"Remove"}
           cancelText={"Cancel"}
 			/>
