@@ -6,6 +6,7 @@ import "firebase/database";
 // React
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
+import { withRouter } from "react-router-dom"
 
 import ReactMarkdown from 'react-markdown'
 
@@ -130,10 +131,7 @@ class SearchSortTable extends Component {
 			pageNum: 0,
 			rowsPerPage:5,
 			pageStart: 0,
-			pageEnd: 5,
-			redirectUrl: "",
-			redirect: false
-
+			pageEnd: 5
 		}
 	}
 
@@ -222,18 +220,12 @@ class SearchSortTable extends Component {
 
 
 	onViewScores(url){
-
-		this.setState({redirectUrl: url, redirect: true})
+		this.props.history.push(url)
 	}
 
   render(){
 	return(
 		<Grid item xs={12} align="center">
-			{this.state.redirect?
-				<Redirect to={this.state.redirectUrl} />
-			:
-				<React.Fragment></React.Fragment>
-			}
 
 		    <Paper style={{margin: "16px 0px 0px 0px"}} component="form">
 			<TextField
@@ -324,5 +316,5 @@ class SearchSortTable extends Component {
   }
 }
 
-export default SearchSortTable = withTheme(SearchSortTable)
+export default SearchSortTable = withRouter(withTheme(SearchSortTable))
 

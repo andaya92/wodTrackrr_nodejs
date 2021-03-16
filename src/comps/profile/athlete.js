@@ -36,11 +36,15 @@ class Athlete extends Component{
                 <Typography>Scores</Typography>
             </Grid>
             <Grid item xs={12}>
-              <UserScoreList
-                uid={this.state.user.uid}
-                scores={this.state.scores}
-                onAlert={this.props.onAlert}
-              />
+              {this.state.user ?
+                <UserScoreList
+                  uid={this.state.user.uid}
+                  scores={this.state.scores}
+                  onAlert={this.props.onAlert}
+                  />
+                :
+                  <React.Fragment></React.Fragment>
+              }
             </Grid>
           </Grid>
         </Paper>

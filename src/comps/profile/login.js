@@ -2,6 +2,9 @@ import firebase from "../../context/firebaseContext"
 // import * as firebase from "firebase/app";
 import "firebase/auth";
 
+import { withRouter } from "react-router-dom";
+
+
 import React, { Component } from 'react'
 import { Grid, TextField, Button, Typography, Paper } from '@material-ui/core';
 import { Link } from 'react-router-dom';
@@ -10,7 +13,7 @@ import { Link } from 'react-router-dom';
 import "../../styles.css"
 
 
-export default class Login extends Component {
+class Login extends Component {
 
   handleSubmit(ev){
     let email = document.getElementById('email')
@@ -23,6 +26,7 @@ export default class Login extends Component {
     firebase.auth().signInWithEmailAndPassword(email.value, pass1.value)
     .then(res=>{
       this.props.onLogin(res.user)
+      this.props.history.push("/boxSearch")
     })
     .catch((error) => {
 
@@ -87,3 +91,4 @@ export default class Login extends Component {
 
 
 
+export default Login = withRouter(Login)

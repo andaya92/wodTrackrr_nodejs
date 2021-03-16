@@ -6,26 +6,18 @@ import "firebase/firestore"
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+import
+{ 	Grid
 } from '@material-ui/core';
 
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 // WodTrackrr
-import ScoreView from "../scores/scoreView"
-import GymClassList from "../gymClasses/gymClassList"
 
-import { removeWod } from "../../utils/firestore/wods"
-import SearchSortTable from "../searchSortTable"
-import ActionCancelModal from "../actionCancelModal"
+import GymClassList from "../gymClasses/gymClassList"
+import BackButton  from "../backButton"
+
+
 import "../../styles.css"
 
 
@@ -55,13 +47,10 @@ class BoxView extends Component {
 		if(!this.boxListener){
 			this.boxListener = fs.collection("boxes").doc(this.state.boxID)
 			.onSnapshot(ss => {
-				console.log(ss)
-				console.log(this.state.boxID)
-				console.log(ss.data())
 
 				if(ss.exists){
 
-					this.setState({boxMD: ss.data()})	
+					this.setState({boxMD: ss.data()})
 				}else{
 					this.setState({boxMD: {}})
 				}
@@ -71,10 +60,10 @@ class BoxView extends Component {
 		}
 	}
 
-	
+
 	checkListeners(){
 		if(this.boxListener === undefined)
-			this.getBoxListener()	
+			this.getBoxListener()
 	}
 
 	componentDidMount(){
@@ -84,12 +73,12 @@ class BoxView extends Component {
 	static getDerivedStateFromProps(props, state){
 		return props
 	}
-	
+
 	componentDidUpdate(){
 		this.checkListeners()
 	}
 
-	componentWillUnmount(){	
+	componentWillUnmount(){
 		if(this.boxListener)
 			this.boxListener()
 	}
@@ -101,8 +90,9 @@ class BoxView extends Component {
 
 		return(
 			<Grid item xs={12}>
+				<BackButton />
 				{Object.keys(this.state.boxMD).length > 0 ?
-					<GymClassList 
+					<GymClassList
 						user={this.state.user}
 						userMD={this.state.userMD}
 						boxID={this.state.boxID}

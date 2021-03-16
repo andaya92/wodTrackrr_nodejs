@@ -4,11 +4,16 @@ import "firebase/firestore"
 
 import React from "react";
 import { HashRouter, Switch, Route, Link, Redirect, Router, BrowserRouter } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
+
+
 
 import { Paper, Button, BottomNavigation, BottomNavigationAction,
         Grid, Container, Box }
 from '@material-ui/core';
 import { createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
+
+
 
 import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
@@ -59,6 +64,7 @@ export default class App extends React.Component {
       alertOpen: false,
       alertInfo: false
     }
+
   }
 
   static getDerivedStateFromProps(props, state){
@@ -127,16 +133,17 @@ export default class App extends React.Component {
     <FirebaseAuthContext.Provider>
     <BrowserRouter >
     <ThemeProvider theme={this.state.theme}>
-    <Header className="header" user={this.state.user}
-      userMD={this.state.userMD}
-      changeTheme={this.changeTheme.bind(this)}
-      handleLogout={this.handleLogout.bind(this)}
-      alertOpen={this.state.alertOpen}
-      alertInfo={this.state.alertInfo}
-      onCloseAlert={this.onCloseAlert.bind(this)}
-      />
+      <Header className="header" user={this.state.user}
+        userMD={this.state.userMD}
+        changeTheme={this.changeTheme.bind(this)}
+        handleLogout={this.handleLogout.bind(this)}
+        alertOpen={this.state.alertOpen}
+        alertInfo={this.state.alertInfo}
+        onCloseAlert={this.onCloseAlert.bind(this)}
+        />
 
       <BackgroundGrid container id="testCont">
+
         <Grid item container xs={12}
           style={{"minHeight": "100vh", paddingTop: "8px"}}>
           <Switch>
@@ -147,14 +154,10 @@ export default class App extends React.Component {
                 />
             </Route>
             <Route exact path="/profile">
-              {this.state.user?
-                <Profile user={this.state.user}
-                  userMD={this.state.userMD}
-                  onAlert={this.onAlert.bind(this)}
-                  />
-              :
-                <Redirect to="/login" />
-              }
+              <Profile user={this.state.user}
+                userMD={this.state.userMD}
+                onAlert={this.onAlert.bind(this)}
+                />
             </Route>
 
             <Route path="/box/:boxID"
@@ -187,12 +190,8 @@ export default class App extends React.Component {
           />
           <Route exact path="/register"
             render= { props =>(
-              this.state.user?
-                <Redirect to="/profile" />
-              :
-                <RegisterUser onAlert={this.onAlert.bind(this)}/>
-              )
-            }
+              <RegisterUser onAlert={this.onAlert.bind(this)}/>
+            )}
           />
 
           <Route exact path="/settings"
@@ -206,15 +205,12 @@ export default class App extends React.Component {
           />
 
           <Route exact path="/login">
-            {!this.state.user?
-              <Login
-                onLogin={this.handleLogin.bind(this)}
-                onAlert={this.onAlert.bind(this)}/>
-            :
-              <Redirect to="/boxSearch" />
-            }
-            </Route>
+            <Login
+              onLogin={this.handleLogin.bind(this)}
+              onAlert={this.onAlert.bind(this)}/>
+          </Route>
           </Switch>
+
           <div style={{"margin": "5vh"}}></div>
         </Grid>
       </BackgroundGrid>
@@ -238,4 +234,5 @@ export default class App extends React.Component {
   }
 }
 App.contextType = FirebaseAuthContext;
+
 

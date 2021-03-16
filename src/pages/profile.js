@@ -9,6 +9,7 @@ from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
+import { Redirect, withRouter } from "react-router-dom";
 
 
 import OwnerControls from "../comps/ownerControls"
@@ -19,7 +20,6 @@ import MemberInvites from "../comps/profile/memberInvites"
 import ClassAdminView from "../comps/profile/classAdminView"
 import ClassMemberView from "../comps/profile/classMemberView"
 import CalendarScoreView from "../comps/calendar/calendarView"
-import makeCancelable from "../utils/promises"
 
 import { getUserScores } from "../utils/firestore/scores"
 
@@ -75,16 +75,7 @@ class PageContentRaw extends Component {
     }
   }
 
-  sendVerificationEmail(){
-    let emailVerifyPromise = new Promise(
-      (res, rej) => {
-      this.state.user.sendEmailVerification()
-      .then(() => this.setState({ emailAlertOpen: true }))
-      .catch( err => { rej(err) })
-    })
 
-    this.cancelablePromise = makeCancelable(emailVerifyPromise)
-  }
 
   render(){
     return (
@@ -118,24 +109,7 @@ class PageContentRaw extends Component {
         </Grid>
         <Grid item xs={12}>
           <Grid item container xs={12}>
-              {!this.state.user.emailVerified ?
-                <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-                  <Paper elevation={4}>
-                    <Typography >
-                      Verification
-                    </Typography>
 
-                    <Button color="secondary" style={{margin: "0px 0px 4px 0px "}}
-                      onClick={this.sendVerificationEmail.bind(this)} >
-                      <Typography  variant="subtitle2">
-                        Send Verification Email
-                      </Typography>
-                    </Button>
-                  </Paper>
-                </Grid>
-              :
-                <React.Fragment></React.Fragment>
-              }
 
               <AdminInvites userMD={this.state.userMD}/>
               <MemberInvites userMD={this.state.userMD}/>
@@ -197,16 +171,22 @@ class ProfilePage extends Component {
   }
 
   render () {
+    console.log("user", this.state.user)
+
     return (
     	<Grid item xs={12} id="profilepage">
-           <PageContent
-                user= {this.state.user}
-                userMD={this.state.userMD}
-                onAlert={this.props.onAlert}
-            />
+        {this.state.user?
+          <PageContent
+              user= {this.state.user}
+              userMD={this.state.userMD}
+              onAlert={this.props.onAlert}
+          />
+        :
+          <Redirect to="/login" />
+      }
   		</Grid>
     );
   }
 }
 
-export default ProfilePage = withTheme(ProfilePage)
+export default ProfilePage = withRouter(withTheme(ProfilePage))

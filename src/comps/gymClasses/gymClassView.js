@@ -7,24 +7,14 @@ import "firebase/firestore"
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel, IconButton
+{ 	Grid, Paper, Button, Typography, IconButton
 } from '@material-ui/core';
 
 import { ArrowBackIos } from '@material-ui/icons';
-
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 // WodTrackrr
-
 import EditWod from "../wods/editWod"
 import SearchSortTable from "../searchSortTable"
 import ActionCancelModal from "../actionCancelModal"
@@ -37,10 +27,13 @@ import ClassMemberList from "../members/classMemberList"
 
 import AddWodClass from "../wods/addWodClass"
 
+import BackButton  from "../backButton"
+
 import { getWods, removeWod } from "../../utils/firestore/wods"
 import { getClassAdmins } from "../../utils/firestore/classAdmin"
 import { getClassMembers } from "../../utils/firestore/classMember"
 
+import { isEmpty } from "../../utils/valid"
 import "../../styles.css"
 
 
@@ -168,14 +161,9 @@ class GymClassView extends Component {
 	}
 
 	getWodListener(gymClassMD){
-		console.log(`Getting wods for user: `)
-		console.log(gymClassMD)
 		if(!this.wodListener){
 			this.wodListener = getWods(this.props.boxID, gymClassMD)
 			.onSnapshot(ss => {
-				console.log(ss)
-
-
 				if(!ss.empty){
 					let wods = []
 					ss.forEach(doc => {
@@ -309,11 +297,7 @@ class GymClassView extends Component {
 		this.setState({inviteMemberModalOpen: false})
 	}
 
-	empty(obj){
-		return (obj
-		&& Object.keys(obj).length === 0
-		&& obj.constructor === Object)
-	}
+
 
 	openViewAdmins(){
 		this.setState({showAdminList: true})
@@ -361,19 +345,26 @@ class GymClassView extends Component {
 	 	]
 		 let viewMemberBtnSize = this.isOnlyMember()? 12: 6
 
-		return this.empty(this.state.userMD) || this.empty(this.state.gymClassMD)
+		return (
+		 <Grid item xs={12}>
+
+			<React.Fragment>
+			{
+
+			isEmpty(this.state.userMD) || isEmpty(this.state.gymClassMD)
 			?
 				<React.Fragment>Loading</React.Fragment>
 			:
-		 		this.state.gymClassMD.isPrivate && !this.isMember()
+				this.state.gymClassMD.isPrivate && !this.isMember()
 				?<Grid item xs={12} align="center">
+					<BackButton />
 					<Paper elevation={6}>
 						<Typography>This is a Private Class</Typography>
 					</Paper>
 				</Grid>
 				:
 				this.state.showAdminList && this.isAdmin() ?
-		 			<Grid item xs={12}>
+					<Grid item xs={12}>
 						<Grid item xs={12}>
 							<IconButton onClick={this.closeDetailView.bind(this)}
 								style={{color: this.props.theme.palette.text.primary}}>
@@ -389,14 +380,14 @@ class GymClassView extends Component {
 								onAlert={this.props.onAlert}
 							/>
 						</Grid>
-					 </Grid>
+					</Grid>
 				:
 				this.state.showMemberList && this.isMember()?
-		 			<Grid item xs={12}>
+					<Grid item xs={12}>
 						<Grid item xs={12}>
 							<IconButton onClick={this.closeDetailView.bind(this)}
 								style={{color: this.props.theme.palette.text.primary}}>
-								 <ArrowBackIos />
+								<ArrowBackIos />
 							</IconButton>
 						</Grid>
 						<Grid item xs={12}>
@@ -415,7 +406,7 @@ class GymClassView extends Component {
 						<Grid item xs={12}>
 							<IconButton onClick={this.closeDetailView.bind(this)}
 								style={{color: this.props.theme.palette.text.primary}}>
-								 <ArrowBackIos />
+								<ArrowBackIos />
 							</IconButton>
 						</Grid>
 						<Grid item xs={12}>
@@ -428,7 +419,7 @@ class GymClassView extends Component {
 				:
 			(
 			<Grid item xs={12}>
-
+				<BackButton />
 				<Grid item align="center" xs={12}>
 					<Paper elevation={6}>
 						<Typography align="center" variant="h3">
@@ -443,7 +434,7 @@ class GymClassView extends Component {
 
 				<Grid item container spacing={1} xs={12}
 					style={{marginTop: "16px"}}>
-					{this.isAdmin()?
+					{this.isAdmin()  && this.state.gymClassMD.isPrivate ?
 						<React.Fragment>
 							<Grid item xs={6}>
 								<Button color="primary" variant="outlined" style={{width: "100%"}}
@@ -470,9 +461,9 @@ class GymClassView extends Component {
 						<React.Fragment></React.Fragment>
 					}
 
-					{ this.isMember() ?
+					{ this.isMember() && this.state.gymClassMD.isPrivate?
 						<React.Fragment>
-							{!this.isOnlyMember()?
+							{!this.isOnlyMember() ?
 
 								<Grid item xs={6}>
 								<Button color="secondary" variant="outlined" style={{width: "100%"}}
@@ -504,10 +495,10 @@ class GymClassView extends Component {
 
 					{this.isAdmin() && this.state.gymClassMD?
 						<Button
-						 color="primary"
-						 variant="outlined"
-						 fullWidth
-						 onClick={this.toggleShowAddWod.bind(this)}>
+						color="primary"
+						variant="outlined"
+						fullWidth
+						onClick={this.toggleShowAddWod.bind(this)}>
 							Add Workout
 						</Button>
 					:
@@ -529,7 +520,7 @@ class GymClassView extends Component {
 					open={this.state.showRemoveAlert}
 					onClose={this.handleModalClose.bind(this)}
 					onAction={this.deleteWod.bind(this)}
-					modalText={ `Remove ${this.state.curRemoveWodTitle} (${this.state.curRemoveWodID})?`}
+					modalText={ `Remove ${this.state.curRemovewodInfo.title}?`}
 					actionText={"Delete"}
 					cancelText={"Cancel"}
 				/>
@@ -544,6 +535,9 @@ class GymClassView extends Component {
 			/>
 			</Grid>
 		)
+		}
+	</React.Fragment>
+	</Grid>)
   }
 }
 

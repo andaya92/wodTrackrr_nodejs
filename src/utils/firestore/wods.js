@@ -3,7 +3,6 @@ import "firebase/auth";
 import "firebase/firestore";
 
 
-
 export default function mTea(){}
 
 /*
@@ -16,7 +15,6 @@ export function getWods(boxID, gymClassMD){
 	.collection("classes").doc(gymClassMD.gymClassID)
 	.collection("wods").where("isPrivate", "==", gymClassMD.isPrivate)
 	.where("owner", "==", gymClassMD.owner)
-	console.log(doc)
 	return doc
 }
 
@@ -75,9 +73,10 @@ export function editWod(boxID, gymClassID, wodID, title, wodText){
 }
 
 
+function deleteCollection(collectionName, fieldName, fieldID, res, rej){
+	/* General form to delete a collection by field name.
 
-function getSnapshot(collectionName, fieldName, fieldID, res, rej){
-
+	*/
 	const batch = fs.batch()
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
 	.then(ss => {
@@ -91,24 +90,148 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 
 		batch.commit().then(() => {
 			if(cnt >= 500)
-				getSnapshot(collectionName, fieldName, fieldID, res, rej)
+			deleteCollection(collectionName, fieldName, fieldID, res, rej)
 		})
-		.catch(err => rej(0))
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+	.catch(err => {
+		console.log(err)
+		rej(err)
 	})
 	res(1)
 }
 
-export function removeWod(wodInfo){
 
-	let collectionNames = [`wods/${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods/${wodInfo.wodID}`, "scores"]
+function deleteUserScores(wodInfo, res, rej){
+	/*
+		Gets collection queries for users that have scores and deletes them.
+	*/
+	const batch = fs.batch()
+	getScoreUIDs(wodInfo).then(scoreUIDs => {
+		if(scoreUIDs == null){
+			res(false)
+		}
+		let promises = scoreUIDs.map(uid => {
+			return fs.collection("userScores").doc(uid).collection("scores").where("wodID", "==", wodInfo.wodID).get()
+		})
 
-	let promises = collectionNames.map(name => {
-		return new Promise((res, rej) => {
-			getSnapshot(name, "wodID", wodInfo.wodID, res, rej)
+		let cnt = 0
+		Promise.all(promises).then( result => {
+			result.forEach( ss => {
+				if(ss.size == 0) res(true)
+
+				console.log(ss)
+				if(!ss.empty){
+					ss.forEach(doc => {
+						console.log(doc)
+						batch.delete(doc.ref)
+						cnt++
+					})
+
+				}
+			})
+		})
+		.then(() => {
+			batch.commit().then(() => {
+				if(cnt >= 500)
+					deleteUserScores(wodInfo, res, rej)
+				res(true)
+			})
+			.catch(err => {
+				console.log(err)
+				rej(err)
+			})
 		})
 	})
+	.catch(err => {
+		console.log(err)
+		rej(err)
+	})
 
-	return Promise.all(promises)
+}
+
+function getScoreUIDs(wodInfo){
+	/* Get current scoreIDs for a wod.
+	*/
+	let wodPath = `${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods/${wodInfo.wodID}`
+	let scorePath = `scores/${wodPath}/scores`
+	return new Promise((res, rej) => {
+		fs.collection(scorePath)
+		.get().then(ss =>{
+			let scoreUIDs = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					scoreUIDs.push(doc.data().uid)
+				})
+				console.log(scoreUIDs)
+				res(scoreUIDs)
+			}
+			res(null)
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+function removeScoresFromWod(wodInfo){
+	/* Deletes scores stored under userScores
+	 */
+	return new Promise((res, rej) => {
+		deleteUserScores(wodInfo, res, rej)
+	})
+}
+
+
+
+export function removeWod(wodInfo){
+	/*Removes wod and its scores.
+
+	Deletes userScores, scores and finally the wod.
+
+
+	*/
+
+	// return Promise.all(promises)
+	return new Promise((res, rej) => {
+		removeScoresFromWod(wodInfo)
+		.then((removed) => {
+			return new Promise((res, rej) => {
+				console.log("scores removed? ", removed)
+				if(removed){
+					// Remove scores
+					deleteCollection(
+						`scores/${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods/${wodInfo.wodID}/scores`,
+						"wodID",
+						wodInfo.wodID,
+						res,
+						rej
+					)
+				}else{
+					res(true)
+				}
+			})
+			.then(() => {
+				// Remove wod
+				fs.collection(`wods/${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods`)
+				.doc(wodInfo.wodID)
+				.delete()
+				res(true)
+			})
+			.catch(err => {
+				console.log(err)
+			})
+		})
+		.catch(err => {
+			console.log(err)
+		})
+
+	})
 }
 
 

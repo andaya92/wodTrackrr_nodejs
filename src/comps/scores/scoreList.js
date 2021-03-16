@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 
-import 
+import
 { 	Grid, Paper, Button, Typography, TextField, Select,
 	CardActions, Card, CardContent, TableRow, TableHead, TableContainer,
 	TableCell, TableBody, Table, Modal
-} 
+}
 from '@material-ui/core';
 import { Alert } from '@material-ui/lab'
 import { withTheme } from '@material-ui/core/styles'
@@ -26,7 +26,7 @@ class ScoreList extends Component {
 	static getDerivedStateFromProps(props, state){
 		return props
 	}
-	
+
   render(){
 		return(
 			<React.Fragment>
@@ -43,12 +43,12 @@ class ScoreList extends Component {
 				<TableBody>
 					{
 					this.state.scores.map((score, i) => {
-						let isCurUserScore = 
+						let isCurUserScore =
 							(this.state.uid == score["uid"])? true : false
 						return <ScoreRow key={i}
 							info={score}
 							onRemove = {this.props.onRemove}
-							isUserScore={isCurUserScore} 
+							isUserScore={isCurUserScore}
 						/>
 					})
 					}
@@ -71,7 +71,7 @@ class ScoreList extends Component {
 	}
 }
 
-  
+
 export default ScoreList = withTheme(ScoreList);
 
 
@@ -91,15 +91,15 @@ function ScoreRowRaw(props){
 					{username}
 				</TableCell>
 				<TableCell>
-					{score} 
+					{score}
 				</TableCell>
 				{
 		  			props.isUserScore
 		  			?
 			  		<TableCell align="right">
-					    <Button size="small" 
-					    	
-					    	onClick={() => props.onRemove(scoreID)}>
+					    <Button size="small"
+
+					    	onClick={() => props.onRemove(props.info)}>
 					    	<Delete color="error"  />
 					    </Button>
 			  		</TableCell>

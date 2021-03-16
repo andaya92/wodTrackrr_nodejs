@@ -10,6 +10,8 @@ import
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
   TableHead, TableRow }
 from '@material-ui/core'
+import { withRouter } from "react-router-dom";
+
 
 import { Alert } from '@material-ui/lab'
 import SearchIcon from '@material-ui/icons/Search'
@@ -86,11 +88,9 @@ class BoxSearch extends Component {
       isOwner: props.isOwner,
       allBoxes: props.allBoxes,
       filteredBoxes: props.filteredBoxes,
-      userFollowing: {},
-      redirect: false,
-      redirectTo: ""
-    }
+      userFollowing: {}
   }
+}
 
   componentDidMount(){
     this.listenForFollowing()
@@ -170,18 +170,13 @@ class BoxSearch extends Component {
   onRowClick(ev, id){
     let tagName = ev.target.tagName
     if(["span", "svg", "path", "BUTTON", "SPAN"].indexOf(tagName) < 0){
-      this.setState({redirect: true, redirectTo: id})
+      this.props.history.push(id);
     }
   }
 
   render () {
     return (
       <Grid item xs={12} style={{marginTop: "3vh"}}>
-        {this.state.redirect ?
-          <Redirect to={this.state.redirectTo} />
-        :
-          <React.Fragment></React.Fragment>
-        }
         <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
         <Paper elevation={2} component="form">
            <TextField
@@ -241,4 +236,4 @@ class BoxSearch extends Component {
 
 
 
-export default BoxSearch = withTheme(BoxSearch)
+export default BoxSearch = withRouter(withTheme(BoxSearch))

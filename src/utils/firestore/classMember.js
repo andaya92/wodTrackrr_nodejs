@@ -100,7 +100,7 @@ function isNotificationSent(uid, boxID, gymClassID){
     })
 }
 
-export function getUserMemberInvites(uid){
+export function getUserMemberInvites(uid) {
     // go through boxes and classes to find all invites.
     return fs.collection(USER_NOTIFICATIONS).doc(uid)
     .collection(NOTIFICATIONS)
@@ -142,7 +142,7 @@ export function getClassMembers(boxID, gymClassID){
 export function getUserClassMembers(uid){
     // Need to proccess
     return fs.collection(USER_CLASS_MEMBER).doc(uid)
-    .collection("classes")
+    .collection("classes").where("uid", "==", uid)
 
 
 
@@ -189,7 +189,6 @@ export function setClassMember(uid, boxID, gymClassID, owner, username, boxTitle
                 .collection(MEMBERS).doc(uid)
 
                 let shallow = fs.collection(USER_CLASS_MEMBER).doc(uid)
-                .collection("boxes").doc(boxID)
                 .collection(CLASSES).doc(gymClassID)
 
 
@@ -226,7 +225,6 @@ export function removeMember({boxID, gymClassID, uid}){
         .collection(MEMBERS).doc(uid).delete(),
 
         fs.collection(USER_CLASS_MEMBER).doc(uid)
-        .collection("boxes").doc(boxID)
         .collection(CLASSES).doc(gymClassID).delete()
     ])
 }

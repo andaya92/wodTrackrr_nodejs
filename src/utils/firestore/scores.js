@@ -87,14 +87,33 @@ export function updateScore(score, boxID, gymClassID, wodID, uid){
 	})
 }
 
-export function removeScore(boxID, gymClassID, wodID, uid){
+export function removeScore(boxID, gymClassID, wodID, uid, scoreID){
 	return new Promise((res, rej) => {
-		fs.collection("scores").doc(boxID)
-		.collection("classes").doc(gymClassID)
-		.collection("wods").doc(wodID)
-		.collection("scores").doc(uid)
-		.delete()
+		Promise.all([
+			fs.collection("scores").doc(boxID)
+			.collection("classes").doc(gymClassID)
+			.collection("wods").doc(wodID)
+			.collection("scores").doc(uid)
+			.delete(),
+
+			fs.collection("userScores").doc(uid)
+			.collection("scores").where("wodID", "==", wodID)
+			.get().then( ss => {
+				console.log("userScores SS")
+				console.log(ss)
+				if(!ss.empty){
+					ss.forEach( doc => {
+						console.log(doc)
+						doc.ref.delete()
+					})
+				}
+			})
+			.catch(err => {
+				console.log(err)
+				rej(err)
+			})
+		])
 		.then(()=>{res(`Successfully removed score: ${wodID}`)})
-		.catch((err) => {rej(`Failed to remove score: ${wodID}`)})
+		.catch((err) => {rej(err.message)})
 	})
 }

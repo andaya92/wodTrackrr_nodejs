@@ -5,10 +5,11 @@ import "firebase/firestore"
 // React
 import React, { Component } from 'react'
 import { Redirect } from "react-router";
+import { withRouter } from "react-router-dom";
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -31,14 +32,12 @@ class DeleteAccount extends Component {
 		super(props)
 		this.state = {
             user: props.user,
-            userConfirmText: "",
-            redirectUrl: "",
-            redirect: false
+            userConfirmText: ""
 		}
 	}
 
 	componentDidMount(){
-       
+
 	}
 
 	static getDerivedStateFromProps(props, state){
@@ -68,19 +67,17 @@ class DeleteAccount extends Component {
             //     console.log("Error deleting user.")
             // })
             this.setState({redirect: true, redirectUrl: "/boxSearch"})
+            this.props.history("/boxSearch")
 
         }else{
             console.log("User entered incorrect confirmation.")
         }
     }
 
-	
+
   render(){
-		return( 
+		return(
             <Paper elevation={6}>
-                {this.state.redirect?
-                    <Redirect to={this.state.redirectUrl} /> : <React.Fragment></React.Fragment>
-                }
                 <Grid item container align="center" xs={12} style={{marginTop: "16px"}}>
                     <Grid item xs={12}>
                         <Typography>Type to Confirm Delete: {this.confirmText()}</Typography>
@@ -104,4 +101,4 @@ class DeleteAccount extends Component {
     )}
 }
 
-export default DeleteAccount = withTheme(DeleteAccount)
+export default DeleteAccount = withRouter(withTheme(DeleteAccount))

@@ -4,6 +4,7 @@ import "firebase/firestore"
 
 // React
 import React, { Component } from 'react'
+import { withRouter } from "react-router-dom";
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -67,9 +68,7 @@ class ClassMemberView extends Component {
 		super(props)
 		this.state = {
             userMD: props.userMD,
-            classes: [],
-            redirect: false,
-            redirectUrl: ""
+            classes: []
 		}
 	}
 
@@ -117,17 +116,12 @@ class ClassMemberView extends Component {
     }
 
     onView(redirectUrl){
-        this.setState({redirect: true, redirectUrl: redirectUrl})
+        this.props.history.push(redirectUrl)
     }
 
   render(){
 		return(
             <React.Fragment>
-                {this.state.redirect?
-                    <Redirect key={"redirectClassMemberView"} to={this.state.redirectUrl}/>
-                :
-                    <React.Fragment></React.Fragment>
-                }
                 {this.state.classes.length > 0?
                     <Grid item xs={12} style={{margin: "16px 0px 0px 0px"}}>
                         <Paper elevation={6}>
@@ -158,4 +152,4 @@ class ClassMemberView extends Component {
     )}
 }
 
-export default ClassMemberView = withTheme(ClassMemberView)
+export default ClassMemberView = withRouter(withTheme(ClassMemberView))

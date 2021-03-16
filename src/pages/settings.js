@@ -15,8 +15,10 @@ import { withTheme, withStyles } from '@material-ui/core/styles';
 import { ArrowBackIos } from '@material-ui/icons';
 
 import ResetPassword from "../comps/settings/resetPassword"
-import DeleteAccount from "../comps/profile/deleteAccount"
-import UsernamePanel from "../comps/profile/usernamePanel"
+import DeleteAccount from "../comps/settings/deleteAccount"
+import UsernamePanel from "../comps/settings/usernamePanel"
+import BackButton  from "../comps/backButton"
+import UserEmail from "../comps/settings/userEmail"
 
 
 let fs = firebase.firestore();
@@ -25,6 +27,7 @@ const HOME = "home"
 const CHANGE_USERNAME = "change username"
 const CHANGE_PASSWORD = "change password"
 const DELETE_ACCOUNT = "delete account"
+const EMAIL = "email"
 
 
 function SettingsRowRaw(props){
@@ -55,6 +58,11 @@ class Settings extends Component {
         {
             id: CHANGE_USERNAME,
             title: "Change Username",
+
+        },
+        {
+            id: EMAIL,
+            title: "Email",
 
         },
         {
@@ -96,6 +104,7 @@ class Settings extends Component {
             {this.state.currentPage === HOME?
                 <Table>
                     <TableHead>
+                        <BackButton />
                         <TableRow>
                                 <TableCell align="center" colSpan={2}>
                                     <Typography gutterBottom variant="h3">
@@ -154,6 +163,20 @@ class Settings extends Component {
                     />
                     </Grid>
                 </Grid>
+            : this.state.currentPage === EMAIL?
+            <Grid container item xs={12}>
+                <Grid item xs={12}>
+                    <IconButton style={{color: this.props.theme.palette.text.primary}} onClick={this.handleBack.bind(this)}>
+                        <ArrowBackIos />
+                    </IconButton>
+                </Grid>
+                <Grid item xs={12}>
+                    <UserEmail
+                        user={this.state.user}
+                        onAlert={this.props.onAlert}
+                    />
+                </Grid>
+            </Grid>
             :
                 <span>Default</span>
             }

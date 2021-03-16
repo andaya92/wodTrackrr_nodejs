@@ -5,16 +5,15 @@ import "firebase/firestore"
 // React
 import React, { Component } from 'react'
 import { Redirect } from "react-router";
+import { withRouter } from "react-router-dom";
 
 // Material UI
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+{ 	Grid, Paper, Typography, Modal, TableBody, Table, TableContainer,
+	TableHead, TableRow
 } from '@material-ui/core';
+
 import {TableCell as TC} from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
@@ -60,9 +59,7 @@ class ClassAdminView extends Component {
 		super(props)
 		this.state = {
             userMD: props.userMD,
-            classes: [],
-            redirect: false,
-            redirectUrl: ""
+            classes: []
 		}
 	}
 
@@ -108,17 +105,12 @@ class ClassAdminView extends Component {
     }
 
     onView(redirectUrl){
-        this.setState({redirect: true, redirectUrl: redirectUrl})
+        this.props.history.push(redirectUrl)
     }
 
   render(){
 		return(
             <React.Fragment>
-                {this.state.redirect?
-                    <Redirect to={this.state.redirectUrl}/>
-                :
-                    <React.Fragment></React.Fragment>
-                }
                 {this.state.classes.length > 0?
                     <Grid item xs={12} style={{margin: "16px 0px 0px 0px"}}>
                         <Paper elevation={6}>
@@ -149,4 +141,4 @@ class ClassAdminView extends Component {
     )}
 }
 
-export default ClassAdminView = withTheme(ClassAdminView)
+export default ClassAdminView = withRouter(withTheme(ClassAdminView))

@@ -6,13 +6,13 @@ import { ContactsOutlined } from "@material-ui/icons";
 let fs = firebase.firestore()
 
 const CLASS_ADMIN = "classAdmins"
-const USER_CLASS_ADMIN = "userClassAdmins"
 const ADMINS = "admins"
-const ADMIN_NOTIFICATIONS = "adminNotifications"
-const USER_NOTIFICATIONS = "userAdminNotifications"
-const NOTIFICATIONS = "notifications"
-const INVITES = "invites"
 const CLASSES = "classes"
+const USER_CLASS_ADMIN = "userClassAdmins"
+const ADMIN_NOTIFICATIONS = "adminNotifications"
+const NOTIFICATIONS = "notifications"
+const USER_NOTIFICATIONS = "userAdminNotifications"
+const INVITES = "invites"
 const USERS = "users"
 
 
@@ -125,6 +125,7 @@ export function removeNotification(notify){
                 res("Removed notification.")
             })
             .catch(err => {
+                console.log(err)
                 rej(err)
             })
 
@@ -143,7 +144,7 @@ export function getClassAdmins(boxID, gymClassID){
 export function getUserClassAdmins(uid){
     // Need to proccess
     return fs.collection(USER_CLASS_ADMIN).doc(uid)
-    .collection("boxes")
+    .collection("classes")
 
 
 
@@ -190,7 +191,6 @@ export function setClassAdmin(uid, boxID, gymClassID, owner, username, boxTitle,
                 .collection(ADMINS).doc(uid)
 
                 let shallow = fs.collection(USER_CLASS_ADMIN).doc(uid)
-                .collection("boxes").doc(boxID)
                 .collection(CLASSES).doc(gymClassID)
 
 
@@ -226,7 +226,9 @@ export function removeAdmin({boxID, gymClassID, uid}){
         .collection(ADMINS).doc(uid).delete(),
 
         fs.collection(USER_CLASS_ADMIN).doc(uid)
-        .collection("boxes").doc(boxID)
         .collection(CLASSES).doc(gymClassID).delete()
     ])
 }
+
+
+

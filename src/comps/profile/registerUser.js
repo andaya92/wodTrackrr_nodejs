@@ -1,6 +1,7 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth"
-import "firebase/firestore"; 
+import "firebase/firestore";
+import { withRouter } from "react-router-dom";
 
 import React, { Component } from 'react'
 import { Grid, TextField, Button, Paper } from '@material-ui/core';
@@ -21,9 +22,9 @@ class RegisterUser extends Component {
 
     let pass1 = document.getElementById('password')
     let pass2 = document.getElementById('passwordConfirm')
-    
+
     console.log(email.value, pass1.value)
-    
+
 
     if(pass1.value === pass2.value){
       firebase.auth().createUserWithEmailAndPassword(email.value, pass1.value)
@@ -38,6 +39,10 @@ class RegisterUser extends Component {
         }
 
         fs.collection('users').doc(res.user.uid).set(data)
+		.then( () => {
+			console.log("Set user data.")
+			this.props.history.push("/profile")
+		})
       })
       .catch(err => {
         console.log(err)
@@ -49,67 +54,61 @@ class RegisterUser extends Component {
 
   render () {
     return (
-      <React.Fragment>
-      {this.state.redirect ?
-      	<Redirect to="/" />
-			:
-				<Grid container xs={12} id="login" align="center" justify="center">
-					<Paper elevation={2}>
-						<br />
-						<Grid item xs={12} ><h1>Register</h1></Grid>
-						<br />
+		<Grid container xs={12} id="login" align="center" justify="center">
+			<Paper elevation={2}>
+				<br />
+				<Grid item xs={12} ><h1>Register</h1></Grid>
+				<br />
 
-						<Grid item xs={12} >
-							<TextField
-							id="email"
-							style={{ margin: 8 }}
-							placeholder="Email"
-							margin="normal"
-							InputLabelProps={{
-							  shrink: true,
-							}}
-							/><br /><br />
-						</Grid>
-
-						<Grid item xs={12} >
-							<TextField
-							  id="password"
-							  type="password"
-							  style={{ margin: 8 }}
-							  placeholder="Password"
-							  margin="normal"
-							  InputLabelProps={{
-							    shrink: true,
-							  }}
-							/>
-							 <br/><br/>
-						</Grid>
-
-						<Grid item xs={12} >
-							<TextField
-							  id="passwordConfirm"
-							  type="password"
-							  style={{ margin: 8 }}
-							  placeholder="Confirm Password"
-							  margin="normal"
-							  InputLabelProps={{
-							    shrink: true,
-							  }}
-							/> <br/><br/>
-						</Grid>
-						<Grid item xs={12} >
-						  <Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
-						    Submit
-						  </Button>
-						</Grid>
-					</Paper>
+				<Grid item xs={12} >
+					<TextField
+					id="email"
+					style={{ margin: 8 }}
+					placeholder="Email"
+					margin="normal"
+					InputLabelProps={{
+						shrink: true,
+					}}
+					/><br /><br />
 				</Grid>
-        }
-        </React.Fragment>
+
+				<Grid item xs={12} >
+					<TextField
+						id="password"
+						type="password"
+						style={{ margin: 8 }}
+						placeholder="Password"
+						margin="normal"
+						InputLabelProps={{
+						shrink: true,
+						}}
+					/>
+						<br/><br/>
+				</Grid>
+
+				<Grid item xs={12} >
+					<TextField
+						id="passwordConfirm"
+						type="password"
+						style={{ margin: 8 }}
+						placeholder="Confirm Password"
+						margin="normal"
+						InputLabelProps={{
+						shrink: true,
+						}}
+					/> <br/><br/>
+				</Grid>
+				<Grid item xs={12} >
+					<Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
+					Submit
+					</Button>
+				</Grid>
+			</Paper>
+		</Grid>
     );
   }
 }
 
 
 
-export default RegisterUser = withTheme(RegisterUser);
+export default RegisterUser = withRouter(withTheme(RegisterUser))

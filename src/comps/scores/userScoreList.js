@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
@@ -34,9 +35,7 @@ class UserScoreList extends Component {
 			scores: props.scores,
 			uid: props.uid,
 			showRemoveAlert: false,
-			removeScoreID: "",
-			redirectUrl: "",
-			redirect: false
+			removeScoreID: ""
 		}
 	}
 
@@ -78,7 +77,7 @@ class UserScoreList extends Component {
 	}
 
 	onView(url){
-		this.setState({redirectUrl: url, redirect: true})
+		this.props.history.pusu(url)
 	}
 
   	render(){
@@ -86,11 +85,6 @@ class UserScoreList extends Component {
 			<React.Fragment>
 			{this.state.scores.length > 0?
 			<TableContainer component={Paper}>
-				{this.state.redirect?
-					<Redirect to={this.state.redirectUrl} />
-				:
-					<React.Fragment></React.Fragment>
-				}
 				<Table aria-label="score table">
 				<TableHead>
 					<TableRow>
@@ -139,7 +133,7 @@ class UserScoreList extends Component {
 }
 
 
-export default UserScoreList = withTheme(UserScoreList);
+export default UserScoreList = withRouter(withTheme(UserScoreList))
 
 function ScoreRow(props){
 	let score = props.info["score"]

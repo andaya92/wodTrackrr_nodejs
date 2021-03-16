@@ -1,13 +1,19 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/firestore"
 
+import { removeAdmin } from "./classAdmin"
+import { removeWod } from "./wods"
+import { removeMember } from "./classMember"
+
+
 let fs = firebase.firestore()
+
 
 export default function mTea(){}
 
 const GYM_CLASSES = "gymClasses"
 const CLASSES = "classes"
-const CLASS_OWNERS ="classOwners"
+const ADMIN_NOTIFICATIONS = "adminNotifications"
 /*
 	GymClasses
 */
@@ -59,7 +65,7 @@ export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner){
  }
 
 
-function getSnapshot(collectionName, fieldName, fieldID, res, rej){
+function deleteCollection(collectionName, fieldName, fieldID, res, rej){
 	const batch = fs.batch()
 	let snapshotSize = 0
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
@@ -74,33 +80,383 @@ function getSnapshot(collectionName, fieldName, fieldID, res, rej){
 
 		batch.commit().then(() => {
 			if(cnt >= 500)
-				getSnapshot(collectionName, fieldName, fieldID, res, rej)
+			deleteCollection(collectionName, fieldName, fieldID, res, rej)
 		})
 		.catch(err => rej(0))
 	})
 	res(1)
 }
 
-export function removeGymClass(boxID, gymClassID){
-	// let collectionNames = ['classMembers', 'classAdmins']
-	let collectionNames = [
-		`scores`,
-		`wods/${gymClassID}/wods`,
-		`classAdmins`, `classMembers`,
-		"notifications/admins/invites", "notifications/members/invites",
-		`classAdminsShallow/${gymClassID}/users`,
-		`classMembersShallow/${gymClassID}/users`,
-		`gymClasses/${boxID}/classes`]
 
-	let promises = collectionNames.map(name => {
-		return new Promise((res, rej) => {
-			getSnapshot(name, "gymClassID", gymClassID, res, rej)
+
+
+function getWodIDs(boxID, gymClassID, isPrivate){
+	return new Promise((res, rej) => {
+		fs.collection("wods").doc(boxID).collection("classes").doc(gymClassID)
+		.collection("wods").where("isPrivate", "==", isPrivate)
+		.get().then(ss => {
+			console.log(ss)
+			let ids = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					ids.push(doc.data().wodID)
+				})
+				console.log(ids)
+				res(ids)
+			}
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+const CLASS_ADMIN = "classAdmins"
+const ADMINS = "admins"
+
+function removeAdminsFromClass(wodInfo){
+	return new Promise((res, rej) => {
+		getAdminUIDs(wodInfo).then(uids => {
+			if(uids == null){
+				res(false)
+				return
+			}
+			let promises = uids.map(uid => {
+				let data = {
+					boxID: wodInfo.boxID,
+					gymClassID: wodInfo.gymClassID,
+					uid: uid
+				}
+				return removeAdmin(data)
+			})
+			Promise.all(promises)
+			.then(() => {
+				res(true)
+			})
+			.catch(err => {
+				rej(err)
+			})
+		})
+
+	})
+}
+function getAdminUIDs(gymClassInfo){
+	return new Promise((res, rej) => {
+		fs.collection(CLASS_ADMIN).doc(gymClassInfo.boxID)
+        .collection(CLASSES).doc(gymClassInfo.gymClassID)
+        .collection(ADMINS)
+		.get().then(ss =>{
+			let UIDs = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					UIDs.push(doc.data().uid)
+				})
+				console.log(UIDs)
+				res(UIDs)
+			}
+			res(null)
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+const CLASS_MEMBER = "classMembers"
+const MEMBERS = "members"
+
+function removeMembersFromClass(wodInfo){
+	return new Promise((res, rej) => {
+		getMemberUIDs(wodInfo).then(uids => {
+			if(uids == null){
+				res(false)
+				return
+			}
+			let promises = uids.map(uid => {
+				let data = {
+					boxID: wodInfo.boxID,
+					gymClassID: wodInfo.gymClassID,
+					uid: uid
+				}
+				return removeMember(data)
+			})
+			Promise.all(promises)
+			.then(() => {
+				res(true)
+			})
+			.catch(err => {
+				rej(err)
+			})
+		})
+
+	})
+}
+function getMemberUIDs(gymClassInfo){
+	return new Promise((res, rej) => {
+		fs.collection(CLASS_MEMBER).doc(gymClassInfo.boxID)
+        .collection(CLASSES).doc(gymClassInfo.gymClassID)
+        .collection(MEMBERS)
+		.get().then(ss =>{
+			let UIDs = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					UIDs.push(doc.data().uid)
+				})
+				console.log(UIDs)
+				res(UIDs)
+			}
+			res(null)
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+const NOTIFICATIONS = "notifications"
+const USER_NOTIFICATIONS = "userAdminNotifications"
+
+export function removeAdminNotification(notify){
+    return new Promise((res, rej) => {
+			fs.collection(USER_NOTIFICATIONS).doc(notify.uid)
+			.collection(NOTIFICATIONS).where("uid", "==", notify.uid)
+			.get().then(ss => {
+				console.log(ss)
+
+				if(!ss.empty){
+
+					ss.forEach(doc => {
+						doc.ref.delete()
+					})
+				}
+
+				fs.collection(ADMIN_NOTIFICATIONS).doc(notify.boxID)
+                .collection(CLASSES).doc(notify.gymClassID)
+                .collection(ADMIN_NOTIFICATIONS).doc(notify.uid)
+                .delete()
+				.catch(err => {console.log(err)})
+			})
+            .then( () => {
+                res("Removed notification.")
+            })
+            .catch(err => {
+                console.log(err)
+                rej(err)
+            })
+
+    })
+}
+
+
+function removeAdminInvitesFromClass(gymClassInfo){
+	return new Promise((res, rej) => {
+		getAdminInviteIDs(gymClassInfo).then(uids => {
+			console.log(uids)
+			if(uids == null){
+				res(false)
+				return
+			}
+			let promises = uids.map(uid => {
+				let data = {
+					boxID: gymClassInfo.boxID,
+					gymClassID: gymClassInfo.gymClassID,
+					uid: uid
+				}
+				console.log(data)
+				return removeAdminNotification(data)
+			})
+
+			Promise.all(promises)
+			.then(() => {
+				res(true)
+			})
+			.catch(err => {
+				console.log(err)
+				rej(err)
+			})
+		})
+
+	})
+}
+
+
+function getAdminInviteIDs(gymClassInfo){
+	return new Promise((res, rej) => {
+		fs.collection(ADMIN_NOTIFICATIONS).doc(gymClassInfo.boxID)
+		.collection(CLASSES).doc(gymClassInfo.gymClassID)
+		.collection(ADMIN_NOTIFICATIONS).where("owner", "==", gymClassInfo.owner)
+		.get().then(ss =>{
+			console.log(ss)
+			let ids = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					ids.push(doc.data().uid)
+				})
+				console.log(ids)
+				res(ids)
+			}
+			res(null)
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+const USER_MEMBER_NOTIFICATIONS = "userMemberNotifications"
+const MEMBER_NOTIFICATIONS = "memberNotifications"
+
+export function removeMemberNotification(notify){
+    return new Promise((res, rej) => {
+			fs.collection(USER_MEMBER_NOTIFICATIONS).doc(notify.uid)
+			.collection(NOTIFICATIONS).where("uid", "==", notify.uid)
+			.get().then(ss => {
+				console.log(ss)
+
+				if(!ss.empty){
+
+					ss.forEach(doc => {
+						doc.ref.delete()
+					})
+				}
+
+				fs.collection(MEMBER_NOTIFICATIONS).doc(notify.boxID)
+                .collection(CLASSES).doc(notify.gymClassID)
+                .collection(MEMBER_NOTIFICATIONS).doc(notify.uid)
+                .delete()
+				.catch(err => {console.log(err)})
+			})
+            .then( () => {
+                res("Removed notification.")
+            })
+            .catch(err => {
+                console.log(err)
+                rej(err)
+            })
+
+    })
+}
+
+
+function removeMemberInvitesFromClass(gymClassInfo){
+	return new Promise((res, rej) => {
+		getMemberInviteIDs(gymClassInfo).then(uids => {
+			console.log(uids)
+			if(uids == null){
+				res(false)
+				return
+			}
+			let promises = uids.map(uid => {
+				let data = {
+					boxID: gymClassInfo.boxID,
+					gymClassID: gymClassInfo.gymClassID,
+					uid: uid
+				}
+				console.log(data)
+				return removeMemberNotification(data)
+			})
+
+			Promise.all(promises)
+			.then(() => {
+				res(true)
+			})
+			.catch(err => {
+				console.log(err)
+				rej(err)
+			})
+		})
+
+	})
+}
+
+
+
+function getMemberInviteIDs(gymClassInfo){
+	return new Promise((res, rej) => {
+		fs.collection(MEMBER_NOTIFICATIONS).doc(gymClassInfo.boxID)
+		.collection(CLASSES).doc(gymClassInfo.gymClassID)
+		.collection(MEMBER_NOTIFICATIONS).where("owner", "==", gymClassInfo.owner)
+		.get().then(ss =>{
+			console.log(ss)
+			let ids = []
+			if(!ss.empty){
+				ss.forEach(doc => {
+					ids.push(doc.data().uid)
+				})
+				console.log(ids)
+				res(ids)
+			}
+			res(null)
+		})
+		.catch(err => {
+			console.log(err)
+			rej(err)
+		})
+	})
+}
+
+
+
+export function removeGymClass(gymClassInfo){
+	return new Promise((res, rej) => {
+
+		removeAdminInvitesFromClass(gymClassInfo)
+		.then((result) => {
+			console.log(result)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+
+		removeMemberInvitesFromClass(gymClassInfo)
+		.then((result) => {
+			console.log(result)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+
+		removeAdminsFromClass(gymClassInfo)
+		.then((result) => {
+			console.log(result)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+
+		removeMembersFromClass(gymClassInfo)
+		.then((result) => {
+			console.log(result)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+
+		getWodIDs(gymClassInfo.boxID, gymClassInfo.gymClassID, gymClassInfo.isPrivate)
+		.then((ids =>{
+
+			let wods = ids.map(id => {
+				let wodInfo = {
+					boxID: gymClassInfo.boxID,
+					gymClassID: gymClassInfo.gymClassID,
+					wodID: id,
+					isPrivate: gymClassInfo.isPrivate
+				}
+				return removeWod(wodInfo)
+			})
+
+		}))
+		.catch(err => {
+			console.log(err)
 		})
 	})
 
-	return Promise.all(promises).then(()=> {
-		new Promise((res, rej) => {
-			getSnapshot("classOwners", "gymClassID", gymClassID, res, rej)
-		})
-	})
 }

@@ -9,11 +9,7 @@ import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import
-{   Grid, Paper, Button, Typography, Collapse, TextField, Select,
-  Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-  CircularProgress, LinearProgress, CardActions, Card, CardContent,
-  ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-  TableCell, TableBody, Table, Modal, GridListTileBar
+{   Grid, Paper, Button, Typography
 }
 from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -25,9 +21,11 @@ import ScoreDataView from "./scoreDataView"
 import ScoreList from "./scoreList"
 import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
+import BackButton  from "../backButton"
 
 import { getWodScores, removeScore } from "../../utils/firestore/scores"
 import { getWod } from "../../utils/firestore/wods"
+import { isEmpty } from "../../utils/valid"
 
 import "../../styles.css"
 
@@ -66,7 +64,7 @@ class ScoreView extends Component {
       wodMD: {},
       scores: [],
       userScore: {},
-      curRemoveScoreID: "",
+      curRemoveScore: {},
       showRemoveAlert: false
     }
   }
@@ -82,13 +80,16 @@ class ScoreView extends Component {
     },
       err => {console.log(err)})
 
-
+      console.log("PreTest")
     this.scoreListener = getWodScores(this.state.boxID, this.state.gymClassID, this.state.wodID)
     .onSnapshot(ss => {
+      console.log(ss)
+      console.log("Test")
       if(!ss.empty){
         let scores = []
         let userScore = {}
         let scoreType = ""
+
         ss.forEach(doc => {
           let data = doc.data()
           scores.push(data)
@@ -115,7 +116,7 @@ class ScoreView extends Component {
         })
       }
     },
-      err => {})
+      err => { console.log(err)})
   }
 
 
@@ -145,23 +146,23 @@ class ScoreView extends Component {
     this.setState({showRemoveAlert:false})
   }
 
-  handleRemoveScore(scoreID){
-    this.setState({curRemoveScoreID: scoreID, showRemoveAlert: true})
+  handleRemoveScore(score){
+    this.setState({curRemoveScore: score, showRemoveAlert: true})
   }
 
   removeScore(){
-    let scoreID = this.state.curRemoveScoreID
-    if(scoreID === "" || scoreID.length <=0){
+    let score = this.state.curRemoveScore
+
+    if(isEmpty(score)){
       this.props.onAlert({
-        type: "warning",
-        message: "Invalid scoreID!"
+        type: "error",
+        message: "Invalid score"
       })
       return
     }
 
-
     this.setState({showRemoveAlert: false})
-    removeScore(scoreID)
+    removeScore( score.boxID, score.gymClassID, score.wodID, score.uid, score.scoreID)
     .then((res)=>{
       this.props.onAlert({
         type: "success",
@@ -171,7 +172,7 @@ class ScoreView extends Component {
     .catch((err)=>{
       this.props.onAlert({
         type: "error",
-        message: err
+        message: err.message
       })
     })
   }
@@ -182,7 +183,8 @@ class ScoreView extends Component {
 
 
   return(
-    <React.Fragment>
+    <Grid  item xs={12}>
+      <BackButton />
       {Object.keys(this.state.wodMD).length > 0 ?
         <Grid item xs={12}>
           <Grid item align="center" xs={12}>
@@ -253,7 +255,7 @@ class ScoreView extends Component {
             open={this.state.showRemoveAlert}
                 onClose={this.handleModalClose.bind(this)}
                 onAction={this.removeScore.bind(this)}
-                modalText={`Remove score?`}
+                modalText={`Remove score: ${this.state.curRemoveScore.username} (${this.state.curRemoveScore.score})?`}
                 actionText={`Remove`}
                 cancelText={`Cancel`}
             />
@@ -267,7 +269,7 @@ class ScoreView extends Component {
             </Paper>
           </Grid>
       }
-    </React.Fragment>
+    </Grid>
   )
   }
 }

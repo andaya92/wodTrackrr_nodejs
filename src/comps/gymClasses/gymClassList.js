@@ -1,11 +1,11 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database"; 
+
 
 import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom';
+import { Route, Link } from 'react-router-dom'
+import { withRouter } from "react-router-dom"
 
-import 
+import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
   TableHead, TableRow }
@@ -26,10 +26,10 @@ function GymClassRaw(props){
   let title = props.info["title"]
   let boxID = props.info["boxID"]
   let gymClassID = props.info["gymClassID"]
-  // TODO redirect to wods whhoch is what boxView is
+
   return(
-    <TableRow id={`class/${gymClassID}`} name="GymClassRow" 
-          onClick={(ev) => {props.onRowClick(ev, `/class/${boxID}/${gymClassID}`)} }> 
+    <TableRow id={`class/${gymClassID}`} name="GymClassRow"
+          onClick={(ev) => {props.onRowClick(ev, `/class/${boxID}/${gymClassID}`)} }>
       <TableCell align="left">
         <Typography variant="subtitle1" color="primary">
           { title }
@@ -59,7 +59,7 @@ function EmptyClassRaw(props){
         <Typography variant="subtitle1" color="primary">
           No Classes!
         </Typography>
-      </TableCell>  
+      </TableCell>
     </TableRow>
   )
 }
@@ -75,12 +75,9 @@ class GymClassList extends Component {
       userMD: props.userMD,
       isOwner: props.isOwner,
       boxID: props.boxID,
-      redirect: false,
-      redirectTo: "",
       filteredGymClasses:[],
       gymClasses: [],
-      removeClassID: "",
-      removeClassTitle: "",
+      removeClass: {},
       openModal: false
     }
   }
@@ -124,7 +121,7 @@ class GymClassList extends Component {
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){   
+    if((data.keyCode || data.which) == 13){
     }
   }
 
@@ -139,17 +136,18 @@ class GymClassList extends Component {
   onRowClick(ev, id){
     let tagName = ev.target.tagName
     if(["span", "svg", "path"].indexOf(tagName) < 0){
-      this.setState({redirect: true, redirectTo: id})
+      console.log("pushed ", id)
+      this.props.history.push(id)
     }
   }
 
   handleRemoveGymClass(){
     this.closeModal()
-    if(!this.state.boxID && !this.state.removeClassID){
+    if(!this.state.boxID && !this.state.removeClass.gymClassID){
       this.props.onAlert({type: "error", message: "Class info missing!"})
       return
     }
-    removeGymClass(this.state.boxID, this.state.removeClassID)
+    removeGymClass(this.state.removeClass)
     .then((res) => {
       console.log(res)
       this.props.onAlert({type: "success", message: "Deleted class!"})
@@ -158,7 +156,7 @@ class GymClassList extends Component {
   }
 
   onRemove(gymClass){
-    this.setState({openModal: true, removeClassID: gymClass.gymClassID, removeClassTitle: gymClass.title})
+    this.setState({openModal: true, removeClass: gymClass})
   }
 
   closeModal(){
@@ -169,12 +167,6 @@ class GymClassList extends Component {
     console.log(this.state.gymClasses)
     return (
       <Grid item xs={12}>
-        {this.state.redirect ?
-          <Redirect to={this.state.redirectTo} />
-        :
-          <React.Fragment></React.Fragment>
-        }
-
         <Grid item xs={12}>
 
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
@@ -208,9 +200,9 @@ class GymClassList extends Component {
                 <TableBody>
                 {this.state.filteredGymClasses.length > 0?
                   this.state.filteredGymClasses.map((gymClass, i) => {
-                    return <GymClass 
-                            key={i} 
-                            info={gymClass} 
+                    return <GymClass
+                            key={i}
+                            info={gymClass}
                             onRemove={this.onRemove.bind(this)}
                             isOwner={this.props.isOwner}
                             onRowClick={this.onRowClick.bind(this)}
@@ -219,7 +211,7 @@ class GymClassList extends Component {
                 :
                   <EmptyClass />
                 }
-                
+
                 </TableBody>
               </Table>
             </TableContainer>
@@ -229,7 +221,7 @@ class GymClassList extends Component {
           open={this.state.openModal}
           actionText="Remove"
           cancelText="Cancel"
-          modalText={`Remove Class (${this.state.removeClassTitle})?`}
+          modalText={`Remove Class (${this.state.removeClass.title})?`}
           onAction={this.handleRemoveGymClass.bind(this)}
           onClose={this.closeModal.bind(this)}
         />
@@ -240,4 +232,4 @@ class GymClassList extends Component {
 
 
 
-export default GymClassList = withTheme(GymClassList)
+export default GymClassList = withRouter(withTheme(GymClassList))
