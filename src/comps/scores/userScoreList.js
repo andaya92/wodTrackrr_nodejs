@@ -77,7 +77,7 @@ class UserScoreList extends Component {
 	}
 
 	onView(url){
-		this.props.history.pusu(url)
+		this.props.history.push(url)
 	}
 
   	render(){
@@ -138,17 +138,17 @@ export default UserScoreList = withRouter(withTheme(UserScoreList))
 function ScoreRow(props){
 	let score = props.info["score"]
 	let title = props.info["title"]
-	let wodID = props.info["wodID"]
-	let uid = props.info["uid"]
 	let scoreID = props.info["scoreID"]
-
+	let wodID = props.info["wodID"]
 	let gymClassID = props.info["gymClassID"]
+	let boxID = props.info["boxID"]
+
 	return(
 		<TableRow onClick={(ev) => {
 			let tagName = ev.target.tagName
 			if(["path", "svg"].indexOf(tagName) > -1)
 				return
-			props.onView(`wod/${gymClassID}/${wodID}`)
+			props.onView(`wod/${boxID}/${gymClassID}/${wodID}`)
 		}}>
 			<TableCell>
 				{title}

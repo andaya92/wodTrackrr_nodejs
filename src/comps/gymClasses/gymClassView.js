@@ -356,11 +356,15 @@ class GymClassView extends Component {
 				<React.Fragment>Loading</React.Fragment>
 			:
 				this.state.gymClassMD.isPrivate && !this.isMember()
-				?<Grid item xs={12} align="center">
-					<BackButton />
-					<Paper elevation={6}>
-						<Typography>This is a Private Class</Typography>
-					</Paper>
+				?<Grid item xs={12} container>
+					<Grid item xs={12} align="left">
+						<BackButton />
+					</Grid>
+					<Grid item xs={12} align="center">
+						<Paper elevation={6}>
+							<Typography variant='h5'>This is a Private Class</Typography>
+						</Paper>
+					</Grid>
 				</Grid>
 				:
 				this.state.showAdminList && this.isAdmin() ?

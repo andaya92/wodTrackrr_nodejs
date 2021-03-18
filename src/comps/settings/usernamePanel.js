@@ -81,53 +81,37 @@ class UsernamePanel extends Component {
       ?
         <h1> Loading </h1>
       :
-        <TableContainer>
-            <Table>
-              <TableBody>
-              <TableRow>
-                <TableCell align="left">
-                  Username
-                </TableCell>
-                <TableCell colSpan={2} align="left">
-                  <Typography gutterBottom variant="h5">
-                    {this.state.userMD.username}
-                  </Typography>
-                </TableCell>
-              </TableRow>
+      <Grid item container align="center" xs={12}>
+        <Grid item xs={12}>
+          <Typography variant="h5" color="primary">
+              {this.state.userMD.username}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="updateUsernameInput"
+            type="text"
 
-                <TableRow>
-                  <TableCell>
-                    <TextField
-                      id="updateUsernameInput"
-                      type="text"
-
-                      pattern="[A-Za-z]{12}"
-                      inputProps={{
-                        title: "Letters only, max length 12",
-                        placeholder: "New username"
-                      }}
-                      onKeyUp={this.onKeyUp.bind(this) }
-                      margin="normal"
-                      color="primary"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </TableCell>
-
-                  <TableCell align="left">
-                    <Typography gutterBottom variant="h5">
-                      <Button size="small" variant="outlined" color="primary"
-                          onClick={this.updateUsername.bind(this)}>
-                          Update
-                      </Button>
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-
-              </TableBody>
-            </Table>
-        </TableContainer>
+            pattern="[A-Za-z]{12}"
+            inputProps={{
+              title: "Letters only, max length 12",
+              placeholder: "New username"
+            }}
+            onKeyUp={this.onKeyUp.bind(this) }
+            margin="normal"
+            color="primary"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} style={{marginTop: "8px"}}>
+          <Button size="small" variant="outlined" color="primary"
+              onClick={this.updateUsername.bind(this)}>
+              Update
+          </Button>
+        </Grid>
+      </Grid>
     }
     </Grid>
     );

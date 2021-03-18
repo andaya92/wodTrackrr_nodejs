@@ -54,6 +54,7 @@ class BoxListAccordion extends Component {
 
   deleteBox(){
 	this.handleModalClose()
+	console.log("removing box: ", this.state.curRemoveBoxID)
   	removeBox(this.state.curRemoveBoxID)
   	.then((res)=>{
   		this.props.onAlert({

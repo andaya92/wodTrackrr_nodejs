@@ -10,8 +10,13 @@ export default function mTea(){}
 export function removeFollow(uid, boxID){
 	const fs = firebase.firestore()
 
-	return fs.collection("userFollowing").doc(uid)
-	.collection("following").doc(boxID).delete()
+	return Promise.all([
+		fs.collection("userFollowing").doc(uid)
+		.collection("following").doc(boxID).delete(),
+		fs.collection("followers").doc(boxID)
+		.collection("followers").doc(uid).delete()
+	])
+
 }
 
 export function getFollowsFromSS(ss){
@@ -40,6 +45,9 @@ export function setFollow(uid, username, boxID, title, owner){
 		let doc = fs.collection("userFollowing").doc(uid)
 		.collection("following").doc(boxID)
 
+		let userDoc = fs.collection("followers").doc(boxID)
+		.collection("followers").doc(uid)
+
 		let data = {
 			uid: uid,
 			owner: owner,
@@ -48,7 +56,11 @@ export function setFollow(uid, username, boxID, title, owner){
 			title: title,
 			date: Date.now()
 		}
-		doc.set(data).then(() => {res("Followed.")})
+		Promise.all([
+			doc.set(data),
+			userDoc.set(data)
+		])
+		.then(() => {res("Followed.")})
 		.catch(err => {rej(err)})
 
 

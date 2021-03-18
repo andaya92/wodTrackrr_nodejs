@@ -47,9 +47,28 @@ lightTheme = responsiveFontSizes(lightTheme)
 
 const BackgroundGrid = withStyles(theme =>({
   root:{
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
+    minHeight: "calc(100vh - 128px)",
+    maxHeight: "calc(100vh - 128px)",
+    overflowY: "scroll"
   }
 }))(Grid)
+
+const StyledBottomNavigation = withStyles(theme =>({
+  root:{
+    minHeight: "64px",
+    maxHeight: "64px"
+  }
+}))(BottomNavigation)
+
+
+const StyledHeader = withStyles(theme =>({
+  root:{
+    minHeight: "64px",
+    maxHeight: "64px"
+  }
+}))(Header)
+
 
 
 export default class App extends React.Component {
@@ -133,7 +152,7 @@ export default class App extends React.Component {
     <FirebaseAuthContext.Provider>
     <BrowserRouter >
     <ThemeProvider theme={this.state.theme}>
-      <Header className="header" user={this.state.user}
+      <StyledHeader className="header" user={this.state.user}
         userMD={this.state.userMD}
         changeTheme={this.changeTheme.bind(this)}
         handleLogout={this.handleLogout.bind(this)}
@@ -142,10 +161,11 @@ export default class App extends React.Component {
         onCloseAlert={this.onCloseAlert.bind(this)}
         />
 
-      <BackgroundGrid container id="testCont">
+      <BackgroundGrid container id="testCont" >
+
 
         <Grid item container xs={12}
-          style={{"minHeight": "100vh", paddingTop: "8px"}}>
+          style={{"minHeight": "100%", paddingTop: "8px"}}>
           <Switch>
             <Route exact path="/boxSearch">
               <BoxSearchPage user={this.state.user}
@@ -215,7 +235,7 @@ export default class App extends React.Component {
         </Grid>
       </BackgroundGrid>
 
-      <BottomNavigation className="footer"
+      <StyledBottomNavigation
         value = {this.state.btmnav}
         onChange = {(event, newValue) => {
             this.setState({btmnav: newValue})
@@ -225,7 +245,7 @@ export default class App extends React.Component {
       >
         <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
         <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
-      </BottomNavigation>
+      </StyledBottomNavigation>
       </ThemeProvider>
       </BrowserRouter>
       </FirebaseAuthContext.Provider>

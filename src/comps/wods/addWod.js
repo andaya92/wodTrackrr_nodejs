@@ -43,7 +43,7 @@ class AddWod extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state){
-		return props
+		return {...props,  box: props.userBoxes[0]}
 	}
 
 	componentDidUpdate(){

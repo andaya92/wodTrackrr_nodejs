@@ -61,7 +61,6 @@ class BoxSearchPage extends Component {
   render () {
     return (
     	<Grid item xs={12} >
-        <Button onClick={createTestData}>Test Data</Button>
         {
           this.state.allBoxes.length > 0?
           <BoxSearch

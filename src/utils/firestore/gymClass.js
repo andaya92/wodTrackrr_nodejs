@@ -104,6 +104,7 @@ function getWodIDs(boxID, gymClassID, isPrivate){
 				console.log(ids)
 				res(ids)
 			}
+			res(false)
 		})
 		.catch(err => {
 			console.log(err)
@@ -406,57 +407,65 @@ function getMemberInviteIDs(gymClassInfo){
 
 
 export function removeGymClass(gymClassInfo){
-	return new Promise((res, rej) => {
+	return new Promise((resolve, reject) => {
+		let deletes = [
+			removeAdminInvitesFromClass(gymClassInfo),
+			removeMemberInvitesFromClass(gymClassInfo),
+			removeAdminsFromClass(gymClassInfo),
+			removeMembersFromClass(gymClassInfo),
+			new Promise((res, rej) => {
+				getWodIDs(gymClassInfo.boxID, gymClassInfo.gymClassID, gymClassInfo.isPrivate)
+				.then((ids =>{
+					if(!ids){
+						res(false)
+						return
+					}
 
-		removeAdminInvitesFromClass(gymClassInfo)
-		.then((result) => {
-			console.log(result)
-		})
-		.catch(err => {
-			console.log(err)
-		})
+					let promises = ids.map(id => {
+						let wodInfo = {
+							boxID: gymClassInfo.boxID,
+							gymClassID: gymClassInfo.gymClassID,
+							wodID: id,
+							isPrivate: gymClassInfo.isPrivate
+						}
+						return removeWod(wodInfo)
+					})
 
-		removeMemberInvitesFromClass(gymClassInfo)
-		.then((result) => {
-			console.log(result)
-		})
-		.catch(err => {
-			console.log(err)
-		})
+					Promise.all(promises)
+					.then(() => {
+						console.log(`Deleted wods from class: ${gymClassInfo.gymClassID}`)
+						res(`Deleted wods from class: ${gymClassInfo.gymClassID}`)
+					})
+					.catch(err => {
+						console.log(`Error deleteing wods from class: ${gymClassInfo.gymClassID}`)
+						rej(err)
+					})
+				}))
+			})
+		]
 
-		removeAdminsFromClass(gymClassInfo)
-		.then((result) => {
-			console.log(result)
-		})
-		.catch(err => {
-			console.log(err)
-		})
-
-		removeMembersFromClass(gymClassInfo)
-		.then((result) => {
-			console.log(result)
-		})
-		.catch(err => {
-			console.log(err)
-		})
-
-		getWodIDs(gymClassInfo.boxID, gymClassInfo.gymClassID, gymClassInfo.isPrivate)
-		.then((ids =>{
-
-			let wods = ids.map(id => {
-				let wodInfo = {
-					boxID: gymClassInfo.boxID,
-					gymClassID: gymClassInfo.gymClassID,
-					wodID: id,
-					isPrivate: gymClassInfo.isPrivate
-				}
-				return removeWod(wodInfo)
+		Promise.all(deletes)
+		.then((results) =>{
+			console.log(results)
+			console.log("DELETING CLASSSSSSSS")
+			fs.collection("gymClasses").doc(gymClassInfo.boxID).collection("classes").doc(gymClassInfo.gymClassID)
+			.delete()
+			.then(() => {
+				resolve(`Deleted class: ${gymClassInfo.gymClassID}`)
+			})
+			.catch(err => {
+				console.log(err)
+				reject(`Error deleting class: ${gymClassInfo.gymClassID}`)
 			})
 
-		}))
-		.catch(err => {
-			console.log(err)
 		})
+		.catch(err => {
+			console.log("Errorasdlkasndlkasndlknaskldn")
+			console.log(err)
+
+		})
+
+
 	})
 
 }

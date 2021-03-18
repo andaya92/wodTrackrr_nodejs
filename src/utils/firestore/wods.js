@@ -201,7 +201,7 @@ export function removeWod(wodInfo){
 	return new Promise((res, rej) => {
 		removeScoresFromWod(wodInfo)
 		.then((removed) => {
-			return new Promise((res, rej) => {
+			new Promise((resScore, rejScore) => {
 				console.log("scores removed? ", removed)
 				if(removed){
 					// Remove scores
@@ -209,11 +209,11 @@ export function removeWod(wodInfo){
 						`scores/${wodInfo.boxID}/classes/${wodInfo.gymClassID}/wods/${wodInfo.wodID}/scores`,
 						"wodID",
 						wodInfo.wodID,
-						res,
-						rej
+						resScore,
+						rejScore
 					)
 				}else{
-					res(true)
+					resScore(false)
 				}
 			})
 			.then(() => {
@@ -225,10 +225,12 @@ export function removeWod(wodInfo){
 			})
 			.catch(err => {
 				console.log(err)
+				rej(err)
 			})
 		})
 		.catch(err => {
 			console.log(err)
+			rej(err)
 		})
 
 	})

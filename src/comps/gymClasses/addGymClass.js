@@ -40,7 +40,7 @@ class AddGymClass extends Component {
 
 
   static getDerivedStateFromProps(props, state){
-	return props
+	return {...props,  box: props.userBoxes[0]}
   }
 
   onKeyUp(data){
@@ -56,7 +56,8 @@ class AddGymClass extends Component {
 
 	if(!title || !box || isPrivate === null){
 		console.log("Error adding class: ")
-		console.log(title, this.props.userMD.uid, box.boxID, box.title, isPrivate, box.uid)
+		console.log(title, this.props.userMD.uid, isPrivate)
+		console.log(box)
 		return
 
 	}
