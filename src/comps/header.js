@@ -10,7 +10,7 @@ import {
 	 AppBar, Toolbar, IconButton, Button, Typography, Paper, Collapse,
 	 Popper, MenuList, MenuItem, ClickAwayListener, Grow, Fade
 
-} 
+}
 from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab'
@@ -27,11 +27,6 @@ const StyledMenuItem = withStyles((theme) => ({
 	},
   }))(MenuItem);
 
-const StyledTypography = withStyles((theme) => ({
-	root: {
-		color: theme.palette.text.primary	
-	},
-}))(Typography);
 
 const StyledPaper = withStyles((theme) => ({
 	root: {
@@ -74,11 +69,11 @@ class Header extends Component{
 	static getDerivedStateFromProps(props, state){
 		return props
   	}
-	  
+
 	handleToggle(){
 		this.setState({open: !this.state.open})
 	};
-	
+
 	handleClose(ev){
 		console.log("Should close")
 		this.setState({open: false})
@@ -92,22 +87,20 @@ class Header extends Component{
 	}
 
 	render(){
-		const { classes } = this.props
 		return(
-			<AppBar position="sticky" ref={this.menuRef} 
+			<AppBar position="sticky" ref={this.menuRef}
 					style={{background:this.props.theme.palette.background.toolbar}}>
 			<Toolbar disableGutters={false}>
-			    <StyledTypography  variant="h3" >
+			    <Typography  variant="h3" >
 		            WodTrackrr
-		          </StyledTypography>
-				  
+		          </Typography>
+
 		          <section style={{marginLeft: "auto", marginRight: -12}}>
 					<IconButton color="primary" onClick={this.handleToggle.bind(this)}>
 						<Menu   />
 					</IconButton>
 					<Popper open={this.state.open} anchorEl={this.menuRef.current}
-							  placement="bottom-end" transition disablePortal
-							 className={classes.popper}>
+							  placement="bottom-end" transition disablePortal>
 						{({ TransitionProps, placement }) => (
 							<Fade
 							{...TransitionProps}
@@ -121,11 +114,11 @@ class Header extends Component{
 									</StyledMenuItem>
 
 									<StyledMenuItem onClick={this.handleClose.bind(this)} component={Link} to="/settings/">
-										Settings 
+										Settings
 									</StyledMenuItem>
-									
+
 									{this.state.user?
-										
+
 										<StyledMenuItem onClick={(ev) => {
 											this.handleClose.bind(this)(ev)
 											this.props.handleLogout()
@@ -137,8 +130,8 @@ class Header extends Component{
 											onClick={ this.handleClose.bind(this) }>
 												Login
 										</StyledMenuItem>
-				
-									
+
+
 									}
 								</MenuList>
 								</ClickAwayListener>
@@ -150,7 +143,7 @@ class Header extends Component{
 		        </Toolbar>
 				<Collapse in={this.props.alertOpen}>
 					{this.state.alertInfo ?
-						<UserAlert  alertInfo={this.state.alertInfo} 
+						<UserAlert  alertInfo={this.state.alertInfo}
 							onCloseAlert={this.props.onCloseAlert}
 						/>
 					:
@@ -165,4 +158,4 @@ class Header extends Component{
 
 
 
-export default withStyles(styles, { withTheme: true })(Header);
+export default withTheme(Header);

@@ -12,16 +12,17 @@ export default function mTea(){}
 	Boxes
 */
 
-export function setBox(title, uid){
+export function setBox(title, description, uid){
 
   	return new Promise((res, rej) => {
   		fs.collection("boxes").where("title", "==", title)
   		.get().then(result => {
   			if(result.empty){
-					let doc = fs.collection("boxes").doc()
+				let doc = fs.collection("boxes").doc()
 		  		doc.set({
 		  			boxID: doc.id,
 		  			title: title,
+					description: description,
 		  			uid, uid,
 		  			date: Date.now()
 		  		})
@@ -34,6 +35,12 @@ export function setBox(title, uid){
   			}
   		})
   	})
+ }
+
+
+ export function updateBoxInfo(){
+	// TODO() update bbox info
+	return true
  }
 
 

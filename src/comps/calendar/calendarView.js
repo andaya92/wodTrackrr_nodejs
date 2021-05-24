@@ -8,7 +8,9 @@ from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 
-import {CellRow, SuperCell, RedCell, GreenCell, WhiteCell, GreyCell, BlueCell, PurpleCell, GoldCell} from "./cells"
+import {CellRow, SuperCell, LightGreyCell, SuperTextCell,
+        TextCell, RedCell, GreenCell, WhiteCell, GreyCell,
+        BlueCell, PurpleCell, GoldCell} from "./cells"
 import "../../styles.css"
 
 import { DateTime } from 'luxon'
@@ -152,7 +154,7 @@ class CalendarScoreView extends Component {
             calendar.push([...week])
         }
 
-
+        console.log(this.state.scores)
         for(let score of this.state.scores){
             let scoreDate = DateTime.fromMillis(score.date)
             let [row, col] = this.getOffsetDayOfMonthFromDate(scoreDate)
@@ -177,49 +179,87 @@ class CalendarScoreView extends Component {
                     <Typography gutterBottom variant="subtitle2">
                         {this.state.today.monthLong}
                     </Typography>
+                </Grid>
+                <Grid item xs={1}></Grid>
+                <Grid item xs={10}>
+                    <CellRow>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> S </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> M </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> T </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> W </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> T </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> F </TextCell>
+                        </SuperTextCell>
+                        <SuperTextCell className="appearFast">
+                            <TextCell square> S </TextCell>
+                        </SuperTextCell>
+
+                    </CellRow>
+                </Grid>
+                <Grid item xs={1}></Grid>
+
+                <Grid item xs={12}>
+                    <Grid item xs={1}></Grid>
+                    <Grid item container xs={10}>
+
+                        {
+                        this.fillCalendar().map((week, i) => {
+
+
+                            return <CellRow className="appearSlow"
+                                    item xs={12}
+                                    key={i}>
+
+                                    {week.map((day, j) => {
+
+                                        if(day.isToday){
+                                            return <SuperCell key={j} className="appearFast">
+                                                <WhiteCell square/>
+                                            </SuperCell>
+                                        }
+                                        else if(day.color === 'green'){
+                                            console.log(day)
+                                            let Cell = null
+                                            if(day.count == 1)
+                                                Cell = GreenCell
+                                            if(day.count == 2)
+                                                Cell = GreenCell
+                                            if(day.count == 3)
+                                                Cell = GreenCell
+                                            if(day.count > 3)
+                                                Cell = GreenCell
+                                            return <SuperCell key={j} className="appearFast">
+                                                <Cell square/>
+                                            </SuperCell>
+                                        }else if(day.color === 'white'){
+                                            return <SuperCell key={j}>
+                                                <LightGreyCell square/>
+                                            </SuperCell>
+                                        }else if(day.color === 'red'){
+                                            return <SuperCell key={j}>
+                                                <RedCell square/>
+                                            </SuperCell>
+                                        }
+                                        return <SuperCell key={j}>
+                                            <GreyCell square/>
+                                        </SuperCell>
+                                    })}
+                            </CellRow>
+                        })
+                        }
                     </Grid>
-                <Grid item xs={3}></Grid>
-                <Grid item container xs={6}>
 
-                    {
-                    this.fillCalendar().map((week, i) => {
-
-
-                        return <CellRow className="appearSlow"
-                                item xs={12}
-                                key={i}>
-
-                                {week.map((day, j) => {
-                                    let border = day.isToday? "whiteBorder": ""
-                                    if(day.color === 'green'){
-                                        let Cell = null
-                                        if(day.count == 1)
-                                            Cell = BlueCell
-                                        if(day.count == 2)
-                                            Cell = PurpleCell
-                                        if(day.count == 3)
-                                            Cell = GreenCell
-                                        if(day.count > 3)
-                                            Cell = GoldCell
-                                        return <SuperCell key={j} className="appearFast">
-                                            <Cell className={border}/>
-                                        </SuperCell>
-                                    }else if(day.color === 'white'){
-                                        return <SuperCell key={j}>
-                                            <WhiteCell  className={border}/>
-                                        </SuperCell>
-                                    }else if(day.color === 'red'){
-                                        return <SuperCell key={j}>
-                                            <RedCell className={border}/>
-                                        </SuperCell>
-                                    }
-                                    return <SuperCell key={j}>
-                                        <GreyCell className={border} />
-                                    </SuperCell>
-                                })}
-                        </CellRow>
-                    })
-                    }
                 </Grid>
 			</Grid>
 		)

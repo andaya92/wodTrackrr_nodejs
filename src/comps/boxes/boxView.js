@@ -14,6 +14,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 // WodTrackrr
 
+import BoxInfo from "./boxInfo"
 import GymClassList from "../gymClasses/gymClassList"
 import BackButton  from "../backButton"
 
@@ -42,7 +43,6 @@ class BoxView extends Component {
 		}
 	}
 
-
 	getBoxListener(){
 		if(!this.boxListener){
 			this.boxListener = fs.collection("boxes").doc(this.state.boxID)
@@ -59,7 +59,6 @@ class BoxView extends Component {
 			})
 		}
 	}
-
 
 	checkListeners(){
 		if(this.boxListener === undefined)
@@ -92,13 +91,19 @@ class BoxView extends Component {
 			<Grid item xs={12}>
 				<BackButton />
 				{Object.keys(this.state.boxMD).length > 0 ?
-					<GymClassList
-						user={this.state.user}
-						userMD={this.state.userMD}
-						boxID={this.state.boxID}
-						isOwner={showOwnerBtns}
-						onAlert={this.props.onAlert}
-					/>
+					<React.Fragment>
+						<BoxInfo
+							boxID={this.state.boxID}
+							boxMD={this.state.boxMD}
+						/>
+						<GymClassList
+							user={this.state.user}
+							userMD={this.state.userMD}
+							boxID={this.state.boxID}
+							isOwner={showOwnerBtns}
+							onAlert={this.props.onAlert}
+						/>
+					</React.Fragment>
 				:
 					<React.Fragment></React.Fragment>
 				}

@@ -91,6 +91,12 @@ body {
 }
 
 .whiteBorder{
-  border-left: 1px solid white;
-  border-right: 1px solid white;
+  background-color: .15em solid #00ff5a;
+
+}
+
+
+.img-responsive{
+  max-width: 100%;
+  height: auto;
 }

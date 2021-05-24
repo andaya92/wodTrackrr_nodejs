@@ -7,8 +7,8 @@ import React, { Component } from 'react'
 
 import
 { 	Grid, Paper, Button, Typography, TextField, Select,
-	TableRow, TableHead, TableContainer,
-	TableBody, Table
+		TableRow, TableHead, TableContainer,
+		TableBody, Table
 }
 from '@material-ui/core';
 import {TableCell as TC} from '@material-ui/core';
@@ -19,93 +19,114 @@ import { setBox } from "../../utils/firestore/boxes"
 let fs = firebase.firestore();
 
 const TableCell = withStyles({root:{
-	borderBottom: "none"
+		borderBottom: "none"
 }})(TC)
 
 class AddBox extends Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      userMD: props.userMD
-    }
-  }
+	constructor(props){
+		super(props)
+		this.state = {
+			userMD: props.userMD,
+			boxMD: {
+					title: "",
+					description: ""
+			}
+		}
+	}
 
-  componentDidMount(){
-  }
+	componentDidMount(){
+	}
 
-  static getDerivedStateFromProps(props, state){
-	return props
-  }
+	static getDerivedStateFromProps(props, state){
+		return props
+	}
 
-  onKeyUp(data){
-    if((data.keyCode || data.which) == 13){
-      let a = document.getElementById("ownerBoxAddBoxTitle")
-      let title = a.value
-      this.createBox(title)
-    }
-  }
+	onKeyUp(data){
+		if((data.keyCode || data.which) == 13){
+			this.createBox()
+		}
+	}
 
-  createBox(title){
-	  if(!title)
-	  	return
-	setBox(title, this.props.userMD.uid)
-	.then((res)=>{
-		this.props.onAlert({
-			type: "success",
-			message: "Added gym!"
+	onChange(ev){
+		let boxMD = this.state.boxMD
+		const {name, value} = ev.target
+		boxMD[name] = value
+		this.setState({
+				boxMD: boxMD
+			})
+	}
+
+	createBox(){
+			let title = this.state.boxMD.title
+			let description = this.state.boxMD.description
+			if(!title)
+					return
+		setBox(title, description, this.props.userMD.uid)
+		.then((res)=>{
+				this.props.onAlert({
+						type: "success",
+						message: "Added gym!"
+				})
 		})
-	})
-	.catch((err)=>{
-	  this.props.onAlert({
-		  type: "error",
-		  message: err
-	  })
-	})
-  }
+		.catch((err)=>{
+			this.props.onAlert({
+					type: "error",
+					message: err
+			})
+		})
+	}
 
-  render () {
-    return (
-    	<Grid item xs={12}>
-			<Table>
-				<TableBody>
-					<TableRow>
-							<TableCell>Title</TableCell>
-							<TableCell>
-								<TextField
-					id="ownerBoxAddBoxTitle"
-					type="text"
-					pattern="[\sA-Za-z0-9]{35}"
-					inputProps={{
-						title: "Letters only, max length 35",
-						placeholder: "Name of gym"
-					}}
-					onKeyUp={this.onKeyUp.bind(this) }
-					margin="normal"
-					color="primary"
-					style={{width: "100%"}}
-					InputLabelProps={{
-						shrink: true,
-					}}
-					/>
-							</TableCell>
-					</TableRow>
-					<TableRow>
-							<TableCell align="center" colSpan={2}>
-								<Button size="small" variant="outlined" color="primary"
-									onClick={ () =>{
-										let el = document.getElementById("ownerBoxAddBoxTitle")
-										this.createBox(el.value)
-									}
-								}>
-								Submit
-							</Button>
-						</TableCell>
-					</TableRow>
-				</TableBody>
-			</Table>
-  		</Grid>
-    );
-  }
+	render () {
+		return (
+				<Grid item xs={12}>
+						<Table>
+								<TableBody>
+										<TableRow>
+												<TableCell>Title</TableCell>
+												<TableCell>
+														<TextField
+																name="title"
+																value={this.state.boxMD.title}
+																onKeyUp={this.onKeyUp.bind(this) }
+																onChange={this.onChange.bind(this)}
+																placeholder="Name"
+																margin="normal"
+																color="primary"
+																style={{width: "100%"}}
+																/>
+												</TableCell>
+										</TableRow>
+										<TableRow>
+												<TableCell>Description</TableCell>
+												<TableCell>
+														<TextField
+																name="description"
+																value={this.state.boxMD.description}
+																onKeyUp={this.onKeyUp.bind(this) }
+																onChange={this.onChange.bind(this)}
+																placeholder="Description"
+																margin="normal"
+																color="primary"
+																style={{width: "100%"}}
+																/>
+												</TableCell>
+										</TableRow>
+										<TableRow>
+												<TableCell align="center" colSpan={2}>
+														<Button size="small" variant="outlined" color="primary"
+																onClick={ () =>{
+																		this.createBox()
+																}
+														}>
+														Submit
+												</Button>
+										</TableCell>
+										</TableRow>
+								</TableBody>
+						</Table>
+					</Grid>
+		);
+	}
 }
 
 export default AddBox = withTheme(AddBox);

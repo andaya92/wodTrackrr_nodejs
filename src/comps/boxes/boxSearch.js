@@ -8,7 +8,8 @@ import { Route, Link, Redirect } from 'react-router-dom';
 import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
-  TableHead, TableRow }
+TableHead, TableRow, Card, CardMedia, CardActionArea, CardContent, CardActions
+ }
 from '@material-ui/core'
 import { withRouter } from "react-router-dom";
 
@@ -33,37 +34,87 @@ function BoxRaw(props){
   let boxID = props.info["boxID"]
 
   return(
-    <TableRow id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
-      <TableCell align="left">
-        <Typography variant="subtitle1" color="primary">
-          { title }
-        </Typography>
-      </TableCell>
-      <TableCell align="right">
-        { props.isUserFollowing ?
-          <IconButton variant="outlined"
-              onClick={()=>{props.handleUnfollow(boxID)}}>
-            <Whatshot color="primary" />
-          </IconButton>
-        :
-          <IconButton
-            onClick={()=>{props.handleFollow(props.info)}}>
-            <Whatshot style={{fill: props.theme.palette.text.primary}}/>
-          </IconButton>
-        }
-        { props.isOwner ?
-          <Button
-            onClick={()=>{props.handleRemoveBox(boxID, title)}}>
-            <Delete  color="error" />
-          </Button>
-        :
-          <React.Fragment></React.Fragment>
-        }
-      </TableCell>
-    </TableRow>
+    <Card id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
+      <CardActionArea>
+        <CardMedia component="img"
+          image="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+          title="NC Fit"
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            { title }
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
+            across all continents except Antarctica
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+      <CardActions>
+        <React.Fragment>
+          { props.isUserFollowing ?
+              <IconButton variant="outlined"
+                  onClick={()=>{props.handleUnfollow(boxID)}}>
+                <Whatshot color="primary" />
+              </IconButton>
+            :
+              <IconButton
+                onClick={()=>{props.handleFollow(props.info)}}>
+                <Whatshot style={{fill: props.theme.palette.text.primary}}/>
+              </IconButton>
+          }
+          { props.isOwner ?
+            <Button
+              onClick={()=>{props.handleRemoveBox(boxID, title)}}>
+              <Delete  color="error" />
+            </Button>
+          :
+            <React.Fragment></React.Fragment>
+          }
+        </React.Fragment>
+      </CardActions>
+    </Card>
   )
 
 }
+
+// const Box = withTheme(BoxRaw)
+// function BoxRaw(props){
+//   let title = props.info["title"]
+//   let boxID = props.info["boxID"]
+
+//   return(
+//     <TableRow id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
+//       <TableCell align="left">
+//         <Typography variant="subtitle1" color="primary">
+//           { title }
+//         </Typography>
+//       </TableCell>
+//       <TableCell align="right">
+//         { props.isUserFollowing ?
+//           <IconButton variant="outlined"
+//               onClick={()=>{props.handleUnfollow(boxID)}}>
+//             <Whatshot color="primary" />
+//           </IconButton>
+//         :
+//           <IconButton
+//             onClick={()=>{props.handleFollow(props.info)}}>
+//             <Whatshot style={{fill: props.theme.palette.text.primary}}/>
+//           </IconButton>
+//         }
+//         { props.isOwner ?
+//           <Button
+//             onClick={()=>{props.handleRemoveBox(boxID, title)}}>
+//             <Delete  color="error" />
+//           </Button>
+//         :
+//           <React.Fragment></React.Fragment>
+//         }
+//       </TableCell>
+//     </TableRow>
+//   )
+
+// }
 const Box = withTheme(BoxRaw)
 
 
@@ -196,15 +247,7 @@ class BoxSearch extends Component {
         </Paper>
         </Grid>
         <Grid item xs={12}>
-          <TableContainer>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Boxes</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+
     { this.state.filteredBoxes.length > 0?
       this.state.filteredBoxes.map((box, i) => {
         return <Box
@@ -224,10 +267,6 @@ class BoxSearch extends Component {
     :
       <EmptyBox />
     }
-
-              </TableBody>
-            </Table>
-          </TableContainer>
         </Grid>
       </Grid>
     );

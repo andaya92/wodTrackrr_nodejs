@@ -5,8 +5,8 @@ export default function mTea(){}
 
 const Cell = withStyles(theme => ({
     root:{
-        borderRadius: "4px",
-        height:"5px"
+
+        height:"0.75em"
     }
 }))(Paper)
 
@@ -15,13 +15,29 @@ export const SuperCell = withStyles(theme => ({
         background: `transparent`,
         display: "block",
         borderRadius: "4px",
-        padding: "0px 0px 0px 2px",
-        margin: "1px auto",
-        width: "12%",
-        height: "6px"
+        width: "100%",
 
     }
 }))(Box)
+
+export const SuperTextCell = withStyles(theme => ({
+    root:{
+        background: `transparent`,
+        display: "block",
+        width: "100%",
+        height: "1em",
+
+    }
+}))(Box)
+
+
+export const TextCell = withStyles(theme => ({
+    root:{
+        background: `linear-gradient(45deg, ${theme.palette.primary.main}, transparent, transparent, ${theme.palette.primary.main} )`,
+        height: "1em",
+    }
+}))(Cell)
+
 
 
 export const CellRow = withStyles(theme => ({
@@ -32,31 +48,31 @@ export const CellRow = withStyles(theme => ({
 
 export const RedCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent, #ff0b0b, transparent)`,
+        background: `linear-gradient(45deg, #ff0b0b, transparent)`,
     }
 }))(Cell)
 
 export const GreyCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent, grey, transparent)`,
+        background: `linear-gradient(45deg, transparent)`,
     }
 }))(Cell)
 
 export const GreenCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent, #00fb42, #00fb42, ${theme.palette.primary.main})`,
+        background: `linear-gradient(45deg, #00fb42, #00fb42, ${theme.palette.primary.main})`,
     }
 }))(Cell)
 
 export const WhiteCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent,  white, ${theme.palette.primary.main})`,
+        background: `linear-gradient(45deg,  white, white, ${theme.palette.primary.main})`,
     }
 }))(Cell)
 
 export const BlueCell = withStyles(theme => ({
     root:{
-        background: `linear-gradient(45deg, transparent,  ${theme.palette.primary.main}, #6700c5)`,
+        background: `linear-gradient(45deg,  ${theme.palette.primary.main}, #6700c5)`,
     }
 }))(Cell)
 
@@ -73,3 +89,12 @@ export const GoldCell = withStyles(theme => ({
         background: `linear-gradient(45deg, white, #ffeb00, #ffeb00, white)`,
     }
 }))(Cell)
+
+export const LightGreyCell = withStyles(theme => ({
+    root:{
+        background: `linear-gradient(45deg,  grey, ${theme.palette.primary.main})`,
+    }
+}))(Cell)
+
+
+

@@ -189,19 +189,14 @@ class ScoreView extends Component {
         <Grid item xs={12}>
           <Grid item align="center" xs={12}>
             <Paper elevation={6}>
-            <Typography>{this.state.wodMD["boxTitle"]}</Typography>
-            <Typography>{this.state.wodMD["gymClassTitle"]}</Typography>
-              <Typography>{this.state.wodMD["title"]}</Typography>
-              <Typography
-                variant="subtitle1"
+              <Typography variant="h6">{this.state.wodMD["boxTitle"]}</Typography>
+              <Typography variant="h3">{this.state.wodMD["title"]}</Typography>
+              <Typography gutterBottom
+                variant="subtitle2"
                 color="primary">
                   For {this.state.wodMD["scoreType"]}
               </Typography>
-              <Typography
-                variant="caption"
-                color="secondary">
-                  {date.monthLong} {date.day}, {date.year}
-              </Typography>
+
             </Paper>
           </Grid>
 
@@ -215,6 +210,11 @@ class ScoreView extends Component {
                 variant="subtitle2"
                 color="primary">
                   Workout
+              </Typography>
+              <Typography
+                variant="caption"
+                color="secondary">
+                  {date.monthLong} {date.day}, {date.year}
               </Typography>
             </Grid>
             <Grid item container xs={12}>

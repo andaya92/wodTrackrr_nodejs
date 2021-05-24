@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Grid, Paper, Button, Typography, IconButton,
-        TableBody, Table, TableCell, TableContainer, TableRow }
+        TableBody, Table, TableCell, TableContainer, TableRow, TableHead}
 from '@material-ui/core';
 
 import Whatshot from '@material-ui/icons/Whatshot'
@@ -80,12 +80,17 @@ class UserFollows extends Component{
       <Grid item xs={12}>
           <Paper elevation={6}>
             <Grid item xs={12}>
-              <Typography>Following</Typography>
-            </Grid>
-            <Grid item xs={12}>
                 {this.state.userFollows.length > 0 ?
                   <TableContainer>
                     <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell><Typography variant="subtitle1">
+                          Following
+                        </Typography></TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableHead>
                       <TableBody>
                         {this.state.userFollows.map((follow, i) => {
                           return (

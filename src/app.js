@@ -22,7 +22,7 @@ import PanoramaIcon from '@material-ui/icons/Panorama';
 
 import "./styles.css";
 
-
+import HomePage from "./pages/homePage"
 import BoxSearchPage from "./pages/boxSearchPage"
 import Settings from "./pages/settings"
 import BoxView from "./comps/boxes/boxView"
@@ -48,8 +48,8 @@ lightTheme = responsiveFontSizes(lightTheme)
 const BackgroundGrid = withStyles(theme =>({
   root:{
     backgroundColor: theme.palette.background.paper,
-    minHeight: "calc(100vh - 128px)",
-    maxHeight: "calc(100vh - 128px)",
+    minHeight: "calc(100vh - 126px)",
+    maxHeight: "calc(100vh - 126px)",
     overflowY: "scroll"
   }
 }))(Grid)
@@ -167,12 +167,19 @@ export default class App extends React.Component {
         <Grid item container xs={12}
           style={{"minHeight": "100%", paddingTop: "8px"}}>
           <Switch>
+            <Route exact path="/">
+              <HomePage
+                onAlert={this.onAlert.bind(this)}
+                />
+            </Route>
+
             <Route exact path="/boxSearch">
               <BoxSearchPage user={this.state.user}
                 userMD={this.state.userMD}
                 onAlert={this.onAlert.bind(this)}
                 />
             </Route>
+
             <Route exact path="/profile">
               <Profile user={this.state.user}
                 userMD={this.state.userMD}
