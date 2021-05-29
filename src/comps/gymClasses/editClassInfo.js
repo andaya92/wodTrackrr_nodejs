@@ -21,7 +21,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 import { sendAdminInvite } from "../../utils/firestore/classAdmin"
 
-import { updateBoxInfo } from '../../utils/firestore/boxes'
+import { updateClassInfo } from '../../utils/firestore/gymClass'
 
 
 
@@ -31,7 +31,7 @@ class EditBoxInfo extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-            boxMD: props.boxMD
+            gymClassMD: props.gymClassMD
 		}
 	}
 
@@ -44,25 +44,27 @@ class EditBoxInfo extends Component {
 
 
     onChange(ev){
-	    let boxMD = this.state.boxMD
+	    let gymClassMD = this.state.gymClassMD
 		const {name, value} = ev.target
-		boxMD[name] = value
+		gymClassMD[name] = value
 		this.setState({
-            boxMD: boxMD
+            gymClassMD: gymClassMD
 	  	})
 	}
 
     onSave(){
         console.log("save state")
-        console.log(this.state.boxMD)
-        updateBoxInfo(this.state.boxMD['boxID'], this.state.boxMD['description']).then(res => {
-            console.log(res)
+        console.log(this.state.gymClassMD)
+        updateClassInfo(
+            this.state.gymClassMD['boxID'],
+            this.state.gymClassMD['gymClassID'],
+            this.state.gymClassMD['description']
+        ).then(res => {
             this.props.onAlert({type: 'success', message: res})
             this.props.onClose()
         })
         .catch(err => {
-            console.log(err)
-            this.props.onAlert({type: 'error', message: err.toString()})
+            this.props.onAlert({type: 'error', message: err})
             this.props.onClose()
         })
     }
@@ -87,7 +89,7 @@ class EditBoxInfo extends Component {
                                 <Typography variant="caption">Description</Typography>
                                 <TextField
                                     placeholder="Desc"
-                                    value={this.state.boxMD.description}
+                                    value={this.state.gymClassMD.description}
                                     name="description"
                                     fullWidth
                                     variant="outlined"

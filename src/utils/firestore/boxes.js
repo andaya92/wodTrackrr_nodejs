@@ -37,10 +37,18 @@ export function setBox(title, description, uid){
   	})
  }
 
-
- export function updateBoxInfo(){
-	// TODO() update bbox info
-	return true
+ export function updateBoxInfo(boxID, description){
+	return new Promise((res, rej) => {
+		fs.collection("boxes").doc(boxID).update({
+			description: description
+		}).then(() => {
+			console.log("Updated description.")
+			res("Updated description.")
+		}).catch( err => {
+			console.log(`UpdateBoxInfo Error: ${err.toString()}`)
+			rej(`UpdateBoxInfo Error: ${err.toString()}`)
+		})
+	})
  }
 
 

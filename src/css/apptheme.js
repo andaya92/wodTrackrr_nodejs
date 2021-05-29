@@ -30,7 +30,22 @@ let apptheme = {
       },
       "MuiBottomNavigation": {
          "root": {
-            "zIndex": 100
+            "zIndex": 100,
+         }
+      },
+      "MuiBottomNavigationAction" :{
+         root: {
+            color: "white",
+            '&$selected': {
+               color: "#004a7b"
+            }
+         }
+      },
+      "MuiTableRow": {
+         "hover": {
+            "&$hover:hover": {
+               backgroundColor: '#515151',
+            }
          }
       }
    },

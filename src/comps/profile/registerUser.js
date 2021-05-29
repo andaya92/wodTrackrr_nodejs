@@ -4,7 +4,7 @@ import "firebase/firestore";
 import { withRouter } from "react-router-dom";
 
 import React, { Component } from 'react'
-import { Grid, TextField, Button, Paper } from '@material-ui/core';
+import { Grid, TextField, Button, Paper, Typography } from '@material-ui/core';
 import { Redirect } from 'react-router-dom';
 import { withTheme } from '@material-ui/core/styles';
 
@@ -52,16 +52,19 @@ class RegisterUser extends Component {
     }
   }
 
+  goToLogin(){
+	  this.props.history.push("/login")
+  }
+
   render () {
     return (
-		<Grid container xs={12} id="login" align="center" justify="center">
+		<Grid container item xs={12} align="center" justify="center" style={{top: "20%", position: "absolute"}}>
 			<Paper elevation={2}>
-				<br />
-				<Grid item xs={12} ><h1>Register</h1></Grid>
-				<br />
+				<Typography variant="h4">
+					Register
+				</Typography>
 
-				<Grid item xs={12} >
-					<TextField
+				<TextField
 					id="email"
 					style={{ margin: 8 }}
 					placeholder="Email"
@@ -69,46 +72,46 @@ class RegisterUser extends Component {
 					InputLabelProps={{
 						shrink: true,
 					}}
-					/><br /><br />
-				</Grid>
+				/><br /><br />
 
-				<Grid item xs={12} >
-					<TextField
-						id="password"
-						type="password"
-						style={{ margin: 8 }}
-						placeholder="Password"
-						margin="normal"
-						InputLabelProps={{
-						shrink: true,
-						}}
-					/>
-						<br/><br/>
-				</Grid>
+				<TextField
+					id="password"
+					type="password"
+					style={{ margin: 8 }}
+					placeholder="Password"
+					margin="normal"
+					InputLabelProps={{
+					shrink: true,
+					}}
+				/><br/><br/>
 
-				<Grid item xs={12} >
-					<TextField
-						id="passwordConfirm"
-						type="password"
-						style={{ margin: 8 }}
-						placeholder="Confirm Password"
-						margin="normal"
-						InputLabelProps={{
-						shrink: true,
-						}}
-					/> <br/><br/>
-				</Grid>
-				<Grid item xs={12} >
-					<Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
-					Submit
-					</Button>
+				<TextField
+					id="passwordConfirm"
+					type="password"
+					style={{ margin: 8 }}
+					placeholder="Confirm Password"
+					margin="normal"
+					InputLabelProps={{
+					shrink: true,
+					}}
+				/> <br/><br/>
+
+				<Grid item container xs={12} >
+					<Grid item xs={6} >
+						<Button variant="outlined" color="secondary" onClick={this.goToLogin.bind(this)}>
+						Login
+						</Button>
+					</Grid>
+					<Grid item xs={6} >
+						<Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
+						Submit
+						</Button>
+					</Grid>
 				</Grid>
 			</Paper>
 		</Grid>
     );
   }
 }
-
-
 
 export default RegisterUser = withRouter(withTheme(RegisterUser))

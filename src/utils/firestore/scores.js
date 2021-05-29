@@ -8,37 +8,34 @@ import "firebase/firestore";
 
 let fs = firebase.firestore();
 
-export function getWodScores(boxID, gymClassID, wodID){
+export function getWodScores(boxID, gymClassID, wodID, date){
+	console.log(date)
 	return fs.collection("scores").doc(boxID)
 			.collection("classes").doc(gymClassID)
 			.collection("wods").doc(wodID)
-			.collection("scores")
+			.collection("scores").where("date", ">=", date)
 }
-
 
 export function getUserScores(uid, field, value){
 	return fs.collection("userScores").doc(uid)
-		.collection("scores").orderBy("date", "asc")
-		.where(field, "==", value)
-
+		.collection("scores")
+		.where(field, ">=", value)
 }
-
-
 
 export function setScore(title, boxID, gymClassID, wodID, owner, uid, username, userScore, scoreType){
 	return new Promise((res, rej) => {
 		let data = {
-				uid: uid,
-				wodID: wodID,
-				gymClassID: gymClassID,
-				boxID: boxID,
-				username: username,
-				title: title,
-				score: userScore,
-				scoreType: scoreType,
-				owner: owner,
-				date: Date.now()
-			}
+			uid: uid,
+			wodID: wodID,
+			gymClassID: gymClassID,
+			boxID: boxID,
+			username: username,
+			title: title,
+			score: userScore,
+			scoreType: scoreType,
+			owner: owner,
+			date: Date.now()
+		}
 
 		let doc = fs.collection("scores").doc(boxID)
 		.collection("classes").doc(gymClassID)
@@ -47,7 +44,6 @@ export function setScore(title, boxID, gymClassID, wodID, owner, uid, username, 
 
 		let userDoc = fs.collection("userScores").doc(uid)
 		.collection("scores")
-
 
 		userDoc.where("wodID", "==", wodID)
 		.get().then( ss => {
@@ -70,8 +66,6 @@ export function setScore(title, boxID, gymClassID, wodID, owner, uid, username, 
 		.catch(err => {
 			console.log(err)
 		})
-
-
 	})
 }
 

@@ -32,7 +32,7 @@ const TableCell = withStyles({root:{
 
 
 function AdminRowRaw(props){
-    let gymClassTitle = props.info.gymClassTitle
+    let gymClassTitle = props.info.classTitle
     let boxTitle = props.info.boxTitle
     let boxID = props.info.boxID
     let redirectUrl = `class/${boxID}/${props.info.gymClassID}`
@@ -115,11 +115,12 @@ class ClassAdminView extends Component {
                     <Grid item xs={12} style={{margin: "16px 0px 0px 0px"}}>
                         <Paper elevation={6}>
                             <Typography variant="subtitle1">Admin Roles</Typography>
+                            <hr/>
                             <Table size="small">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell align="center">Gym</TableCell>
-                                        <TableCell align="center">Class</TableCell>
+                                        <TableCell align="left">Gym</TableCell>
+                                        <TableCell align="left">Class</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>

@@ -57,10 +57,10 @@ const BackgroundGrid = withStyles(theme =>({
 const StyledBottomNavigation = withStyles(theme =>({
   root:{
     minHeight: "64px",
-    maxHeight: "64px"
+    maxHeight: "64px",
+    background: theme.palette.primary.mainGrad
   }
 }))(BottomNavigation)
-
 
 const StyledHeader = withStyles(theme =>({
   root:{
@@ -68,7 +68,6 @@ const StyledHeader = withStyles(theme =>({
     maxHeight: "64px"
   }
 }))(Header)
-
 
 
 export default class App extends React.Component {
@@ -81,17 +80,26 @@ export default class App extends React.Component {
       theme: darkTheme,
       darkTheme: true,
       alertOpen: false,
-      alertInfo: false
+      alertInfo: false,
+      loading: true
     }
-
   }
 
   static getDerivedStateFromProps(props, state){
+    console.log("App STATE:")
+    console.log(state)
     return state
   }
 
+  onURLChange(ev){
+    // console.log("Window EVENT!!!!!!!!!!!!!!!!!!!!")
+    // console.log(ev)
+  }
 
   componentDidMount(){
+    window.addEventListener('click', this.onURLChange)
+
+
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
       let fs = firebase.firestore()
@@ -103,13 +111,13 @@ export default class App extends React.Component {
           }else{
             this.setState({ user: user, userMD: false })
           }
+          this.setState({loading: false})
         }, err => {console.log(err)})
-
       }else{
         this.setState({ user: null, userMD: false })
+        this.setState({loading: false})
       }
     })
-
   }
 
   handleLogin(user){
@@ -129,6 +137,8 @@ export default class App extends React.Component {
       this.firebaseAuthListener && this.firebaseAuthListener()
     if(this.userMDListener !== null)
       this.userMDListener && this.userMDListener()
+
+    window.removeEventListener('click', this.onURLChange)
   }
 
   changeTheme(){
@@ -145,8 +155,6 @@ export default class App extends React.Component {
     this.setState({alertOpen: false, alertInfo: false})
   }
 
-
-
   render(){
     return(
     <FirebaseAuthContext.Provider>
@@ -162,10 +170,14 @@ export default class App extends React.Component {
         />
 
       <BackgroundGrid container id="testCont" >
-
-
         <Grid item container xs={12}
-          style={{"minHeight": "100%", paddingTop: "8px"}}>
+          style={{"minHeight": "100%", paddingTop: "8px"}}
+        >
+          {this.state.loading?
+            <h1>Loading</h1>
+          :
+
+
           <Switch>
             <Route exact path="/">
               <HomePage
@@ -195,6 +207,7 @@ export default class App extends React.Component {
                   onAlert={this.onAlert.bind(this)}/>
               )}
             />
+
             <Route path="/class/:boxID/:gymClassID"
               render= { props =>(
                 <GymClassView
@@ -204,6 +217,7 @@ export default class App extends React.Component {
                   onAlert={this.onAlert.bind(this)}/>
               )}
             />
+
            <Route path="/wod/:boxID/:gymClassID/:wodID"
             render= { props =>(
                 <ScoreView userMD={this.state.userMD}
@@ -215,6 +229,7 @@ export default class App extends React.Component {
               )
             }
           />
+
           <Route exact path="/register"
             render= { props =>(
               <RegisterUser onAlert={this.onAlert.bind(this)}/>
@@ -233,10 +248,12 @@ export default class App extends React.Component {
 
           <Route exact path="/login">
             <Login
+              userMD={this.state.userMD}
               onLogin={this.handleLogin.bind(this)}
               onAlert={this.onAlert.bind(this)}/>
           </Route>
-          </Switch>
+        </Switch>
+        }
 
           <div style={{"margin": "5vh"}}></div>
         </Grid>
@@ -247,7 +264,6 @@ export default class App extends React.Component {
         onChange = {(event, newValue) => {
             this.setState({btmnav: newValue})
           }}
-          style={{background: this.state.theme.palette.primary.mainGrad}}
         showLabels
       >
         <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />

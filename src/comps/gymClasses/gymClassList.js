@@ -18,7 +18,7 @@ import Delete from '@material-ui/icons/Delete'
 
 import ActionCancelModal from "../actionCancelModal"
 import { getGymClasses, removeGymClass } from '../../utils/firestore/gymClass'
-import "../../styles.css"
+
 
 const fs = firebase.firestore()
 
@@ -28,8 +28,10 @@ function GymClassRaw(props){
   let gymClassID = props.info["gymClassID"]
 
   return(
-    <TableRow id={`class/${gymClassID}`} name="GymClassRow"
-          onClick={(ev) => {props.onRowClick(ev, `/class/${boxID}/${gymClassID}`)} }>
+    <TableRow hover
+      id={`class/${gymClassID}`} name="GymClassRow"
+      onClick={(ev) => {props.onRowClick(ev, `/class/${boxID}/${gymClassID}`)} }
+    >
       <TableCell align="left">
         <Typography variant="subtitle1" color="primary">
           { title }
@@ -170,25 +172,21 @@ class GymClassList extends Component {
         <Grid item xs={12}>
 
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
-            <Paper elevation={2} component="form">
-              <TextField
-                fullWidth
-                  variant="outlined"
-                  onKeyUp={this.onKeyUp.bind(this)}
-                  onChange={this.onChange.bind(this)}
-                  placeholder="Search Classes"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="primary" />
-                      </InputAdornment>
-                    )
-                  }}
-              />
-            </Paper>
-          </Grid>
 
-          <Grid item xs={12}>
+              <TextField
+                placeholder="Search Classes"
+                variant="outlined"
+                onKeyUp={this.onKeyUp.bind(this)}
+                onChange={this.onChange.bind(this)}
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment >
+                      <SearchIcon color="primary" />
+                    </InputAdornment>
+                  )
+                }}
+              />
             <TableContainer>
               <Table stickyHeader>
                 <TableHead>

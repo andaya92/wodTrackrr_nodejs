@@ -24,7 +24,7 @@ export function getGymClasses(boxID){
 
 
 
-export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner){
+export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner, description){
 	/* Sets the data for a new class.
 
 		Adds two entries:
@@ -49,6 +49,7 @@ export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner){
 					uid, uid,
 					isPrivate: isPrivate,
 					owner: owner,
+					description: description,
 					date: Date.now(),
 
 				})
@@ -57,11 +58,28 @@ export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner){
 		  		})
 				.catch(err => { rej(err) })
   			}else{
-  				res("Name Taken")
+  				rej({message: "Name Taken!"})
   			}
   		})
 		.catch(err => {rej(err)})
   	})
+ }
+
+ export function updateClassInfo(boxID, gymClassID, description){
+	return new Promise((res, rej) => {
+		fs.collection("gymClasses").doc(boxID)
+		.collection("classes").doc(gymClassID)
+		.update({
+			description: description
+		}).then(() => {
+			console.log("Updated description.")
+			res("Updated description.")
+		}).catch( err => {
+			console.log(`UpdateClassInfo Error: ${err.toString()}`)
+			console.log(err)
+			rej(err.message)
+		})
+	})
  }
 
 

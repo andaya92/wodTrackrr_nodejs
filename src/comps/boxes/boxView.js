@@ -88,13 +88,18 @@ class BoxView extends Component {
 		let showOwnerBtns = uid === boxOwnerUid
 
 		return(
-			<Grid item xs={12}>
-				<BackButton />
+			<Grid item container xs={12}>
+				<Grid item xs={1}>
+					<BackButton />
+				</Grid>
+				<Grid item xs={10}>
 				{Object.keys(this.state.boxMD).length > 0 ?
 					<React.Fragment>
 						<BoxInfo
+							userMD={this.state.userMD}
 							boxID={this.state.boxID}
 							boxMD={this.state.boxMD}
+							onAlert={this.props.onAlert}
 						/>
 						<GymClassList
 							user={this.state.user}
@@ -107,7 +112,7 @@ class BoxView extends Component {
 				:
 					<React.Fragment></React.Fragment>
 				}
-
+				</Grid>
 			</Grid>
 		)
 	}

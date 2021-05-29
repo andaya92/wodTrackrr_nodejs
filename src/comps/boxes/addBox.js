@@ -79,51 +79,36 @@ class AddBox extends Component {
 	render () {
 		return (
 				<Grid item xs={12}>
-						<Table>
-								<TableBody>
-										<TableRow>
-												<TableCell>Title</TableCell>
-												<TableCell>
-														<TextField
-																name="title"
-																value={this.state.boxMD.title}
-																onKeyUp={this.onKeyUp.bind(this) }
-																onChange={this.onChange.bind(this)}
-																placeholder="Name"
-																margin="normal"
-																color="primary"
-																style={{width: "100%"}}
-																/>
-												</TableCell>
-										</TableRow>
-										<TableRow>
-												<TableCell>Description</TableCell>
-												<TableCell>
-														<TextField
-																name="description"
-																value={this.state.boxMD.description}
-																onKeyUp={this.onKeyUp.bind(this) }
-																onChange={this.onChange.bind(this)}
-																placeholder="Description"
-																margin="normal"
-																color="primary"
-																style={{width: "100%"}}
-																/>
-												</TableCell>
-										</TableRow>
-										<TableRow>
-												<TableCell align="center" colSpan={2}>
-														<Button size="small" variant="outlined" color="primary"
-																onClick={ () =>{
-																		this.createBox()
-																}
-														}>
-														Submit
-												</Button>
-										</TableCell>
-										</TableRow>
-								</TableBody>
-						</Table>
+					<Grid item xs={12}>
+						<TextField
+								name="title"
+								value={this.state.boxMD.title}
+								onKeyUp={this.onKeyUp.bind(this) }
+								onChange={this.onChange.bind(this)}
+								placeholder="Name"
+								margin="normal"
+								color="primary"
+								style={{width: "80%"}}
+								/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+								name="description"
+								value={this.state.boxMD.description}
+								onKeyUp={this.onKeyUp.bind(this) }
+								onChange={this.onChange.bind(this)}
+								placeholder="Description"
+								margin="normal"
+								color="primary"
+								style={{width: "80%"}}
+								/>
+					</Grid>
+					<Grid item xs={12}>
+						<Button size="small" variant="outlined" color="primary"
+								onClick={ () =>{ this.createBox() }}>
+								Submit
+						</Button>
+					</Grid>
 					</Grid>
 		);
 	}

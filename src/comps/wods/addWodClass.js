@@ -76,11 +76,11 @@ class AddWodClass extends Component {
 	  	let scoreType = this.state.scoreTypeForm
 	  	let wodText = this.state.wodTextForm
 
-
-		console.log("Creating Wod")
-		console.log(boxID, gymClassID, title, scoreType, wodText)
-	  	if(!boxID || !gymClassID || !title || !scoreType || !wodText || !owner){
-	  		console.log("Error with input createWod")
+	  	if(!boxID || !gymClassID || !scoreType || !wodText || !owner){
+			this.props.onAlert({
+				type: "error",
+				message: "Error creating workout"
+			})
 	  		console.log(boxID, gymClassID, title, scoreType, wodText, owner)
 	  		return
 
@@ -94,10 +94,10 @@ class AddWodClass extends Component {
 			})
 		})
 		.catch((err)=>{
-		  this.props.onAlert({
+		  	this.props.onAlert({
 			  type: "error",
 			  message: err.message
-		  })
+		  	})
 	 	 })
 
 	  }

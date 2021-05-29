@@ -9,10 +9,10 @@ export function cvtTimetoInt(x){
 
 export function dupNewLine(text){
 	console.log("\n".charCodeAt(0))
-	
+
 	let newLinePattern = /\\n/
 	let newText = text.replace(newLinePattern, "\\n\\n")
-	
+
 	for(let c of newText){
 		console.log(c)
 		console.log(c.charCodeAt(0))
@@ -41,13 +41,24 @@ export function msToDate(ms){
 	return new Date(ms).toLocaleDateString("en-US")
 }
 
+export function getFirstOfMonthTS(){
+	let today = new Date()
+	return new Date(today.getFullYear(), today.getMonth(), 1, 0).valueOf()
+}
+
 
 export function formatDate(){
-  const [{ value: month },,{ value: day },,{ value: year }] 
-    = new Intl.DateTimeFormat('en', 
+  const [{ value: month },,{ value: day },,{ value: year }]
+    = new Intl.DateTimeFormat('en',
       { year: 'numeric', month: 'numeric', day: '2-digit' })
-      .formatToParts(new Date())  
-  console.log(new Intl.DateTimeFormat('en', 
+      .formatToParts(new Date())
+  console.log(new Intl.DateTimeFormat('en',
       { year: 'numeric', month: 'numeric', day: '2-digit' }))
   return `${year}/${month}/${day}`
+}
+
+
+export function toDayYear(date){
+	let dateJoined = date.toDateString().split(" ")
+	return `${dateJoined[1]} ${dateJoined[3]}`
 }

@@ -27,7 +27,7 @@ class ScoreList extends Component {
 		return props
 	}
 
-  render(){
+  	render(){
 		return(
 			<React.Fragment>
 			{this.state.scores.length > 0?
@@ -41,28 +41,26 @@ class ScoreList extends Component {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{
-					this.state.scores.map((score, i) => {
+					{this.state.scores.map((score, i) => {
 						let isCurUserScore =
 							(this.state.uid == score["uid"])? true : false
 						return <ScoreRow key={i}
-							info={score}
-							onRemove = {this.props.onRemove}
-							isUserScore={isCurUserScore}
-						/>
-					})
-					}
+								info={score}
+								onRemove={this.props.onRemove}
+								isUserScore={isCurUserScore}
+								/>
+					})}
 			    </TableBody>
 			    </Table>
 			</TableContainer>
 			:
 			<Grid item xs={12}>
 				<Card variant="outlined" color="primary">
-				  <CardContent>
-				    <Typography variant="h5" component="h2"gutterBottom>
-				   	No Scores!
-				    </Typography>
-				   </CardContent>
+					<CardContent>
+						<Typography variant="h5" component="h2"gutterBottom>
+							No Scores!
+						</Typography>
+					</CardContent>
 				</Card>
 			</Grid>
 			}
@@ -73,8 +71,6 @@ class ScoreList extends Component {
 
 
 export default ScoreList = withTheme(ScoreList);
-
-
 /*
 Show details of Box and its WODS
 */
@@ -98,7 +94,6 @@ function ScoreRowRaw(props){
 		  			?
 			  		<TableCell align="right">
 					    <Button size="small"
-
 					    	onClick={() => props.onRemove(props.info)}>
 					    	<Delete color="error"  />
 					    </Button>

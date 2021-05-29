@@ -15,6 +15,13 @@ import "../../styles.css"
 
 class Login extends Component {
 
+  constructor(props){
+    super(props)
+    this.state = {
+      userMD: props.userMD
+    }
+  }
+
   handleSubmit(ev){
     let email = document.getElementById('email')
 
@@ -37,11 +44,21 @@ class Login extends Component {
     });
   }
 
+  // static getDerivedStateFromProps(props, state){
+  //   console.log(props.userMD)
+  //   console.log(state.userMD)
+  //   if(state.userMD || props.userMD){
+  //     console.log("redirect Home or something")
+  //     props.history.push("/boxSearch")
+  //   }
+  //   return props
+  // }
+
+
   render () {
     return (
       <Grid container id="login" align="center" justify="center">
-        <br />
-        <Grid item xs={12} >
+        <Grid item xs={12} style={{top: "20%", position: "absolute"}}>
           <Paper elevation={2}>
             <Typography variant="h4">
               Login
@@ -69,11 +86,7 @@ class Login extends Component {
             }}
             />
             <br/><br/>
-          </Paper>
-        </Grid>
 
-        <Grid item xs={12} >
-          <Paper elevation={2}>
             <Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
               Login
             </Button>

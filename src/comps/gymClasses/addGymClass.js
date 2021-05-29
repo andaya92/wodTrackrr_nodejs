@@ -29,15 +29,13 @@ class AddGymClass extends Component {
       userMD: props.userMD,
       userBoxes: props.userBoxes,
       hasBoxes: props.hasBoxes,
-	  title: "",
-	  box: props.userBoxes[0],
-	  isPrivate: false
+	  	box: props.userBoxes[0],
+	  	classInfo: {
+				boxID: props.userBoxes[0]['boxID'],
+				isPrivate: false
+			}
     }
   }
-
-  componentDidMount(){
-  }
-
 
   static getDerivedStateFromProps(props, state){
 	return {...props,  box: props.userBoxes[0]}
@@ -50,46 +48,58 @@ class AddGymClass extends Component {
   }
 
   createGymClass(){
-	let title = this.state.title
-	let box = this.state.box
-	let isPrivate = this.state.isPrivate
+		let boxID = this.state.classInfo.boxID
+		let owner = this.state.classInfo.owner
+		let boxTitle = this.state.classInfo.boxTitle
+		let title = this.state.classInfo.title
+		let description = this.state.classInfo.description
+		let isPrivate = this.state.classInfo.isPrivate
 
-	if(!title || !box || isPrivate === null){
-		console.log("Error adding class: ")
-		console.log(title, this.props.userMD.uid, isPrivate)
-		console.log(box)
-		return
+		if(!title || !boxID || isPrivate === null || isPrivate === undefined){
+			console.log("Error adding class: ")
+			console.log(title, this.props.userMD.uid, isPrivate, boxID)
+			return
+		}
 
-	}
-
-	setGymClass(title, this.props.userMD.uid, box.boxID, box.title, isPrivate, box.uid)
-	.then((res)=>{
-		this.props.onAlert({
-			type: "success",
-			message: "Added class!"
+		setGymClass(
+			title, this.props.userMD.uid, boxID, boxTitle, isPrivate, owner,
+			description
+		)
+		.then((res)=>{
+			this.props.onAlert({
+				type: "success",
+				message: "Added class!"
+			})
 		})
-	})
-	.catch((err)=>{
-	  this.props.onAlert({
-		  type: "error",
-		  message: err
-	  })
-	})
+		.catch((err)=>{
+			this.props.onAlert({
+				type: "error",
+				message: err.message
+			})
+		})
   }
 
   handleCheckboxChange(ev){
-	  let checked = ev.target.checked
-	  this.setState({isPrivate: checked})
+	  let classInfo = this.state.classInfo
+	  let name = ev.target.name
+	  classInfo[name] = ev.target.checked
+	  this.setState({classInfo: classInfo})
   }
 
-  onTitleChange(ev){
-	  console.log(ev.target.value)
-	this.setState({title: ev.target.value})
-  }
+  onChange(ev){
+		let classInfo = this.state.classInfo
+		let name = ev.target.name
+		let value = ev.target.value
 
-  onSelectChange(ev){
-	console.log(ev.target.value)
-	this.setState({box: JSON.parse(ev.target.value)})
+		if(name == "boxID"){
+			let box = JSON.parse(value)
+			classInfo['boxID'] = box.boxID
+			classInfo['boxTitle'] = box.title
+			classInfo['owner'] = box.uid
+		}else{
+			classInfo[name] = value
+		}
+		this.setState({classInfo: classInfo})
   }
 
   render () {
@@ -103,12 +113,10 @@ class AddGymClass extends Component {
 						</TableCell>
 						<TableCell>
 							<Select native
+								name = "boxID"
 								style={{width: "100%"}}
-								onChange={this.onSelectChange.bind(this)}
-								inputProps={{
-									name: 'Box',
-									id: 'addGymClassBox'
-								}}>
+								onChange={this.onChange.bind(this)}
+							>
 								{this.state.hasBoxes ?
 									this.state.userBoxes.map((box, i) => {
 										return (<option key={i} value={JSON.stringify(box)} >
@@ -125,20 +133,36 @@ class AddGymClass extends Component {
 						<TableCell>Title</TableCell>
 						<TableCell>
 							<TextField
-								id="addGymClassTitle"
+								name = "title"
 								type="text"
 								pattern="[\sA-Za-z0-9]{35}"
-								onChange={this.onTitleChange.bind(this)}
-								inputProps={{
-								title: "Letters only, max length 35",
-								placeholder: "Name of class"
-								}}
+								onChange={this.onChange.bind(this)}
+								placeholder="Name of class"
 								onKeyUp={this.onKeyUp.bind(this) }
 								margin="normal"
 								color="primary"
 								style={{width: "100%"}}
 								InputLabelProps={{
-								shrink: true,
+									shrink: true,
+								}}
+							/>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>Description</TableCell>
+						<TableCell>
+							<TextField
+								name="description"
+								type="text"
+								pattern="[\sA-Za-z0-9]{35}"
+								onChange={this.onChange.bind(this)}
+								placeholder="Description"
+								onKeyUp={this.onKeyUp.bind(this) }
+								margin="normal"
+								color="primary"
+								style={{width: "100%"}}
+								InputLabelProps={{
+									shrink: true,
 								}}
 							/>
 						</TableCell>
@@ -147,6 +171,7 @@ class AddGymClass extends Component {
 						<TableCell>Private</TableCell>
 						<TableCell>
 						<Checkbox
+							name="isPrivate"
 							checked={this.state.isPrivate}
 							onChange={this.handleCheckboxChange.bind(this)}
 						/>

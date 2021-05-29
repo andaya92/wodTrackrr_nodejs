@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 
 import { Grid, Paper, Button, Typography, IconButton,
         TableBody, Table, TableCell, TableContainer, TableRow, TableHead}
@@ -10,6 +10,7 @@ import Whatshot from '@material-ui/icons/Whatshot'
 import { Alert } from '@material-ui/lab'
 import { withTheme } from '@material-ui/core/styles'
 
+import ActionCancelModal from "../actionCancelModal"
 import { getUserFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
 
 
@@ -20,6 +21,8 @@ class UserFollows extends Component{
       user: props.user,
       userMD: props.userMD,
       userFollows: [],
+      showRemoveAlert: false,
+      removeBoxID: ""
     }
   }
 
@@ -59,13 +62,24 @@ class UserFollows extends Component{
   }
 
   handleUnfollow(boxID){
-    removeFollow(this.state.userMD.uid, boxID)
+    this.setState({removeBoxID: boxID, showRemoveAlert: true})
+  }
+
+  unfollow(){
+    if(!this.state.removeBoxID.length > 0) return
+
+    removeFollow(this.state.userMD.uid, this.state.removeBoxID)
     .then(res => {
       if(res){
-        let userFollowing = this.state.userFollowing
-        userFollowing[boxID] = undefined
-        this.setState({userFollowing: userFollowing})
-        console.log("Succefully unfollowed.")
+         let userFollowing = this.state.userFollowing
+         try{
+           userFollowing[this.state.removeBoxID] = undefined
+           console.log("Succefully unfollowed.")
+         }catch{
+           console.log("Error with removing follow.")
+         }
+
+         this.setState({userFollowing: userFollowing, showRemoveAlert: false})
       }
     })
     .catch(err => {console.log(err)})
@@ -73,6 +87,15 @@ class UserFollows extends Component{
 
   static getDerivedStateFromProps(props, state){
     return props
+  }
+
+  viewBox(boxID){
+    console.log(this.props)
+    this.props.history.push(`box/${boxID}`)
+  }
+
+  handleModalClose(){
+    this.setState({showRemoveAlert: false})
   }
 
   render(){
@@ -85,37 +108,31 @@ class UserFollows extends Component{
                     <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell><Typography variant="subtitle1">
-                          Following
-                        </Typography></TableCell>
-                        <TableCell></TableCell>
+                        <TableCell align="center" colSpan={2}>
+                        <Typography variant="subtitle1">Following</Typography>
+                        </TableCell>
                       </TableRow>
                     </TableHead>
                       <TableBody>
                         {this.state.userFollows.map((follow, i) => {
                           return (
-                            <TableRow key={i}>
-                              <TableCell>
-                                {follow.boxID === "" ?
-                                  <Button>
-                                    {follow.title} <Typography variant="caption" component="span">&nbsp;(deleted)</Typography>
-                                  </Button>
-                                :
-                                  <Button
-                                    to={`box/${follow.boxID}`}
-                                    component={Link}
-                                  >
-                                    {follow.title}
-                                  </Button>
+                            <TableRow key={i} onClick={(ev) => {
+                                if(["path", "svg"].indexOf(ev.target.tagName) > -1) return
+                                this.viewBox(follow.boxID)
                               }
+                            }>
+                              <TableCell>
+                                <Typography color="primary">
+                                  {follow.title}
+                                </Typography>
                               </TableCell>
-                                <TableCell align="right">
-                                <IconButton
-                                      onClick={()=>{
-                                        this.handleUnfollow(follow.boxID)}
-                                      }>
-                                      <Whatshot color="primary" />
-                                    </IconButton>
+                              <TableCell align="right">
+                                <IconButton size="small"
+                                  onClick={()=>{
+                                    this.handleUnfollow(follow.boxID)}
+                                  }>
+                                <Whatshot color="primary" />
+                                </IconButton>
                               </TableCell>
                             </TableRow>
                           )
@@ -127,6 +144,14 @@ class UserFollows extends Component{
                 :
                   <React.Fragment>Not following anyone!</React.Fragment>
                 }
+                <ActionCancelModal
+                  open={this.state.showRemoveAlert}
+                  onClose={this.handleModalClose.bind(this)}
+                  onAction={this.unfollow.bind(this)}
+                  modalText={ `Are you sure you want to unfollow?`}
+                  actionText={"Unfollow"}
+                  cancelText={"Cancel"}
+                />
           </Grid>
 
           </Paper>
@@ -135,4 +160,4 @@ class UserFollows extends Component{
   }
 }
 
-export default UserFollows = withTheme(UserFollows);
+export default UserFollows = withRouter(withTheme(UserFollows))

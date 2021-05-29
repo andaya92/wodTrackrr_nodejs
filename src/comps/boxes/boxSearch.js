@@ -16,7 +16,7 @@ import { withRouter } from "react-router-dom";
 
 import { Alert } from '@material-ui/lab'
 import SearchIcon from '@material-ui/icons/Search'
-import { withTheme } from '@material-ui/core/styles'
+import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import Delete from '@material-ui/icons/Delete'
 import Waves from '@material-ui/icons/Waves'
@@ -25,40 +25,55 @@ import Whatshot from '@material-ui/icons/Whatshot'
 import BoxView from "./boxView"
 
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
-import "../../styles.css"
+import { toDayYear } from "../../utils/formatting"
 
 const fs = firebase.firestore()
+
+
+const StyledCardMedia = withStyles(theme =>({
+  root:{
+    width: "50%",
+    margin: "0 auto",
+    borderRadius: "8px"
+  }
+}))(CardMedia)
+
+
 
 function BoxRaw(props){
   let title = props.info["title"]
   let boxID = props.info["boxID"]
-
+  let description = props.info["description"]
   return(
     <Card id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
       <CardActionArea>
-        <CardMedia component="img"
+        <StyledCardMedia component="img"
           image="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
           title="NC Fit"
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            { title }
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
+          <Grid item align='left' xs={12}>
+            <Typography gutterBottom variant="h5" component="h2">
+              { title }
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              { description }
+            </Typography>
+            <Typography variant="caption" color="textSecondary" component="p">
+              { toDayYear(new Date(props.info['date'])) }
+            </Typography>
+          </Grid>
         </CardContent>
       </CardActionArea>
       <CardActions>
         <React.Fragment>
           { props.isUserFollowing ?
-              <IconButton variant="outlined"
+              <IconButton variant="outlined" style={{ marginLeft: 'auto'}}
                   onClick={()=>{props.handleUnfollow(boxID)}}>
                 <Whatshot color="primary" />
               </IconButton>
             :
-              <IconButton
+              <IconButton style={{ marginLeft: 'auto'}}
                 onClick={()=>{props.handleFollow(props.info)}}>
                 <Whatshot style={{fill: props.theme.palette.text.primary}}/>
               </IconButton>
@@ -77,56 +92,16 @@ function BoxRaw(props){
   )
 
 }
-
-// const Box = withTheme(BoxRaw)
-// function BoxRaw(props){
-//   let title = props.info["title"]
-//   let boxID = props.info["boxID"]
-
-//   return(
-//     <TableRow id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
-//       <TableCell align="left">
-//         <Typography variant="subtitle1" color="primary">
-//           { title }
-//         </Typography>
-//       </TableCell>
-//       <TableCell align="right">
-//         { props.isUserFollowing ?
-//           <IconButton variant="outlined"
-//               onClick={()=>{props.handleUnfollow(boxID)}}>
-//             <Whatshot color="primary" />
-//           </IconButton>
-//         :
-//           <IconButton
-//             onClick={()=>{props.handleFollow(props.info)}}>
-//             <Whatshot style={{fill: props.theme.palette.text.primary}}/>
-//           </IconButton>
-//         }
-//         { props.isOwner ?
-//           <Button
-//             onClick={()=>{props.handleRemoveBox(boxID, title)}}>
-//             <Delete  color="error" />
-//           </Button>
-//         :
-//           <React.Fragment></React.Fragment>
-//         }
-//       </TableCell>
-//     </TableRow>
-//   )
-
-// }
 const Box = withTheme(BoxRaw)
 
 
 function EmptyBoxRaw(props){
   return(
-    <TableRow>
-      <TableCell colSpan={3} align="center">
-        <Typography variant="subtitle1" color="primary">
-          No Gyms!
-        </Typography>
-      </TableCell>
-    </TableRow>
+    <Grid item align="center" xs={12}>
+      <Typography variant="subtitle1" color="primary">
+        No Gyms!
+      </Typography>
+    </Grid>
   )
 }
 const EmptyBox = withTheme(EmptyBoxRaw)
@@ -237,8 +212,8 @@ class BoxSearch extends Component {
               onChange={this.onChange.bind(this)}
               placeholder="Search Boxes"
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
+                endAdornment: (
+                  <InputAdornment>
                     <SearchIcon color="primary" />
                   </InputAdornment>
                 )

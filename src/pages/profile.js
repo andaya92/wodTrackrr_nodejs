@@ -22,6 +22,7 @@ import ClassMemberView from "../comps/profile/classMemberView"
 import CalendarScoreView from "../comps/calendar/calendarView"
 
 import { getUserScores } from "../utils/firestore/scores"
+import { getFirstOfMonthTS } from "../utils/formatting"
 
 let fs = firebase.firestore()
 
@@ -37,8 +38,7 @@ class PageContentRaw extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-
-    return props
+    return state.userMD? state: props
   }
 
   componentWillUnmount(){
@@ -56,7 +56,11 @@ class PageContentRaw extends Component {
 
   listenForUserScores(){
     if(!this.listener){
-      this.listener = getUserScores(this.state.user.uid, "uid", this.state.user.uid)
+      this.listener = getUserScores(
+        this.state.user.uid,
+        "date",
+        getFirstOfMonthTS()
+      )
       .onSnapshot(ss => {
         if(!ss.empty){
           let scores = []
@@ -66,9 +70,11 @@ class PageContentRaw extends Component {
           scores.sort((a, b) => {
            return (a.date > b.date)? 1 : -1
           })
+          console.log(scores)
           this.setState({scores: scores })
         }else{
           this.setState({scores: [] })
+          console.log("User scores empty")
         }
       },
       err => {console.log(err)})
@@ -102,15 +108,9 @@ class PageContentRaw extends Component {
             />
           </Paper>
         </Grid>
-        <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-          <Paper elevation={4}>
 
-          </Paper>
-        </Grid>
         <Grid item xs={12}>
           <Grid item container xs={12}>
-
-
               <AdminInvites userMD={this.state.userMD}/>
               <MemberInvites userMD={this.state.userMD}/>
               <ClassAdminView userMD={this.state.userMD}/>
@@ -148,7 +148,7 @@ class PageContentRaw extends Component {
   }
 }
 
-const PageContent = withTheme(PageContentRaw)
+const PageContent = withRouter(withTheme(PageContentRaw))
 
 class ProfilePage extends Component {
   constructor(props){
@@ -182,7 +182,7 @@ class ProfilePage extends Component {
               onAlert={this.props.onAlert}
           />
         :
-          <Redirect to="/login" />
+          <h1>Loading</h1>
       }
   		</Grid>
     );

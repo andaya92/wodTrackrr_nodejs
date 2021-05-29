@@ -26,6 +26,22 @@ function cellData(color="grey", valid=false, isToday=false){
 }
 
 
+
+/*   May has 6 weekns == Calendar only supports up to 5 apparently.
+
+                Need to fix this
+
+        1 sunday
+        ...
+        ...
+        ...
+        ...
+        31 Monday
+
+
+
+*/
+
 class CalendarScoreView extends Component {
 	constructor(props){
 		super(props)

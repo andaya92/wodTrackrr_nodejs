@@ -23,9 +23,12 @@ import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 import BackButton  from "../backButton"
 
+
+
 import { getWodScores, removeScore } from "../../utils/firestore/scores"
 import { getWod } from "../../utils/firestore/wods"
 import { isEmpty } from "../../utils/valid"
+import { getFirstOfMonthTS } from "../../utils/formatting"
 
 import "../../styles.css"
 
@@ -81,7 +84,12 @@ class ScoreView extends Component {
       err => {console.log(err)})
 
       console.log("PreTest")
-    this.scoreListener = getWodScores(this.state.boxID, this.state.gymClassID, this.state.wodID)
+    this.scoreListener = getWodScores(
+      this.state.boxID,
+      this.state.gymClassID,
+      this.state.wodID,
+      getFirstOfMonthTS()
+    )
     .onSnapshot(ss => {
       console.log(ss)
       console.log("Test")
@@ -177,6 +185,8 @@ class ScoreView extends Component {
     })
   }
 
+
+
   render(){
 
    let date = this.state.wodMD && this.state.wodMD.date?  DateTime.fromMillis(this.state.wodMD.date) : {monthLong: "", day: "", year:""}
@@ -191,49 +201,33 @@ class ScoreView extends Component {
             <Paper elevation={6}>
               <Typography variant="h6">{this.state.wodMD["boxTitle"]}</Typography>
               <Typography variant="h3">{this.state.wodMD["title"]}</Typography>
-              <Typography gutterBottom
-                variant="subtitle2"
-                color="primary">
-                  For {this.state.wodMD["scoreType"]}
-              </Typography>
 
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Paper elevation={6} style={{
-                margin: "8px 0px 8px 0px",
-                padding: "8px"
-            }}>
-            <Grid item xs={12} align="center">
-            <Typography
-                variant="subtitle2"
-                color="primary">
-                  Workout
-              </Typography>
-              <Typography
-                variant="caption"
-                color="secondary">
-                  {date.monthLong} {date.day}, {date.year}
-              </Typography>
-            </Grid>
-            <Grid item container xs={12}>
-              <RenderWodTextRaw
-                wodText={this.state.wodMD["wodText"]}
-              />
+              <Grid item xs={12} align="center">
+                <Typography
+                  variant="body2">
+                    {date.monthLong} {date.day}, {date.year}
+                </Typography>
+                <Typography variant="caption">
+                    For {this.state.wodMD["scoreType"]}
+                </Typography>
+              </Grid>
+              <Grid item container align="left" xs={12}>
+                <RenderWodTextRaw
+                  wodText={this.state.wodMD["wodText"]}
+                />
               </Grid>
             </Paper>
           </Grid>
-
-          {Object.keys(this.state.userMD).length > 0?
-            <AddScore
-              userMD={this.state.userMD}
-              wodMD={this.state.wodMD}
-            />
-          :
-            <React.Fragment></React.Fragment>
-          }
-          <Grid item xs={12} margin={{marginTop: "16px"}}>
+          <Grid item align="center" xs={12}>
+            <Paper elevation={6}>
+              {Object.keys(this.state.userMD).length > 0?
+                <AddScore
+                  userMD={this.state.userMD}
+                  wodMD={this.state.wodMD}
+                />
+              :
+                <React.Fragment></React.Fragment>
+              }
               {this.state.scores && this.state.scores.length > 0?
                 <ScoreDataView
                   scores={this.state.scores}
@@ -241,9 +235,11 @@ class ScoreView extends Component {
               :
                 <React.Fragment></React.Fragment>
               }
+            </Paper>
           </Grid>
+
           <Grid item xs={12}>
-            <Paper elevation={6}>
+            <Paper elevation={2}>
             <ScoreList
               scores={this.state.scores}
               uid={this.state.userMD.uid}

@@ -19,7 +19,7 @@ import { ArrowBackIos, EditOutlined } from '@material-ui/icons';
 
 import { withTheme, withStyles } from '@material-ui/core/styles';
 
-import EditBoxInfo from "./editBoxInfo"
+import EditClassInfo from "./editClassInfo"
 
 import { toDayYear } from "../../utils/formatting"
 
@@ -34,23 +34,23 @@ function Image(props){
 
 const StyledImage = withStyles(theme =>({
 	root: {
-		width: "75%",
+		width: "100%",
+		maxHeight: "15vh",
 		margin: "0 auto",
 		borderRadius: "8px"
 	}
   }))(Image)
 
 
-class BoxInfo extends Component {
+class ClassInfo extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
 			userMD: props.userMD,
-			boxID: props.boxID,
-			boxMD: props.boxMD,
-			editModalOpen: false
+			gymClassMD: props.gymClassMD,
+			editModalOpen: false,
+			showEditClassInfoBtn: props.showEditBtn
 		}
-		console.log(props.boxMD)
 	}
 
 	static getDerivedStateFromProps(props, state){
@@ -66,22 +66,25 @@ class BoxInfo extends Component {
     }
 
     render(){
-		let showEditBoxInfoBtn = this.state.userMD != null && this.state.boxMD['uid'] == this.state.userMD['uid']
-		console.log(`Show edit btn? ${showEditBoxInfoBtn}`)
+
+
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12}>
 				<Paper>
 					<Typography variant="h2">
-						{this.state.boxMD.title}
+						{this.state.gymClassMD.boxTitle}
 					</Typography>
 					<Typography variant="h3">
-						{this.state.boxMD.description}
+						{this.state.gymClassMD.title}
 					</Typography>
 					<Typography variant="h4">
-						Location Here
+						{this.state.gymClassMD.description}
 					</Typography>
-					{showEditBoxInfoBtn?
+					<Typography variant="caption">
+						Created: { toDayYear(new Date(this.state.gymClassMD.date)) }
+					</Typography>
+					{this.state.showEditClassInfoBtn?
 						<IconButton onClick={this.openEditInfo.bind(this)}
 							style={{color: this.props.theme.palette.text.primary}}>
 							<EditOutlined />
@@ -89,9 +92,6 @@ class BoxInfo extends Component {
 					:
 						<React.Fragment></React.Fragment>
 					}
-					<Typography variant="caption">
-						Joined: { toDayYear(new Date(this.state.boxMD.date)) }
-					</Typography>
 					<Grid item align="center" xs={12}>
 						<StyledImage
 							src="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
@@ -100,11 +100,11 @@ class BoxInfo extends Component {
 				</Paper>
 			</Grid>
 			{
-				showEditBoxInfoBtn?
-					<EditBoxInfo
+				this.state.showEditClassInfoBtn?
+					<EditClassInfo
 						open={this.state.editModalOpen}
 						onClose={this.closeEditInfo.bind(this)}
-						boxMD={this.state.boxMD}
+						gymClassMD={this.state.gymClassMD}
 						onAlert={this.props.onAlert}
 					/>
 				:
@@ -114,4 +114,4 @@ class BoxInfo extends Component {
     )}
 }
 
-export default BoxInfo = withTheme(BoxInfo)
+export default ClassInfo = withTheme(ClassInfo)

@@ -8,15 +8,17 @@ import React, { Component } from 'react'
 
 // Material UI
 import
-{ 	Grid, Paper, Button, Typography, IconButton
+{ 	Grid, Paper, Button, Typography, IconButton, Tooltip
 } from '@material-ui/core';
 
-import { ArrowBackIos } from '@material-ui/icons';
+import { ArrowBackIos, Add, Visibility, PersonAdd } from '@material-ui/icons';
 import { withTheme } from '@material-ui/core/styles';
 
 // WodTrackrr
+import ClassInfo from "./classInfo"
+
 import EditWod from "../wods/editWod"
-import SearchSortTable from "../searchSortTable"
+import WodList from "../wods/wodList"
 import ActionCancelModal from "../actionCancelModal"
 
 import InviteAdminView from "./inviteAdminView"
@@ -254,8 +256,6 @@ class GymClassView extends Component {
 		})
 	}
 
-
-
 	onChange(ev){
 		let val = ev.target.value
 		let filteredWods = this.state.wods.filter(wod =>{
@@ -297,8 +297,6 @@ class GymClassView extends Component {
 		this.setState({inviteMemberModalOpen: false})
 	}
 
-
-
 	openViewAdmins(){
 		this.setState({showAdminList: true})
 	}
@@ -321,26 +319,24 @@ class GymClassView extends Component {
 	isMember(){
 		return (this.state.isMember || this.isAdmin()) && this.state.userMD
 	}
-	 isOnlyMember(){
-		 return this.state.isMember && this.state.userMD && !this.isAdmin()
+
+	isOnlyMember(){
+		return this.state.isMember && this.state.userMD && !this.isAdmin()
 	 }
 
-
-	 toggleShowAddWod(){
-		 this.setState({showAddWod: true})
-	 }
+	toggleShowAddWod(){
+		this.setState({showAddWod: true})
+	}
 
   	render(){
 	 	let sortableHeadersOwner = [
 	 		{id:"date", sortable:true, label:"Date"},
 	 		{id:"title", sortable:true, label:"Title"},
-			{id:"title2", sortable:true, label:""},
 	 		{id:"btns", sortable:false, label:""}
 	 	]
 	 	let sortableHeadersUser = [
 	 		{id:"date", sortable:true, label:"Date"},
 	 		{id:"title", sortable:true, label:"Title"},
-			{id:"title2", sortable:true, label:""},
 	 		{id:"btns", sortable:false, label:""}
 	 	]
 		 let viewMemberBtnSize = this.isOnlyMember()? 12: 6
@@ -349,12 +345,17 @@ class GymClassView extends Component {
 		 <Grid item xs={12}>
 
 			<React.Fragment>
-			{
-
-			isEmpty(this.state.userMD) || isEmpty(this.state.gymClassMD)
+			{ isEmpty(this.state.userMD) || isEmpty(this.state.gymClassMD)
 			?
 				<React.Fragment>Loading</React.Fragment>
 			:
+			/*
+				Sub pages
+					Invite members, admins
+					View members, admins
+
+
+			*/
 				this.state.gymClassMD.isPrivate && !this.isMember()
 				?<Grid item xs={12} container>
 					<Grid item xs={12} align="left">
@@ -422,95 +423,88 @@ class GymClassView extends Component {
 					</Grid>
 				:
 			(
+			/*
+				Main Page
+
+
+			*/
 			<Grid item xs={12}>
 				<BackButton />
 				<Grid item align="center" xs={12}>
 					<Paper elevation={6}>
-						<Typography align="center" variant="h3">
-							{this.state.gymClassMD['title']}
-						</Typography>
-						<Typography align="center" variant="h6">
-							{this.state.gymClassMD['boxTitle']}
-						</Typography>
+						<ClassInfo
+							gymClassMD={this.state.gymClassMD}
+							userMD={this.state.userMD}
+							showEditBtn={this.isAdmin()} // TODO() check this
+							onAlert={this.props.onAlert}
+						/>
+						<Grid item align="right" xs={12}>
+							{ this.isMember() && this.state.gymClassMD.isPrivate?
+								<React.Fragment>
+									{!this.isOnlyMember() ?
+										<Tooltip title="Invite member">
+											<IconButton
+												color="secondary" variant="outlined"
+												onClick={ this.openMemberInvite.bind(this)}
+											>
+												<PersonAdd />
+											</IconButton>
+										</Tooltip>
+									:
+										<React.Fragment></React.Fragment>
+
+									}
+										<Tooltip title="View members">
+											<IconButton
+												color="secondary" variant="outlined"
+												onClick={ this.openViewMembers.bind(this) }
+											>
+												<Visibility />
+											</IconButton>
+										</Tooltip>
+								</React.Fragment>
+							:
+								<React.Fragment></React.Fragment>
+							}
+							{this.isAdmin()  && this.state.gymClassMD.isPrivate ?
+								<React.Fragment>
+									<Tooltip title="Invite admin">
+										<IconButton
+											color="primary" variant="outlined"
+											onClick={ this.openAdminInvite.bind(this) }
+										>
+											<PersonAdd />
+										</IconButton>
+									</Tooltip>
+									<Tooltip title="View admins">
+										<IconButton
+											color="primary" variant="outlined"
+											onClick={ this.openViewAdmins.bind(this) }
+										>
+											<Visibility />
+										</IconButton>
+									</Tooltip>
+								</React.Fragment>
+							:
+								<React.Fragment></React.Fragment>
+							}
+							{this.isAdmin() && this.state.gymClassMD?
+								<Tooltip title="Add workout">
+									<IconButton
+										color="primary"
+										onClick={this.toggleShowAddWod.bind(this)}>
+											<Add />
+									</IconButton>
+								</Tooltip>
+							:
+								<React.Fragment></React.Fragment>
+							}
+						</Grid>
 					</Paper>
 				</Grid>
 
-
-				<Grid item container spacing={1} xs={12}
-					style={{marginTop: "16px"}}>
-					{this.isAdmin()  && this.state.gymClassMD.isPrivate ?
-						<React.Fragment>
-							<Grid item xs={6}>
-								<Button color="primary" variant="outlined" style={{width: "100%"}}
-									onClick={ this.openAdminInvite.bind(this) }>
-									Invite Admin
-								</Button>
-							</Grid>
-							<Grid item xs={6}>
-								<Button color="primary" variant="outlined" style={{width: "100%"}}
-									onClick={ this.openViewAdmins.bind(this) }>
-									View Admins
-								</Button>
-							</Grid>
-								<InviteAdminView
-									userMD={this.state.userMD}
-									gymClassMD={this.state.gymClassMD}
-									onModalClose={this.onInviteModalClose.bind(this)}
-									modalOpen={this.state.inviteModalOpen}
-									onAlert={this.props.onAlert}
-								/>
-						</React.Fragment>
-
-					:
-						<React.Fragment></React.Fragment>
-					}
-
-					{ this.isMember() && this.state.gymClassMD.isPrivate?
-						<React.Fragment>
-							{!this.isOnlyMember() ?
-
-								<Grid item xs={6}>
-								<Button color="secondary" variant="outlined" style={{width: "100%"}}
-											onClick={ this.openMemberInvite.bind(this) }>
-											Invite Member
-										</Button>
-								</Grid>
-							:
-								<React.Fragment></React.Fragment>
-
-							}
-								<Grid item xs={viewMemberBtnSize}>
-									<Button color="secondary" variant="outlined" style={{width: "100%"}}
-										onClick={ this.openViewMembers.bind(this) }>
-										View Members
-									</Button>
-								</Grid>
-							<InviteMemberView
-									userMD={this.state.userMD}
-									gymClassMD={this.state.gymClassMD}
-									onModalClose={this.onInviteMemberModalClose.bind(this)}
-									modalOpen={this.state.inviteMemberModalOpen}
-									onAlert={this.props.onAlert}
-								/>
-						</React.Fragment>
-					:
-						<React.Fragment></React.Fragment>
-					}
-
-					{this.isAdmin() && this.state.gymClassMD?
-						<Button
-						color="primary"
-						variant="outlined"
-						fullWidth
-						onClick={this.toggleShowAddWod.bind(this)}>
-							Add Workout
-						</Button>
-					:
-						<React.Fragment></React.Fragment>
-					}
-				</Grid>
 				<Paper elevation={6} style={{padding: "8px"}}>
-					<SearchSortTable
+					<WodList
 						rows = {this.state.wods}
 						filteredRows={this.state.wods}
 						headers={this.isOwner()? sortableHeadersOwner: sortableHeadersUser}
@@ -528,7 +522,6 @@ class GymClassView extends Component {
 					actionText={"Delete"}
 					cancelText={"Cancel"}
 				/>
-
 				<EditWod
 					open={this.state.showEditModal}
 					onClose={this.handleEditModalClose.bind(this)}
@@ -536,7 +529,21 @@ class GymClassView extends Component {
 					hasBoxes={this.state.hasBoxes}
 					wodInfo={this.state.editWodInfo}
 					onAlert={this.props.onAlert}
-			/>
+				/>
+				<InviteAdminView
+					userMD={this.state.userMD}
+					gymClassMD={this.state.gymClassMD}
+					onModalClose={this.onInviteModalClose.bind(this)}
+					modalOpen={this.state.inviteModalOpen}
+					onAlert={this.props.onAlert}
+				/>
+				<InviteMemberView
+					userMD={this.state.userMD}
+					gymClassMD={this.state.gymClassMD}
+					onModalClose={this.onInviteMemberModalClose.bind(this)}
+					modalOpen={this.state.inviteMemberModalOpen}
+					onAlert={this.props.onAlert}
+				/>
 			</Grid>
 		)
 		}
