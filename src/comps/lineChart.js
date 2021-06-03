@@ -1,13 +1,13 @@
 import firebase from "../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -39,27 +39,27 @@ class LineChart extends Component {
 			stats: props.stats // mean, median, SD
 		}
 	}
-	
+
 	componentDidMount(){
 		this.createChart()
 	}
 
 	createChart(){
 		this.ctx = document.getElementById('lineChart');
-		
+
 		let context = this.ctx.getContext('2d')
 		let grd = context.createLinearGradient(200,0,200,400);
 		grd.addColorStop(0,"#01d3fe");
-		
+
 		grd.addColorStop(1,"#0890fd");
 
 		if(this.lineChart){
 			this.lineChart.destroy()
 		}
-		
+
 		this.lineChart = new Chart(this.ctx, {
 		    type: 'line',
-		    
+
 		    data:  {
 		    	label: "Scores",
 			    datasets: [{
@@ -103,8 +103,8 @@ class LineChart extends Component {
 		                	}else if(this.state.scoreType === "reps"){
 		                		label += tooltipItem.yLabel
 		                	}
-			                
-			                
+
+
 			                return label;
 			            }
 			        }
@@ -127,24 +127,14 @@ class LineChart extends Component {
 		this.createChart()
 	}
 
-	componentWillUnmount(){
-		console.log("Component will unmount")
-	}
-
-  render(){
+  	render(){
 		return(
 			<Grid item xs={12}>
-				<div style={{width: "92vw", padding: "8px"}}>
-					<canvas id="lineChart" ></canvas>
-				</div>
+				<canvas id="lineChart" ></canvas>
 			</Grid>
 		)
-  }
+  	}
 }
 
-
-
-
-  
 export default LineChart = withTheme(LineChart);
 

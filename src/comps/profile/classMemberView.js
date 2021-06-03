@@ -7,24 +7,14 @@ import React, { Component } from 'react'
 import { withRouter } from "react-router-dom";
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+{ 	Grid, Paper, Button, Typography,
+		TableBody, Table,
+		TableHead, TableRow, TableCell
 } from '@material-ui/core';
-import {TableCell as TC} from '@material-ui/core';
 
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme, withStyles } from '@material-ui/core/styles';
-
-import { getUserClassMembers } from "../../utils/firestore/classMember"
-
 import "../../styles.css"
-import { Redirect } from "react-router";
 
 /*
 	Given:
@@ -35,9 +25,9 @@ import { Redirect } from "react-router";
 */
 const fs = firebase.firestore();
 
-const TableCell = withStyles({root:{
+const StyledTableCell = withStyles({root:{
 	borderBottom: "none"
-}})(TC)
+}})(TableCell)
 
 
 function MemberRowRaw(props){
@@ -48,16 +38,16 @@ function MemberRowRaw(props){
 
     return(
         <TableRow onClick={ (ev) => props.onView(redirectUrl)}>
-            <TableCell>
+            <StyledTableCell>
                 <Typography color="primary">
                     {boxTitle}
                 </Typography>
-            </TableCell>
-            <TableCell>
+            </StyledTableCell>
+            <StyledTableCell>
                 <Typography color="primary">
                     {gymClassTitle}
                 </Typography>
-            </TableCell>
+            </StyledTableCell>
         </TableRow>
     )
 }
@@ -67,90 +57,45 @@ class ClassMemberView extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
-            userMD: props.userMD,
-            classes: []
+    	classes:props.classes
 		}
-	}
-
-	componentDidMount(){
-        this.getListener()
 	}
 
 	static getDerivedStateFromProps(props, state){
 		return props
 	}
 
-    componentDidUpdate(){
-        this.getListener()
-    }
-
-    componentWillUnmount(){
-        if(this.userClassMembersListener)
-            this.userClassMembersListener()
-    }
-
-
-    getListener(){
-        if(this.state.userMD && !this.userClassMembersListener){
-            console.log(`Looking for members for ${this.state.userMD.uid}`)
-            this.userClassMembersListener = getUserClassMembers(this.state.userMD.uid)
-            .onSnapshot(ss => {
-                console.log(ss)
-                let classes = []
-                if(!ss.empty){
-                    ss.forEach(doc => {
-                        classes.push(doc.data())
-                    })
-                    classes.sort((a, b) => {
-                        return (a.date > b.date)? 1 : -1
-                    })
-                    this.setState({ classes: classes })
-                }else{
-                    this.setState({ classes: classes })
-                }
-            },
-            err => {
-                console.log(err)
-            })
-        }
-    }
-
-    onView(redirectUrl){
-        this.props.history.push(redirectUrl)
-    }
+	onView(redirectUrl){
+			this.props.history.push(redirectUrl)
+	}
 
   render(){
 		return(
-            <React.Fragment>
-                {this.state.classes.length > 0?
-                    <Grid item xs={12} style={{margin: "16px 0px 0px 0px"}}>
-                        <Paper elevation={6}>
-                            <Typography variant="subtitle1">Membership</Typography>
-                            <hr/>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell align="left">Gym</TableCell>
-                                        <TableCell align="left">Class</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {this.state.classes.map((classMember, i) => {
-                                        return (
-                                            <MemberRow key={i}
-                                                info={classMember}
-                                                onView={this.onView.bind(this)}
-                                            />)
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </Paper>
-                    </Grid>
-                :
-                    <React.Fragment></React.Fragment>
-                }
-            </React.Fragment>
-    )}
+			<React.Fragment>
+				{this.state.classes.length > 0?
+					<Table size="small">
+						<TableHead>
+								<TableRow>
+										<StyledTableCell align="left">Gym</StyledTableCell>
+										<StyledTableCell align="left">Class</StyledTableCell>
+								</TableRow>
+						</TableHead>
+						<TableBody>
+							{this.state.classes.map((classMember, i) => {
+								return (
+									<MemberRow key={i}
+										info={classMember}
+										onView={this.onView.bind(this)}
+									/>)
+							})}
+						</TableBody>
+					</Table>
+				:
+					<React.Fragment></React.Fragment>
+				}
+			</React.Fragment>
+    )
+	}
 }
 
 export default ClassMemberView = withRouter(withTheme(ClassMemberView))

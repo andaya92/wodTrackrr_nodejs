@@ -8,17 +8,21 @@ from '@material-ui/core';
 
 import Whatshot from '@material-ui/icons/Whatshot'
 import { Alert } from '@material-ui/lab'
-import { withTheme } from '@material-ui/core/styles'
+import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import ActionCancelModal from "../actionCancelModal"
 import { getUserFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
+
+
+const StyledTableCell = withStyles({root:{
+	borderBottom: "none"
+}})(TableCell)
 
 
 class UserFollows extends Component{
   constructor(props){
     super(props)
     this.state = {
-      user: props.user,
       userMD: props.userMD,
       userFollows: [],
       showRemoveAlert: false,
@@ -35,7 +39,7 @@ class UserFollows extends Component{
   }
 
   componentDidMount(){
-    this.getUserFollowers = getUserFollowers(this.state.user.uid)
+    this.getUserFollowers = getUserFollowers(this.state.userMD.uid)
    .onSnapshot(followingSS => {
       let follows = this.extractData(followingSS)
       this.setState({userFollows: follows})
@@ -100,62 +104,60 @@ class UserFollows extends Component{
 
   render(){
     return(
-      <Grid item xs={12}>
-          <Paper elevation={6}>
-            <Grid item xs={12}>
-                {this.state.userFollows.length > 0 ?
-                  <TableContainer>
-                    <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center" colSpan={2}>
-                        <Typography variant="subtitle1">Following</Typography>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                      <TableBody>
-                        {this.state.userFollows.map((follow, i) => {
-                          return (
-                            <TableRow key={i} onClick={(ev) => {
-                                if(["path", "svg"].indexOf(ev.target.tagName) > -1) return
-                                this.viewBox(follow.boxID)
-                              }
-                            }>
-                              <TableCell>
-                                <Typography color="primary">
-                                  {follow.title}
-                                </Typography>
-                              </TableCell>
-                              <TableCell align="right">
-                                <IconButton size="small"
-                                  onClick={()=>{
-                                    this.handleUnfollow(follow.boxID)}
-                                  }>
-                                <Whatshot color="primary" />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                        }
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                :
-                  <React.Fragment>Not following anyone!</React.Fragment>
+      <React.Fragment>
+        <Table size="small">
+        <TableHead>
+          <TableRow>
+            <StyledTableCell align="left" colSpan={2}>
+              Gym
+            </StyledTableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+        {this.state.userFollows.length > 0 ?
+          this.state.userFollows.map((follow, i) => {
+            return (
+              <TableRow key={i} onClick={(ev) => {
+                  if(["path", "svg"].indexOf(ev.target.tagName) > -1) return
+                  this.viewBox(follow.boxID)
                 }
-                <ActionCancelModal
-                  open={this.state.showRemoveAlert}
-                  onClose={this.handleModalClose.bind(this)}
-                  onAction={this.unfollow.bind(this)}
-                  modalText={ `Are you sure you want to unfollow?`}
-                  actionText={"Unfollow"}
-                  cancelText={"Cancel"}
-                />
-          </Grid>
+              }>
+                <StyledTableCell>
+                  <Typography color="primary">
+                    {follow.title}
+                  </Typography>
+                </StyledTableCell>
+                <StyledTableCell align="right">
+                  <IconButton size="small"
+                    onClick={()=>{
+                      this.handleUnfollow(follow.boxID)}
+                    }>
+                  <Whatshot color="primary" />
+                  </IconButton>
+                </StyledTableCell>
+              </TableRow>
+            )
+          })
+        :
+          <TableRow>
+            <StyledTableCell align="center">
+              Not following anyone!
+            </StyledTableCell>
 
-          </Paper>
-      </Grid>
+          </TableRow>
+        }
+        </TableBody>
+      </Table>
+
+      <ActionCancelModal
+        open={this.state.showRemoveAlert}
+        onClose={this.handleModalClose.bind(this)}
+        onAction={this.unfollow.bind(this)}
+        modalText={ `Are you sure you want to unfollow?`}
+        actionText={"Unfollow"}
+        cancelText={"Cancel"}
+      />
+    </React.Fragment>
     )
   }
 }

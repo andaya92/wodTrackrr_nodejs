@@ -90,16 +90,11 @@ class CalendarScoreView extends Component {
         // Last week may contain invalid days from next month
         let firstWeek = []
         let fullWeek  = []
-        let fullWeek1 = []
-        let fullWeek2 = []
         let lastWeek  = []
 
         for(let i=0; i<7; i++){
             fullWeek.push(cellData("white", true, false))
         }
-
-        fullWeek1 = [...fullWeek]
-        fullWeek2 = [...fullWeek]
 
         for(let i=0; i<first.weekday; i++){
             firstWeek.push(cellData())
@@ -116,7 +111,14 @@ class CalendarScoreView extends Component {
             lastWeek[i] = cellData()
         }
 
-        let calendar = [[...firstWeek], [...fullWeek], [...fullWeek1], [...fullWeek2], [...lastWeek]]
+        let calendar = [
+            [...firstWeek],
+            [...fullWeek],
+            [...fullWeek],
+            [...fullWeek],
+            [...fullWeek],
+            [...lastWeek]
+        ]
 
         // Fill in passed days w/ red
         // Start and end days' offset corresponding to 2d array

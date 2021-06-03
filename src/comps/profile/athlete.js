@@ -30,24 +30,21 @@ class Athlete extends Component{
     return(
 
       <Grid item xs={12}>
-        <Paper elevation={6}>
-          <Grid item xs={12}>
-            <Grid item xs={12}>
-                <Typography>Scores</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              {this.state.user ?
-                <UserScoreList
-                  uid={this.state.user.uid}
-                  scores={this.state.scores}
-                  onAlert={this.props.onAlert}
-                  />
-                :
-                  <React.Fragment></React.Fragment>
-              }
-            </Grid>
-          </Grid>
-        </Paper>
+        <Grid item xs={12}>
+            <Typography>Scores</Typography>
+        </Grid>
+
+        <Grid item xs={12}>
+          {this.state.user ?
+            <UserScoreList
+              uid={this.state.user.uid}
+              scores={this.state.scores}
+              onAlert={this.props.onAlert}
+              />
+            :
+              <React.Fragment></React.Fragment>
+          }
+        </Grid>
       </Grid>
     )
   }

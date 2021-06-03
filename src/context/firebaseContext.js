@@ -10,7 +10,8 @@ const firebaseConfig = {
   storageBucket: "wodtrackrr.appspot.com",
   messagingSenderId: "743601990099",
   appId: "1:743601990099:web:5937e9151eaad13e93a726",
-  measurementId: "G-39CF0BRPMH"
+  measurementId: "G-39CF0BRPMH",
+  storageBucket: "gs://wodtrackrr.appspot.com"
 };
 
 

@@ -13,7 +13,7 @@ import
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
 	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-	TableBody, Table, Modal, TableCell
+	TableBody, Table, Modal, TableCell, IconButton, Tooltip
 }
 from '@material-ui/core';
 
@@ -23,6 +23,7 @@ import { withTheme, withStyles } from '@material-ui/core/styles';
 
 import { setScore } from "../../utils/firestore/scores"
 import "../../styles.css"
+import { AddCircleOutlineTwoTone } from "@material-ui/icons";
 
 
 
@@ -38,7 +39,8 @@ class AddScore extends Component{
 		super(props)
 		this.state = {
 			userMD: props.userMD,
-			wodMD: props.wodMD
+			wodMD: props.wodMD,
+			showingAddScore: false
 		}
 	}
 
@@ -129,23 +131,14 @@ class AddScore extends Component{
 		.catch((err) => console.log(err))
 	}
 
-  render(){
+
+
+  	render(){
 	return(
 		<Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
-			<Accordion>
-				<AccordionSummary
-					style={{background: this.props.theme.palette.primary.mainGrad}}
-					expandIcon={<ExpandMoreIcon />}
-					aria-label="Expand"
-					aria-controls="additional-actions2-content"
-					id="additional-actions2-header">
-					<Typography >
-						Add Score
-					</Typography>
-				</AccordionSummary>
-				<AccordionDetails>
-					<Grid item container xs={12}>
-						<Grid item xs={12}>
+
+				<Grid item container xs={12}>
+					<Grid item xs={12}>
 						<Typography>
 							{this.state.wodMD['scoreType']
 								.replace(
@@ -153,55 +146,54 @@ class AddScore extends Component{
 									this.state.wodMD['scoreType'][0].toUpperCase())
 							}
 						</Typography>
-
-						</Grid>
-						<Grid item xs={12}>
-							<TableContainer>
-							<Table>
-							<TableBody>
-								<TableRow>
-									{this.state.wodMD.scoreType === "time" ?
-										<React.Fragment>
-										<BorderlessTableCell align="center">
-											<TextField
-												id="scoreViewUserScoreMins"
-												type="number"
-												style={{ margin: 8}}
-												pattern="[0-9]{3}"
-												inputProps={{
-													title: "Numbers only, max length 3",
-													placeholder: "Minutes"
-												}}
-												style={{width: "100%"}}
-												margin="normal"
-												color="primary"
-												InputLabelProps={{
-													shrink: true,
-												}}
-												/>
-										</BorderlessTableCell>
-										<BorderlessTableCell align="center">
-											<TextField
-												id="scoreViewUserScoreSecs"
-												type="number"
-												style={{ margin: 8}}
-												pattern="[0-9]{2}"
-												inputProps={{
-													title: "Numbers only, max length 2",
-													placeholder: "Seconds"
-												}}
-												style={{width: "100%"}}
-												margin="normal"
-												color="primary"
-												InputLabelProps={{
-													shrink: true,
-												}}
-												/>
-										</BorderlessTableCell>
-										</React.Fragment>
-									:
-										<BorderlessTableCell align="center" colSpan={2}>
-											<TextField
+					</Grid>
+					<Grid item xs={12}>
+						<TableContainer>
+						<Table>
+						<TableBody>
+							<TableRow>
+								{this.state.wodMD.scoreType === "time" ?
+									<React.Fragment>
+									<BorderlessTableCell align="center">
+										<TextField
+											id="scoreViewUserScoreMins"
+											type="number"
+											style={{ margin: 8}}
+											pattern="[0-9]{3}"
+											inputProps={{
+												title: "Numbers only, max length 3",
+												placeholder: "Minutes"
+											}}
+											style={{width: "100%"}}
+											margin="normal"
+											color="primary"
+											InputLabelProps={{
+												shrink: true,
+											}}
+											/>
+									</BorderlessTableCell>
+									<BorderlessTableCell align="center">
+										<TextField
+											id="scoreViewUserScoreSecs"
+											type="number"
+											style={{ margin: 8}}
+											pattern="[0-9]{2}"
+											inputProps={{
+												title: "Numbers only, max length 2",
+												placeholder: "Seconds"
+											}}
+											style={{width: "100%"}}
+											margin="normal"
+											color="primary"
+											InputLabelProps={{
+												shrink: true,
+											}}
+										/>
+									</BorderlessTableCell>
+									</React.Fragment>
+								:
+									<BorderlessTableCell align="center" colSpan={2}>
+										<TextField
 											id="scoreViewUserScore"
 											type="number"
 											style={{ margin: 8}}
@@ -216,28 +208,25 @@ class AddScore extends Component{
 											InputLabelProps={{
 												shrink: true,
 											}}
-											/>
-										</BorderlessTableCell>
-									}
-								</TableRow>
-								<TableRow>
-									<BorderlessTableCell colSpan={3} align="center">
-										<Button  color="primary" style={{width: "100%"}} variant="outlined"
-											onClick={this.handleAddScore.bind(this)}>
-											Add
-										</Button>
+										/>
 									</BorderlessTableCell>
-								</TableRow>
-								</TableBody>
-							</Table>
-							</TableContainer>
-
-						</Grid>
-					</Grid>
-				</AccordionDetails>
-			</Accordion>
+								}
+							</TableRow>
+							<TableRow>
+								<BorderlessTableCell colSpan={3} align="center">
+									<Button  color="primary" style={{width: "100%"}} variant="outlined"
+										onClick={this.handleAddScore.bind(this)}>
+										Add
+									</Button>
+								</BorderlessTableCell>
+							</TableRow>
+					</TableBody>
+					</Table>
+					</TableContainer>
+				</Grid>
+			</Grid>
 		</Grid>
-	)
+		)
   }
 }
 

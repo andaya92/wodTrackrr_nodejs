@@ -11,44 +11,69 @@ import { withTheme } from '@material-ui/core/styles';
 class RegisterUser extends Component {
   constructor(props){
     super(props)
-    this.state = {redirect: false}
+    this.state = {
+		redirect: false,
+		registerInfo: {}
+	}
   }
 
   componentDidMount(){
   }
 
   handleSubmit(ev){
-    let email = document.getElementById('email')
+    let username = this.state.registerInfo.username
+	let email = this.state.registerInfo.email
+    let pass1 = this.state.registerInfo.password
+    let pass2 = this.state.registerInfo.passwordConfirm
 
-    let pass1 = document.getElementById('password')
-    let pass2 = document.getElementById('passwordConfirm')
+    console.log(username, email, pass1, pass2)
+	if(pass1 !== pass2){
+		this.props.onAlert({
+			type: "error",
+			 message: "Passwords do not match"
+		  })
+	}else if(!email){
+		this.props.onAlert({
+			type: "error",
+			 message: "Missing E-mail"
+		  })
+	}else if(!username){
+		this.props.onAlert({
+			type: "error",
+			 message: "Missing Username"
+		  })
+	}else if(pass1 === pass2 && username && email){
+    	firebase.auth().createUserWithEmailAndPassword(email, pass1)
+      	.then(res => {
+        	console.log(res)
+			let fs = firebase.firestore()
+			let data = {
+			username: username,
+			admin: false,
+			uid: res.user.uid,
+			accountType: "athlete"
+			}
 
-    console.log(email.value, pass1.value)
-
-
-    if(pass1.value === pass2.value){
-      firebase.auth().createUserWithEmailAndPassword(email.value, pass1.value)
-      .then(res => {
-        console.log(res)
-        let fs = firebase.firestore();
-        let data = {
-          username: "",
-          admin: false,
-          uid: res.user.uid,
-          accountType: "athlete"
-        }
-
-        fs.collection('users').doc(res.user.uid).set(data)
-		.then( () => {
-			console.log("Set user data.")
-			this.props.history.push("/profile")
-		})
-      })
-      .catch(err => {
-        console.log(err)
-      });
+			fs.collection('users').doc(res.user.uid).set(data)
+			.then( () => {
+				this.props.onAlert({
+					type: "success",
+					 message: "Registered. Verify your email!"
+				  })
+				this.props.history.push("/profile")
+			})
+      	})
+      	.catch(err => {
+        	this.props.onAlert({
+				type: "error",
+				 message: err.message
+			  })
+      	})
     }else{
-      alert("Passwords do not match")
+	  this.props.onAlert({
+		  type: "error",
+		   message: "Passwords do not match"
+		})
     }
   }
 
@@ -56,16 +81,38 @@ class RegisterUser extends Component {
 	  this.props.history.push("/login")
   }
 
+  onChange(ev){
+	  const { name, value } = ev.target
+	  let registerInfo = this.state.registerInfo
+	  registerInfo[name] = value
+	  this.setState({registerInfo: registerInfo})
+  }
+
   render () {
     return (
-		<Grid container item xs={12} align="center" justify="center" style={{top: "20%", position: "absolute"}}>
+		<Grid container id="login" align="center" justify="center">
+       		<Grid item xs={12} style={{top: "20%", position: "absolute"}}>
 			<Paper elevation={2}>
 				<Typography variant="h4">
 					Register
 				</Typography>
 
 				<TextField
-					id="email"
+					name="username"
+					type="text"
+					onChange={this.onChange.bind(this)}
+					style={{ margin: 8 }}
+					placeholder="Username"
+					margin="normal"
+					InputLabelProps={{
+						shrink: true,
+					}}
+				/><br /><br />
+
+				<TextField
+					name="email"
+					type="email"
+					onChange={this.onChange.bind(this)}
 					style={{ margin: 8 }}
 					placeholder="Email"
 					margin="normal"
@@ -75,8 +122,9 @@ class RegisterUser extends Component {
 				/><br /><br />
 
 				<TextField
-					id="password"
+					name="password"
 					type="password"
+					onChange={this.onChange.bind(this)}
 					style={{ margin: 8 }}
 					placeholder="Password"
 					margin="normal"
@@ -86,11 +134,12 @@ class RegisterUser extends Component {
 				/><br/><br/>
 
 				<TextField
-					id="passwordConfirm"
+					name="passwordConfirm"
 					type="password"
 					style={{ margin: 8 }}
 					placeholder="Confirm Password"
 					margin="normal"
+					onChange={this.onChange.bind(this)}
 					InputLabelProps={{
 					shrink: true,
 					}}
@@ -109,6 +158,7 @@ class RegisterUser extends Component {
 					</Grid>
 				</Grid>
 			</Paper>
+			</Grid>
 		</Grid>
     );
   }

@@ -89,13 +89,14 @@ class Header extends Component{
 	render(){
 		return(
 			<AppBar position="sticky" ref={this.menuRef}
-					style={{background:this.props.theme.palette.background.toolbar}}>
+				style={{background:this.props.theme.palette.background.toolbar}}
+			>
 			<Toolbar disableGutters={false}>
-			    <Typography  variant="h3" >
-		            WodTrackrr
-		          </Typography>
+				<Typography color="textPrimary" variant="h3" >
+					WodTrackrr
+				</Typography>
 
-		          <section style={{marginLeft: "auto", marginRight: -12}}>
+		    <section style={{marginLeft: "auto", marginRight: -12}}>
 					<IconButton color="primary" onClick={this.handleToggle.bind(this)}>
 						<Menu   />
 					</IconButton>
@@ -130,8 +131,6 @@ class Header extends Component{
 											onClick={ this.handleClose.bind(this) }>
 												Login
 										</StyledMenuItem>
-
-
 									}
 								</MenuList>
 								</ClickAwayListener>
@@ -139,8 +138,8 @@ class Header extends Component{
 							</Fade>
 						)}
 					</Popper>
-		          	</section>
-		        </Toolbar>
+		        </section>
+		    </Toolbar>
 				<Collapse in={this.props.alertOpen}>
 					{this.state.alertInfo ?
 						<UserAlert  alertInfo={this.state.alertInfo}
@@ -149,9 +148,8 @@ class Header extends Component{
 					:
 						<React.Fragment></React.Fragment>
 					}
-
 				</Collapse>
-			</AppBar>
+		</AppBar>
 		)
 	}
 }

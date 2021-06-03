@@ -32,7 +32,7 @@ const EMAIL = "email"
 
 function SettingsRowRaw(props){
     return(
-        <TableRow onClick={() => { props.openSetting(props.info.id) }}>
+        <TableRow hover onClick={() => { props.openSetting(props.info.id) }}>
             <TableCell align="left" colSpan={2}>
                 {props.info.title}
             </TableCell>
@@ -102,29 +102,30 @@ class Settings extends Component {
     return (
     	<Grid item xs={12}>
             {this.state.currentPage === HOME?
-                <Table>
-                    <TableHead>
-                        <BackButton />
-                        <TableRow>
-                                <TableCell align="center" colSpan={2}>
-                                    <Typography gutterBottom variant="h3">
-                                        Settings
-                                    </Typography>
-                                </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.settings.map((setting, i) => {
-                            return(
-                                <SettingsRow key={i}
-                                    info={setting}
-                                    openSetting={this.openSetting.bind(this)}
-                                />
-                            )
-                        })}
-                    </TableBody>
-                </Table>
-
+                <Grid item xs={12}>
+                    <BackButton />
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                    <TableCell align="center" colSpan={2}>
+                                        <Typography gutterBottom variant="h3">
+                                            Settings
+                                        </Typography>
+                                    </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.settings.map((setting, i) => {
+                                return(
+                                    <SettingsRow key={i}
+                                        info={setting}
+                                        openSetting={this.openSetting.bind(this)}
+                                    />
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
+                </Grid>
             : this.state.currentPage === CHANGE_PASSWORD?
                 <Grid container item xs={12}>
                     <Grid item xs={12}>

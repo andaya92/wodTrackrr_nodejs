@@ -10,6 +10,7 @@ import { Grid, Paper, Button, Typography, Collapse,
 from '@material-ui/core';
 
 import makeCancelable from "../../utils/promises"
+import { CheckCircleOutlined } from "@material-ui/icons";
 
 
 
@@ -48,42 +49,32 @@ class UserEmail extends Component{
             <Grid item  xs={12}>
                 <Grid item container xs={12}>
                     <Grid item xs={6} align="center">
-                    <Paper>
-                        <Typography>
-                            Email
-                        </Typography>
-                    </Paper>
-
+                      <Typography>
+                          Email
+                      </Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Paper>
-                            <Typography>
-                                {this.state.user.email}
-                            </Typography>
-                        </Paper>
+                    <Grid item align="center" xs={6}>
+                        <Typography>
+                            {this.state.user.email}
+                        </Typography>
                     </Grid>
                 </Grid>
 
                 {!this.state.user.emailVerified ?
                     <Grid item xs={12} align="center" style={{margin: "16px 0px 0px 0px "}}>
-                      <Paper elevation={4}>
-                        <Typography >
-                          Verification
+                      <Button variant="outlined" color="primary" style={{margin: "0px 0px 4px 0px "}}
+                        onClick={this.sendVerificationEmail.bind(this)} >
+                        <Typography  variant="subtitle2">
+                          Send Verification Email
                         </Typography>
-
-                        <Button color="secondary" style={{margin: "0px 0px 4px 0px "}}
-                          onClick={this.sendVerificationEmail.bind(this)} >
-                          <Typography  variant="subtitle2">
-                            Send Verification Email
-                          </Typography>
-                        </Button>
-                      </Paper>
+                      </Button>
                     </Grid>
                   :
-                    <React.Fragment></React.Fragment>
+                  <Grid item xs={12} align="center" style={{margin: "16px 0px 0px 0px "}}>
+                    <Typography gutterBottom>Email Verified <CheckCircleOutlined /></Typography>
+                  </Grid>
                   }
             </Grid>
-
         )
     }
 }

@@ -8,7 +8,7 @@ import { Route, Link, Redirect } from 'react-router-dom';
 import
 {Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
 InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
-TableHead, TableRow, Card, CardMedia, CardActionArea, CardContent, CardActions
+TableHead, TableRow, Card, CardMedia, CardActionArea, CardContent, CardActions, Tooltip
  }
 from '@material-ui/core'
 import { withRouter } from "react-router-dom";
@@ -16,6 +16,7 @@ import { withRouter } from "react-router-dom";
 
 import { Alert } from '@material-ui/lab'
 import SearchIcon from '@material-ui/icons/Search'
+import PhotoIcon from '@material-ui/icons/Photo';
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import Delete from '@material-ui/icons/Delete'
@@ -68,21 +69,37 @@ function BoxRaw(props){
       <CardActions>
         <React.Fragment>
           { props.isUserFollowing ?
-              <IconButton variant="outlined" style={{ marginLeft: 'auto'}}
-                  onClick={()=>{props.handleUnfollow(boxID)}}>
-                <Whatshot color="primary" />
-              </IconButton>
+              <Tooltip title="Unfollow">
+                <IconButton variant="outlined" style={{ marginLeft: 'auto'}}
+                    onClick={()=>{props.handleUnfollow(boxID)}}>
+                  <Whatshot color="primary" />
+                </IconButton>
+              </Tooltip>
             :
-              <IconButton style={{ marginLeft: 'auto'}}
-                onClick={()=>{props.handleFollow(props.info)}}>
-                <Whatshot style={{fill: props.theme.palette.text.primary}}/>
-              </IconButton>
+            <Tooltip title="Follow">
+                <IconButton style={{ marginLeft: 'auto'}}
+                  onClick={()=>{props.handleFollow(props.info)}}>
+                  <Whatshot style={{fill: props.theme.palette.text.primary}}/>
+                </IconButton>
+            </Tooltip>
           }
           { props.isOwner ?
-            <Button
-              onClick={()=>{props.handleRemoveBox(boxID, title)}}>
-              <Delete  color="error" />
-            </Button>
+          <React.Fragment>
+            <Tooltip title="Delete Gym">
+              <IconButton
+                onClick={()=>{props.handleRemoveBox(boxID, title)}}>
+                <Delete  color="error" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Upload Image">
+              <IconButton
+                onClick={()=>{}}>
+                  <PhotoIcon color="primary"/>
+              </IconButton>
+
+            </Tooltip>
+          </React.Fragment>
+
           :
             <React.Fragment></React.Fragment>
           }

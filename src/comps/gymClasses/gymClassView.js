@@ -362,9 +362,7 @@ class GymClassView extends Component {
 						<BackButton />
 					</Grid>
 					<Grid item xs={12} align="center">
-						<Paper elevation={6}>
-							<Typography variant='h5'>This is a Private Class</Typography>
-						</Paper>
+						<Typography variant='h5'>This is a Private Class</Typography>
 					</Grid>
 				</Grid>
 				:
@@ -431,88 +429,84 @@ class GymClassView extends Component {
 			<Grid item xs={12}>
 				<BackButton />
 				<Grid item align="center" xs={12}>
-					<Paper elevation={6}>
-						<ClassInfo
-							gymClassMD={this.state.gymClassMD}
-							userMD={this.state.userMD}
-							showEditBtn={this.isAdmin()} // TODO() check this
-							onAlert={this.props.onAlert}
-						/>
-						<Grid item align="right" xs={12}>
-							{ this.isMember() && this.state.gymClassMD.isPrivate?
-								<React.Fragment>
-									{!this.isOnlyMember() ?
-										<Tooltip title="Invite member">
-											<IconButton
-												color="secondary" variant="outlined"
-												onClick={ this.openMemberInvite.bind(this)}
-											>
-												<PersonAdd />
-											</IconButton>
-										</Tooltip>
-									:
-										<React.Fragment></React.Fragment>
-
-									}
-										<Tooltip title="View members">
-											<IconButton
-												color="secondary" variant="outlined"
-												onClick={ this.openViewMembers.bind(this) }
-											>
-												<Visibility />
-											</IconButton>
-										</Tooltip>
-								</React.Fragment>
-							:
-								<React.Fragment></React.Fragment>
-							}
-							{this.isAdmin()  && this.state.gymClassMD.isPrivate ?
-								<React.Fragment>
-									<Tooltip title="Invite admin">
+					<ClassInfo
+						gymClassMD={this.state.gymClassMD}
+						userMD={this.state.userMD}
+						showEditBtn={this.isAdmin()} // TODO() check this
+						onAlert={this.props.onAlert}
+					/>
+					<Grid item align="right" xs={12}>
+						{ this.isMember() && this.state.gymClassMD.isPrivate?
+							<React.Fragment>
+								{!this.isOnlyMember() ?
+									<Tooltip title="Invite member">
 										<IconButton
-											color="primary" variant="outlined"
-											onClick={ this.openAdminInvite.bind(this) }
+											color="secondary" variant="outlined"
+											onClick={ this.openMemberInvite.bind(this)}
 										>
 											<PersonAdd />
 										</IconButton>
 									</Tooltip>
-									<Tooltip title="View admins">
+								:
+									<React.Fragment></React.Fragment>
+
+								}
+									<Tooltip title="View members">
 										<IconButton
-											color="primary" variant="outlined"
-											onClick={ this.openViewAdmins.bind(this) }
+											color="secondary" variant="outlined"
+											onClick={ this.openViewMembers.bind(this) }
 										>
 											<Visibility />
 										</IconButton>
 									</Tooltip>
-								</React.Fragment>
-							:
-								<React.Fragment></React.Fragment>
-							}
-							{this.isAdmin() && this.state.gymClassMD?
-								<Tooltip title="Add workout">
+							</React.Fragment>
+						:
+							<React.Fragment></React.Fragment>
+						}
+						{this.isAdmin()  && this.state.gymClassMD.isPrivate ?
+							<React.Fragment>
+								<Tooltip title="Invite admin">
 									<IconButton
-										color="primary"
-										onClick={this.toggleShowAddWod.bind(this)}>
-											<Add />
+										color="primary" variant="outlined"
+										onClick={ this.openAdminInvite.bind(this) }
+									>
+										<PersonAdd />
 									</IconButton>
 								</Tooltip>
-							:
-								<React.Fragment></React.Fragment>
-							}
-						</Grid>
-					</Paper>
+								<Tooltip title="View admins">
+									<IconButton
+										color="primary" variant="outlined"
+										onClick={ this.openViewAdmins.bind(this) }
+									>
+										<Visibility />
+									</IconButton>
+								</Tooltip>
+							</React.Fragment>
+						:
+							<React.Fragment></React.Fragment>
+						}
+						{this.isAdmin() && this.state.gymClassMD?
+							<Tooltip title="Add workout">
+								<IconButton
+									color="primary"
+									onClick={this.toggleShowAddWod.bind(this)}>
+										<Add />
+								</IconButton>
+							</Tooltip>
+						:
+							<React.Fragment></React.Fragment>
+						}
+					</Grid>
 				</Grid>
 
-				<Paper elevation={6} style={{padding: "8px"}}>
-					<WodList
-						rows = {this.state.wods}
-						filteredRows={this.state.wods}
-						headers={this.isOwner()? sortableHeadersOwner: sortableHeadersUser}
-						handleRemove={this.handleRemoveWod.bind(this)}
-						handleEdit={this.handleEdit.bind(this)}
-						showOwnerBtns={this.isAdmin()}
-					/>
-				</Paper>
+				<WodList
+					rows = {this.state.wods}
+					filteredRows={this.state.wods}
+					headers={this.isOwner()? sortableHeadersOwner: sortableHeadersUser}
+					handleRemove={this.handleRemoveWod.bind(this)}
+					handleEdit={this.handleEdit.bind(this)}
+					showOwnerBtns={this.isAdmin()}
+				/>
 
 				<ActionCancelModal
 					open={this.state.showRemoveAlert}

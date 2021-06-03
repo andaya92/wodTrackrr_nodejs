@@ -3,25 +3,21 @@ import "firebase/auth"
 import "firebase/firestore"
 
 import React from "react";
-import { HashRouter, Switch, Route, Link, Redirect, Router, BrowserRouter } from 'react-router-dom';
-import { withRouter } from "react-router-dom";
+import {
+  Switch, Route, Link, BrowserRouter
+} from 'react-router-dom';
 
+import {
+  BottomNavigation, BottomNavigationAction,Grid, Paper
+} from '@material-ui/core';
 
+import {
+  createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes
+} from '@material-ui/core/styles';
 
-import { Paper, Button, BottomNavigation, BottomNavigationAction,
-        Grid, Container, Box }
-from '@material-ui/core';
-import { createMuiTheme, withStyles, ThemeProvider, responsiveFontSizes } from '@material-ui/core/styles';
-
-
-
-import HomeIcon from '@material-ui/icons/Home';
 import PersonIcon from '@material-ui/icons/Person';
-import LiveTvIcon from '@material-ui/icons/LiveTv';
-import PanoramaIcon from '@material-ui/icons/Panorama';
 
 import "./styles.css";
-
 import HomePage from "./pages/homePage"
 import BoxSearchPage from "./pages/boxSearchPage"
 import Settings from "./pages/settings"
@@ -32,18 +28,15 @@ import ScoreView from "./comps/scores/scoreView"
 import Profile from "./pages/profile"
 import Header from "./comps/header"
 import Login from "./comps/profile/login"
-
-
 import apptheme from "./css/apptheme"
 import lightapptheme from "./css/applighttheme"
 import "./styles.css"
 
+const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
 let darkTheme = createMuiTheme(apptheme)
-darkTheme = responsiveFontSizes(darkTheme)
-
-
 let lightTheme = createMuiTheme(lightapptheme)
-lightTheme = responsiveFontSizes(lightTheme)
+darkTheme = responsiveFontSizes(darkTheme, breakPoints)
+lightTheme = responsiveFontSizes(lightTheme, breakPoints)
 
 const BackgroundGrid = withStyles(theme =>({
   root:{
@@ -97,9 +90,6 @@ export default class App extends React.Component {
   }
 
   componentDidMount(){
-    window.addEventListener('click', this.onURLChange)
-
-
     this.firebaseAuthListener = firebase.auth()
     .onAuthStateChanged(user => {
       let fs = firebase.firestore()
@@ -147,7 +137,7 @@ export default class App extends React.Component {
   }
 
   onAlert(alert){
-    console.log(alert)
+    console.log(alert) // TDOO() remove
     this.setState({alertInfo: alert, alertOpen: true})
   }
 
@@ -160,120 +150,121 @@ export default class App extends React.Component {
     <FirebaseAuthContext.Provider>
     <BrowserRouter >
     <ThemeProvider theme={this.state.theme}>
-      <StyledHeader className="header" user={this.state.user}
-        userMD={this.state.userMD}
-        changeTheme={this.changeTheme.bind(this)}
-        handleLogout={this.handleLogout.bind(this)}
-        alertOpen={this.state.alertOpen}
-        alertInfo={this.state.alertInfo}
-        onCloseAlert={this.onCloseAlert.bind(this)}
-        />
+    <StyledHeader className="header" user={this.state.user}
+      userMD={this.state.userMD}
+      changeTheme={this.changeTheme.bind(this)}
+      handleLogout={this.handleLogout.bind(this)}
+      alertOpen={this.state.alertOpen}
+      alertInfo={this.state.alertInfo}
+      onCloseAlert={this.onCloseAlert.bind(this)}
+    />
 
-      <BackgroundGrid container id="testCont" >
-        <Grid item container xs={12}
-          style={{"minHeight": "100%", paddingTop: "8px"}}
-        >
-          {this.state.loading?
-            <h1>Loading</h1>
-          :
+    <BackgroundGrid container direction="column" alignItems="center">
+      <Grid item container xs={12} sm={10}
+        style={{"minHeight": "100%", paddingTop: "8px"}}
+      >
+        <Paper style={{width: "100%"}}>
+          <Grid item xs={12}>
+            {this.state.loading?
+              <h1>Loading</h1>
+            :
+            <Switch>
+              <Route exact path="/">
+                <HomePage
+                  onAlert={this.onAlert.bind(this)}
+                  />
+              </Route>
 
-
-          <Switch>
-            <Route exact path="/">
-              <HomePage
-                onAlert={this.onAlert.bind(this)}
-                />
-            </Route>
-
-            <Route exact path="/boxSearch">
-              <BoxSearchPage user={this.state.user}
-                userMD={this.state.userMD}
-                onAlert={this.onAlert.bind(this)}
-                />
-            </Route>
-
-            <Route exact path="/profile">
-              <Profile user={this.state.user}
-                userMD={this.state.userMD}
-                onAlert={this.onAlert.bind(this)}
-                />
-            </Route>
-
-            <Route path="/box/:boxID"
-              render= { props =>(
-                <BoxView
-                  userMD={this.state.userMD}
-                  boxID={props.match.params.boxID}
-                  onAlert={this.onAlert.bind(this)}/>
-              )}
-            />
-
-            <Route path="/class/:boxID/:gymClassID"
-              render= { props =>(
-                <GymClassView
-                  userMD={this.state.userMD}
-                  gymClassID={props.match.params.gymClassID}
-                  boxID={props.match.params.boxID}
-                  onAlert={this.onAlert.bind(this)}/>
-              )}
-            />
-
-           <Route path="/wod/:boxID/:gymClassID/:wodID"
-            render= { props =>(
-                <ScoreView userMD={this.state.userMD}
-                  gymClassID={props.match.params.gymClassID}
-                  wodID={props.match.params.wodID}
-                  boxID={props.match.params.boxID}
-                  isReadOnly={true}
-                  onAlert={this.onAlert.bind(this)}/>
-              )
-            }
-          />
-
-          <Route exact path="/register"
-            render= { props =>(
-              <RegisterUser onAlert={this.onAlert.bind(this)}/>
-            )}
-          />
-
-          <Route exact path="/settings"
-            render= { props =>(
-                <Settings
-                  user={this.state.user}
+              <Route exact path="/boxSearch">
+                <BoxSearchPage user={this.state.user}
                   userMD={this.state.userMD}
                   onAlert={this.onAlert.bind(this)}
-                />
-            )}
-          />
+                  />
+              </Route>
 
-          <Route exact path="/login">
-            <Login
-              userMD={this.state.userMD}
-              onLogin={this.handleLogin.bind(this)}
-              onAlert={this.onAlert.bind(this)}/>
-          </Route>
-        </Switch>
-        }
+              <Route exact path="/profile">
+                <Profile user={this.state.user}
+                  userMD={this.state.userMD}
+                  onAlert={this.onAlert.bind(this)}
+                  />
+              </Route>
 
-          <div style={{"margin": "5vh"}}></div>
-        </Grid>
-      </BackgroundGrid>
+              <Route path="/box/:boxID"
+                render= { props =>(
+                  <BoxView
+                    userMD={this.state.userMD}
+                    boxID={props.match.params.boxID}
+                    onAlert={this.onAlert.bind(this)}/>
+                )}
+              />
 
-      <StyledBottomNavigation
-        value = {this.state.btmnav}
-        onChange = {(event, newValue) => {
-            this.setState({btmnav: newValue})
-          }}
-        showLabels
-      >
-        <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
-        <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
-      </StyledBottomNavigation>
-      </ThemeProvider>
-      </BrowserRouter>
-      </FirebaseAuthContext.Provider>
+              <Route path="/class/:boxID/:gymClassID"
+                render= { props =>(
+                  <GymClassView
+                    userMD={this.state.userMD}
+                    gymClassID={props.match.params.gymClassID}
+                    boxID={props.match.params.boxID}
+                    onAlert={this.onAlert.bind(this)}/>
+                )}
+              />
 
-    );
+              <Route path="/wod/:boxID/:gymClassID/:wodID"
+                render= { props =>(
+                    <ScoreView userMD={this.state.userMD}
+                      gymClassID={props.match.params.gymClassID}
+                      wodID={props.match.params.wodID}
+                      boxID={props.match.params.boxID}
+                      isReadOnly={true}
+                      onAlert={this.onAlert.bind(this)}/>
+                  )
+                }
+              />
+
+              <Route exact path="/register"
+                render= { props =>(
+                  <RegisterUser onAlert={this.onAlert.bind(this)}/>
+                )}
+              />
+
+              <Route exact path="/settings"
+                render= { props =>(
+                    <Settings
+                      user={this.state.user}
+                      userMD={this.state.userMD}
+                      onAlert={this.onAlert.bind(this)}
+                    />
+                )}
+              />
+
+              <Route exact path="/login">
+                <Login
+                  userMD={this.state.userMD}
+                  onLogin={this.handleLogin.bind(this)}
+                  onAlert={this.onAlert.bind(this)}/>
+              </Route>
+            </Switch>
+            }
+          </Grid>
+        </Paper>
+
+        <div style={{"margin": "5vh"}}></div>
+      </Grid>
+    </BackgroundGrid>
+
+    <StyledBottomNavigation
+      value = {this.state.btmnav}
+      onChange = {(event, newValue) => {
+          this.setState({btmnav: newValue})
+        }}
+      showLabels
+    >
+      <BottomNavigationAction label="Search" component={Link} to="/boxSearch" icon={<PersonIcon />}  />
+      <BottomNavigationAction label="Profile" component={Link} to="/profile" icon={<PersonIcon />}  />
+    </StyledBottomNavigation>
+    </ThemeProvider>
+    </BrowserRouter>
+    </FirebaseAuthContext.Provider>
+    )
   }
 }
 App.contextType = FirebaseAuthContext;

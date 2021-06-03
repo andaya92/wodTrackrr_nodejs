@@ -9,7 +9,7 @@ import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import
-{   Grid, Paper, Button, Typography
+{   Grid, Paper, Button, Typography, Tooltip, IconButton
 }
 from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -31,6 +31,7 @@ import { isEmpty } from "../../utils/valid"
 import { getFirstOfMonthTS } from "../../utils/formatting"
 
 import "../../styles.css"
+import { AddCircleOutlineTwoTone, ArrowBackIos } from "@material-ui/icons";
 
 
 var db = firebase.database();
@@ -56,100 +57,22 @@ function RenderWodTextRaw(props){
 
 const RenderWodText = withTheme(RenderWodTextRaw)
 
-class ScoreView extends Component {
+class ScoreViewContent extends Component {
   constructor(props){
     super(props)
     this.state = {
       userMD: props.userMD,
-      boxID: props.boxID,
-      gymClassID: props.gymClassID,
-      wodID: props.wodID,
-      wodMD: {},
-      scores: [],
-      userScore: {},
+      wodMD: props.wodMD,
+      scores: props.scores,
+      userScore: props.userScore,
       curRemoveScore: {},
       showRemoveAlert: false
     }
   }
 
-  componentDidMount(){
-
-
-    let fs = firebase.firestore()
-
-    this.wodListener = getWod(this.state.boxID, this.state.gymClassID, this.state.wodID)
-    .onSnapshot(ss => {
-      this.setState({wodMD: ss.data()})
-    },
-      err => {console.log(err)})
-
-      console.log("PreTest")
-    this.scoreListener = getWodScores(
-      this.state.boxID,
-      this.state.gymClassID,
-      this.state.wodID,
-      getFirstOfMonthTS()
-    )
-    .onSnapshot(ss => {
-      console.log(ss)
-      console.log("Test")
-      if(!ss.empty){
-        let scores = []
-        let userScore = {}
-        let scoreType = ""
-
-        ss.forEach(doc => {
-          let data = doc.data()
-          scores.push(data)
-          scoreType = data.scoreType
-          if(data.uid === this.state.uid)
-            userScore = data
-        })
-        let isTime = (scoreType && scoreType === "time") ? 1 : 0
-        scores.sort((a,b) => {
-          return isTime
-          ?
-              parseFloat(a["score"]) < parseFloat(b["score"]) ? -1 : 1
-          :
-             parseFloat(a["score"]) > parseFloat(b["score"]) ? 1 : -1
-        })
-        this.setState({
-          scores: scores,
-          userScore: userScore
-        })
-      }else{
-        this.setState({
-          scores: [],
-          userScore: {}
-        })
-      }
-    },
-      err => { console.log(err)})
-  }
-
-
-  getWodListener(){
-    let fs = firebase.firestore()
-
-    this.wodListener = getWod(this.state.wodMD.boxID, this.state.gymClassID, this.state.wodID)
-    .onSnapshot(ss => {
-      this.setState({wodMD: ss.data()})
-    },
-      err => {console.log(err)})
-
-  }
-
   static getDerivedStateFromProps(props, state){
     return props
   }
-
-  componentWillUnmount(){
-    if(this.scoreListener !== undefined)
-      this.scoreListener()
-    if(this.wodListener !== undefined)
-      this.wodListener()
-  }
-
   handleModalClose(){
     this.setState({showRemoveAlert:false})
   }
@@ -185,67 +108,57 @@ class ScoreView extends Component {
     })
   }
 
-
-
   render(){
-
-   let date = this.state.wodMD && this.state.wodMD.date?  DateTime.fromMillis(this.state.wodMD.date) : {monthLong: "", day: "", year:""}
-
-
-  return(
-    <Grid  item xs={12}>
-      <BackButton />
-      {Object.keys(this.state.wodMD).length > 0 ?
+    let date = this.state.wodMD && this.state.wodMD.date?  DateTime.fromMillis(this.state.wodMD.date) : {monthLong: "", day: "", year:""}
+    return(
+      <Grid  item xs={12}>
+        <BackButton />
         <Grid item xs={12}>
           <Grid item align="center" xs={12}>
-            <Paper elevation={6}>
-              <Typography variant="h6">{this.state.wodMD["boxTitle"]}</Typography>
-              <Typography variant="h3">{this.state.wodMD["title"]}</Typography>
+            <Typography variant="h6">{this.state.wodMD["boxTitle"]}</Typography>
+            <Typography variant="h3">{this.state.wodMD["title"]}</Typography>
 
-              <Grid item xs={12} align="center">
-                <Typography
-                  variant="body2">
-                    {date.monthLong} {date.day}, {date.year}
-                </Typography>
-                <Typography variant="caption">
-                    For {this.state.wodMD["scoreType"]}
-                </Typography>
-              </Grid>
-              <Grid item container align="left" xs={12}>
-                <RenderWodTextRaw
-                  wodText={this.state.wodMD["wodText"]}
-                />
-              </Grid>
-            </Paper>
+            <Grid item xs={12} align="center">
+              <Typography
+                variant="body2">
+                  {date.monthLong} {date.day}, {date.year}
+              </Typography>
+              <Typography variant="caption">
+                  For {this.state.wodMD["scoreType"]}
+              </Typography>
+            </Grid>
+            <Grid item container align="left" xs={12}>
+              <RenderWodTextRaw
+                wodText={this.state.wodMD["wodText"]}
+              />
+            </Grid>
           </Grid>
           <Grid item align="center" xs={12}>
-            <Paper elevation={6}>
-              {Object.keys(this.state.userMD).length > 0?
-                <AddScore
-                  userMD={this.state.userMD}
-                  wodMD={this.state.wodMD}
-                />
-              :
-                <React.Fragment></React.Fragment>
-              }
-              {this.state.scores && this.state.scores.length > 0?
-                <ScoreDataView
-                  scores={this.state.scores}
-                />
-              :
-                <React.Fragment></React.Fragment>
-              }
-            </Paper>
+            <Grid item xs={12} align="right">
+              <Tooltip title="Add Score">
+                <IconButton color="primary"
+                  onClick={this.props.toggleAddScore}
+                >
+                  <AddCircleOutlineTwoTone />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+
+            {this.state.scores && this.state.scores.length > 0?
+              <ScoreDataView
+                scores={this.state.scores}
+              />
+            :
+              <React.Fragment></React.Fragment>
+            }
           </Grid>
 
           <Grid item xs={12}>
-            <Paper elevation={2}>
             <ScoreList
               scores={this.state.scores}
               uid={this.state.userMD.uid}
               onRemove={this.handleRemoveScore.bind(this)}
             />
-            </Paper>
           </Grid>
           <ActionCancelModal
             open={this.state.showRemoveAlert}
@@ -255,21 +168,128 @@ class ScoreView extends Component {
                 actionText={`Remove`}
                 cancelText={`Cancel`}
             />
-          </Grid>
-        :
-          <Grid item xs={12}>
-            <Paper elevation={6}>
-              <Typography>
-                Wod not found!
-              </Typography>
-            </Paper>
-          </Grid>
+        </Grid>
+      </Grid>
+    )
+  }
+}
+ScoreViewContent = withTheme(ScoreViewContent)
+
+class ScoreView extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      userMD: props.userMD,
+      boxID: props.boxID,
+      gymClassID: props.gymClassID,
+      wodID: props.wodID,
+      wodMD: {},
+      scores: [],
+      userScore: {},
+      curRemoveScore: {},
+      showingAddScore: false
+    }
+  }
+
+  componentDidMount(){
+    this.scoreListener()
+    this.wodListener()
+  }
+
+  scoreListener(){
+    this.scoreListener = getWodScores(
+      this.state.boxID,
+      this.state.gymClassID,
+      this.state.wodID,
+      getFirstOfMonthTS()
+    )
+    .onSnapshot(ss => {
+      if(!ss.empty){
+        let scores = []
+        let userScore = {}
+        let scoreType = ""
+
+        ss.forEach(doc => {
+          let data = doc.data()
+          scores.push(data)
+          scoreType = data.scoreType
+          if(data.uid === this.state.uid)
+            userScore = data
+        })
+        let isTime = (scoreType && scoreType === "time") ? 1 : 0
+        scores.sort((a,b) => {
+          return isTime
+          ?
+              parseFloat(a["score"]) < parseFloat(b["score"]) ? -1 : 1
+          :
+             parseFloat(a["score"]) > parseFloat(b["score"]) ? 1 : -1
+        })
+        this.setState({
+          scores: scores,
+          userScore: userScore
+        })
+      }else{
+        this.setState({
+          scores: [],
+          userScore: {}
+        })
       }
-    </Grid>
-  )
+    },
+      err => { console.log(err)}
+    )
+  }
+
+  wodListener(){
+    this.wodListener = getWod(this.state.boxID, this.state.gymClassID, this.state.wodID)
+    .onSnapshot(ss => {
+      this.setState({wodMD: ss.data()})
+    },
+      err => {console.log(err)})
+
+  }
+
+  componentWillUnmount(){
+    if(this.scoreListener !== undefined)
+    this.scoreListener()
+    if(this.wodListener !== undefined)
+    this.wodListener()
+  }
+
+  toggleAddScore(ev){
+		this.setState({showingAddScore: !this.state.showingAddScore})
+	}
+
+  render(){
+    let isReady = (!isEmpty(this.state.userMD) && !isEmpty(this.state.wodMD))
+    return(
+      <React.Fragment>
+        {isReady?
+          this.state.showingAddScore?
+            <Grid item xs={12}>
+              <IconButton onClick={this.toggleAddScore.bind(this)}>
+                  <ArrowBackIos  style={{color: this.props.theme.palette.text.primary}}/>
+              </IconButton>
+              <AddScore
+                userMD={this.state.userMD}
+                wodMD={this.state.wodMD}
+              />
+            </Grid>
+          :
+            <ScoreViewContent
+              userMD={this.state.userMD}
+              wodMD={this.state.wodMD}
+              scores={this.state.scores}
+              userScore={this.props.userScore}
+              toggleAddScore={this.toggleAddScore.bind(this)}
+            />
+        :
+          <React.Fragment></React.Fragment>
+        }
+      </React.Fragment>
+    )
   }
 }
 
-export default ScoreView = withTheme(ScoreView);
+export default ScoreView = withTheme(ScoreView)
 
 

@@ -1,5 +1,5 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth"; 
+import "firebase/auth";
 
 import React, { Component } from 'react'
 import {
@@ -31,10 +31,10 @@ class ResetPassword extends Component {
     let currentPassword = this.state.currentPassword
     let newPassword = this.state.newPassword
     let confirmPassword = this.state.confirmPassword
-    
+
     console.log(this.state)
     console.log(currentPassword, newPassword, confirmPassword)
-    
+
     if(newPassword === confirmPassword){
 
       let creds = firebase.auth.EmailAuthProvider.credential(
@@ -82,7 +82,7 @@ class ResetPassword extends Component {
                 Change Password
               </Typography>
             </Grid>
-            
+
             <Grid item xs={12} align="center">
               <TextField
                   id="currentPassword"
@@ -96,22 +96,22 @@ class ResetPassword extends Component {
                     shrink: true,
                   }}
                 />
-            
-              <TextField
-                  id="password"
-                  type="password"
-                  name="newPassword"
-                  color="primary"
-                  onChange={this.onChange.bind(this)}
-                  style={{ margin: 8 }}
-                  placeholder="New Password"
-                  margin="normal"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
               </Grid>
-
+              <Grid item xs={12} align="center">
+                <TextField
+                    id="password"
+                    type="password"
+                    name="newPassword"
+                    color="primary"
+                    onChange={this.onChange.bind(this)}
+                    style={{ margin: 8 }}
+                    placeholder="New Password"
+                    margin="normal"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+              </Grid>
               <Grid item xs={12} align="center">
                   <TextField
                   id="passwordConfirm"
@@ -124,7 +124,7 @@ class ResetPassword extends Component {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                /> 
+                />
               </Grid>
 
               <Grid item xs={12} align="center" style={{margin: "16px 0px 16px 0px"}}>

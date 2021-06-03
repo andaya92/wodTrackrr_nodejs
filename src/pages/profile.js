@@ -21,6 +21,8 @@ import ClassAdminView from "../comps/profile/classAdminView"
 import ClassMemberView from "../comps/profile/classMemberView"
 import CalendarScoreView from "../comps/calendar/calendarView"
 
+import { getUserClassMembers } from "../utils/firestore/classMember"
+import { getUserClassAdmins } from "../utils/firestore/classAdmin"
 import { getUserScores } from "../utils/firestore/scores"
 import { getFirstOfMonthTS } from "../utils/formatting"
 
@@ -33,7 +35,9 @@ class PageContentRaw extends Component {
       user: props.user,
       userMD: props.userMD,
       emailAlertOpen: false,
-      scores: []
+      scores: [],
+      adminClasses: [],
+      memberClasses: []
     }
   }
 
@@ -48,10 +52,16 @@ class PageContentRaw extends Component {
     }
     if(this.listener)
       this.listener()
+    if(this.userClassAdminsListener)
+      this.userClassAdminsListener()
+    if(this.userClassMembersListener)
+      this.userClassMembersListener()
   }
 
   componentDidMount(){
     this.listenForUserScores()
+    this.adminClassListener()
+    this.memberClassListener()
   }
 
   listenForUserScores(){
@@ -81,67 +91,118 @@ class PageContentRaw extends Component {
     }
   }
 
+  adminClassListener(){
+    if(this.state.userMD.uid && !this.userClassAdminsListener){
+      this.userClassAdminsListener = getUserClassAdmins(this.state.userMD.uid)
+      .onSnapshot(ss => {
+        let classes = []
+        if(!ss.empty){
+          ss.forEach(doc => {
+            classes.push(doc.data())
+          })
+          classes.sort((a, b) => {
+            return (a.date > b.date)? 1 : -1
+          })
+          this.setState({ adminClasses: classes })
+        }else{
+          this.setState({ adminClasses: classes })
+        }
+      },
+      err => {
+        console.log(err)
+      })
+    }
+  }
 
+  memberClassListener(){
+    if(this.state.userMD && !this.userClassMembersListener){
+      console.log(`Looking for members for ${this.state.userMD.uid}`)
+      this.userClassMembersListener = getUserClassMembers(this.state.userMD.uid)
+      .onSnapshot(ss => {
+        let classes = []
+        if(!ss.empty){
+          ss.forEach(doc => {
+            classes.push(doc.data())
+          })
+          classes.sort((a, b) => {
+            return (a.date > b.date)? 1 : -1
+          })
+          this.setState({ memberClasses: classes })
+        }else{
+          this.setState({ memberClasses: classes })
+        }
+      },
+      err => {
+          console.log(err)
+      })
+    }
+  }
 
   render(){
+
+    let isMemberOfClass = this.state.adminClasses.length > 0 ? 1 : 0
+    let isAdminOfClass = this.state.memberClasses.length > 0 ? 1 : 0
+    let numPanels = isMemberOfClass + isAdminOfClass + 1
+    let panelSize = 12 / numPanels
     return (
       <Grid item container align="center">
-        <Grid item xs={12}>
-          <Collapse in={this.state.emailAlertOpen}>
-            <Alert onClose={() => {this.setState({emailAlertOpen: false})}}>
-              Email sent!
-            </Alert>
-          </Collapse>
-        </Grid>
         <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-          <Paper elevation={4}>
             <Typography gutterBottom variant="h5" >
               { this.state.userMD.username }
             </Typography>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-          <Paper elevation={4}>
-            <CalendarScoreView
-              userMD={this.state.userMD}
-              scores={this.state.scores}
-            />
-          </Paper>
         </Grid>
 
         <Grid item xs={12}>
           <Grid item container xs={12}>
-              <AdminInvites userMD={this.state.userMD}/>
-              <MemberInvites userMD={this.state.userMD}/>
-              <ClassAdminView userMD={this.state.userMD}/>
-              <ClassMemberView userMD={this.state.userMD}/>
+            <AdminInvites userMD={this.state.userMD}/>
+            <MemberInvites userMD={this.state.userMD}/>
+          </Grid>
 
-             <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-               <Paper elevation={4}>
-                <UserFollows
-                  user={this.state.user}
-                  userMD={this.state.userMD}
-                 />
-               </Paper>
+          <Grid item container xs={12} spacing={2}>
+            <Grid item xs={12} >
+              <Typography>Following</Typography>
+              <UserFollows userMD={this.state.userMD} />
+            </Grid>
+
+            {this.state.adminClasses.length > 0?
+              <Grid item xs={12} >
+                <Typography>Administrator</Typography>
+                <ClassAdminView
+                  classes={this.state.adminClasses}
+                />
               </Grid>
-        </Grid>
+            :
+              <React.Fragment></React.Fragment>
+            }
 
-        <Paper elevation={2} style={{margin: "16px 0px 0px 0px"}}>
-          {this.state.userMD.accountType === "owner" ?
-            <OwnerControls
-              user={this.state.user}
-              userMD={this.state.userMD}
-              onAlert={this.props.onAlert}
+            {this.state.memberClasses.length > 0?
+              <Grid item xs={12} >
+                <Typography>Membership</Typography>
+                <ClassMemberView
+                  classes={this.state.memberClasses}
+                />
+              </Grid>
+            :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
+
+          <Grid item xs={12}>
+            {this.state.userMD.accountType === "owner" ?
+              <OwnerControls
+                user={this.state.user}
+                userMD={this.state.userMD}
+                onAlert={this.props.onAlert}
+                />
+            :
+              <Athlete
+                user={this.state.user}
+                userMD={this.state.userMD}
+                onAlert={this.props.onAlert}
+                scores={this.state.scores}
               />
-          :
-            <Athlete
-              user={this.state.user}
-              userMD={this.state.userMD}
-              onAlert={this.props.onAlert}
-              scores={this.state.scores}
-            />
-          }
-          </Paper>
+            }
+          </Grid>
         </Grid>
     </Grid>
     )
@@ -155,7 +216,9 @@ class ProfilePage extends Component {
     super(props)
     this.state = {
       user: props.user,
-      userMD: props.userMD
+      userMD: props.userMD,
+      timeComponentMounted: 0,
+      isLoading: true
     }
   }
 
@@ -166,13 +229,24 @@ class ProfilePage extends Component {
       this.setState({user: user} )
   }
 
+  timer(){
+    return new Promise(res => {
+      setTimeout(res, 5000)
+    })
+  }
+
+  componentDidMount(){
+    this.timer()
+    .then(() => {
+      this.setState({isLoading: false})
+    })
+  }
+
   static getDerivedStateFromProps(props, state){
     return props
   }
 
   render () {
-    console.log("user", this.state.user)
-
     return (
     	<Grid item xs={12} id="profilepage">
         {this.state.user?
@@ -182,10 +256,27 @@ class ProfilePage extends Component {
               onAlert={this.props.onAlert}
           />
         :
-          <h1>Loading</h1>
+          <Grid item align="center" xs={12}>
+            {this.state.isLoading?
+              <Paper>
+                <Grid item xs={12} align="center">
+                  <Typography>Loading</Typography>
+                </Grid>
+              </Paper>
+            :
+              <Button
+                variant="outlined"  color="primary"
+                onClick={(ev) => {
+                  this.props.history.push("/login")
+                }}
+              >
+                Login
+              </Button>
+            }
+          </Grid>
       }
   		</Grid>
-    );
+    )
   }
 }
 

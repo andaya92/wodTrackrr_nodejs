@@ -84,30 +84,28 @@ class UserScoreList extends Component {
 		return(
 			<React.Fragment>
 			{this.state.scores.length > 0?
-			<TableContainer component={Paper}>
-				<Table aria-label="score table">
-				<TableHead>
-					<TableRow>
-						<TableCell>Title</TableCell>
-						<TableCell>Score</TableCell>
-						<TableCell></TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{
-					this.state.scores.map((score, i) => {
-						return <ScoreRow key={i}
-							info={score}
-							onViewBox={this.handleViewBox.bind(this)}
-							onViewWod={this.handleViewWod.bind(this)}
-							onRemove = {this.showRemoveAlert.bind(this)}
-							onView={this.onView.bind(this)}
-						/>
-					})
-					}
-			    </TableBody>
-			    </Table>
-			</TableContainer>
+			<Table size="small" aria-label="score table">
+			<TableHead>
+				<TableRow>
+					<TableCell>Title</TableCell>
+					<TableCell>Score</TableCell>
+					<TableCell></TableCell>
+				</TableRow>
+			</TableHead>
+			<TableBody>
+				{
+				this.state.scores.map((score, i) => {
+					return <ScoreRow key={i}
+						info={score}
+						onViewBox={this.handleViewBox.bind(this)}
+						onViewWod={this.handleViewWod.bind(this)}
+						onRemove = {this.showRemoveAlert.bind(this)}
+						onView={this.onView.bind(this)}
+					/>
+				})
+				}
+			</TableBody>
+			</Table>
 			:
 			<Grid item xs={12}>
 				<Card variant="outlined" color="primary">

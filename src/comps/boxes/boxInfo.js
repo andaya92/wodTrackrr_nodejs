@@ -71,33 +71,31 @@ class BoxInfo extends Component {
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12}>
-				<Paper>
-					<Typography variant="h2">
-						{this.state.boxMD.title}
-					</Typography>
-					<Typography variant="h3">
-						{this.state.boxMD.description}
-					</Typography>
-					<Typography variant="h4">
-						Location Here
-					</Typography>
-					{showEditBoxInfoBtn?
-						<IconButton onClick={this.openEditInfo.bind(this)}
-							style={{color: this.props.theme.palette.text.primary}}>
-							<EditOutlined />
-						</IconButton>
-					:
-						<React.Fragment></React.Fragment>
-					}
-					<Typography variant="caption">
-						Joined: { toDayYear(new Date(this.state.boxMD.date)) }
-					</Typography>
-					<Grid item align="center" xs={12}>
-						<StyledImage
-							src="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
-						/>
-					</Grid>
-				</Paper>
+				<Typography variant="h2">
+					{this.state.boxMD.title}
+				</Typography>
+				<Typography variant="h3">
+					{this.state.boxMD.description}
+				</Typography>
+				<Typography variant="h4">
+					Location Here
+				</Typography>
+				{showEditBoxInfoBtn?
+					<IconButton onClick={this.openEditInfo.bind(this)}
+						style={{color: this.props.theme.palette.text.primary}}>
+						<EditOutlined />
+					</IconButton>
+				:
+					<React.Fragment></React.Fragment>
+				}
+				<Typography variant="caption">
+					Joined: { toDayYear(new Date(this.state.boxMD.date)) }
+				</Typography>
+				<Grid item align="center" xs={12}>
+					<StyledImage
+						src="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+					/>
+				</Grid>
 			</Grid>
 			{
 				showEditBoxInfoBtn?

@@ -1,13 +1,13 @@
 import firebase from "../context/firebaseContext"
 import "firebase/auth";
-import "firebase/database"; 
+import "firebase/database";
 
 
 import React, { Component } from 'react'
 import { Route, Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
+import
 { 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
 	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
 	CircularProgress, LinearProgress, CardActions, Card, CardContent,
@@ -42,8 +42,6 @@ class BarChart extends Component {
 	}
 
 	static getDerivedStateFromProps(props, state){
-		console.log(props)
-		console.log(state)
 		return props
 	}
 
@@ -52,7 +50,6 @@ class BarChart extends Component {
 	}
 
 	componentDidUpdate(){
-		console.log(this.state)
 		this.createChart(this.binData(this.state.values))
 	}
 
@@ -97,7 +94,7 @@ class BarChart extends Component {
 
 		for(let i=0; i<3; i++){
 			let binA = `${this.format(_mean - (sd * (i + 1)))} - ${this.format(_mean - (sd * i))}`
-			let binB = `${this.format(_mean + (sd * i))} - ${this.format(_mean + (sd * (i + 1)))}`	
+			let binB = `${this.format(_mean + (sd * i))} - ${this.format(_mean + (sd * (i + 1)))}`
 			bins.unshift(binA)
 			bins.push(binB)
 		}
@@ -115,7 +112,7 @@ class BarChart extends Component {
 		let binnedData = [0, 0, 0, 0, 0, 0]
 		for(let x of values){
 	 		let diff = (x - _mean)
-	 		let numSDAway = Math.floor(diff / sd)	 		
+	 		let numSDAway = Math.floor(diff / sd)
 	 		if(Math.abs(numSDAway) <= 1){
 	 			if(diff > 0){
 	 				binnedData[3]++
@@ -139,15 +136,13 @@ class BarChart extends Component {
 		return [labels, binnedData]
 	}
 
-  render(){
+  	render(){
 		return(
 			<Grid item xs={12}>
-				<div style={{width: "92vw", padding: "8px"}}>
-					<canvas id="barChart"></canvas>
-				</div>
+				<canvas id="barChart"></canvas>
 			</Grid>
 		)
-  }
+  	}
 }
 
 export default BarChart = withTheme(BarChart);
