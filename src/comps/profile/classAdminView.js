@@ -90,7 +90,6 @@ class ClassAdminView extends Component {
 						</TableHead>
 						<TableBody>
 							{this.state.testData.map((classAdmin, i) => {
-
 								return (
 									<AdminRow key={i}
 										info={classAdmin}

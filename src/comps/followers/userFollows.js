@@ -24,32 +24,9 @@ class UserFollows extends Component{
     super(props)
     this.state = {
       userMD: props.userMD,
-      userFollows: [],
+      userFollows: props.userFollows,
       showRemoveAlert: false,
       removeBoxID: ""
-    }
-  }
-
-  extractData(ss){
-    let follows = []
-    ss.forEach(doc => {
-      follows.push(doc.data())
-    })
-    return follows
-  }
-
-  componentDidMount(){
-    this.getUserFollowers = getUserFollowers(this.state.userMD.uid)
-   .onSnapshot(followingSS => {
-      let follows = this.extractData(followingSS)
-      this.setState({userFollows: follows})
-    })
-  }
-
-
-  componentWillUnmount(){
-    if(this.getUserFollowers){
-      this.getUserFollowers()
     }
   }
 

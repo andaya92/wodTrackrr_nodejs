@@ -1,6 +1,7 @@
 import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
+import "firebase/auth"
+import "firebase/database"
+import "firebase/storage"
 
 import React, { Component } from 'react'
 import { Route, Link, Redirect } from 'react-router-dom';
@@ -24,11 +25,15 @@ import Waves from '@material-ui/icons/Waves'
 import Whatshot from '@material-ui/icons/Whatshot'
 
 import BoxView from "./boxView"
-
+import UploadImageModal from "./uploadImageModal"
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import { toDayYear } from "../../utils/formatting"
+import { setImage, getImages } from "../../utils/firestore/images"
 
 const fs = firebase.firestore()
+const storage = firebase.storage()
+const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+
 
 
 const StyledCardMedia = withStyles(theme =>({
@@ -41,15 +46,17 @@ const StyledCardMedia = withStyles(theme =>({
 
 
 
+
 function BoxRaw(props){
   let title = props.info["title"]
   let boxID = props.info["boxID"]
   let description = props.info["description"]
+
   return(
     <Card id={`box/${boxID}`} onClick={(ev) => props.onRowClick(ev, `box/${boxID}`)}>
       <CardActionArea>
         <StyledCardMedia component="img"
-          image="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+          image={props.boxImage}
           title="NC Fit"
         />
         <CardContent>
@@ -93,7 +100,7 @@ function BoxRaw(props){
             </Tooltip>
             <Tooltip title="Upload Image">
               <IconButton
-                onClick={()=>{}}>
+                onClick={()=>{ props.showUploadImage(boxID, title) }}>
                   <PhotoIcon color="primary"/>
               </IconButton>
 
@@ -131,12 +138,18 @@ class BoxSearch extends Component {
       isOwner: props.isOwner,
       allBoxes: props.allBoxes,
       filteredBoxes: props.filteredBoxes,
-      userFollowing: {}
+      userFollowing: {},
+      showingUploadImage: false,
+      curUploadBoxID: "",
+      curUploadBoxTitle: "",
+      boxImages: {}
+
   }
 }
 
   componentDidMount(){
     this.listenForFollowing()
+    this._getImages()
   }
 
   componentWillUnmount(){
@@ -153,6 +166,8 @@ class BoxSearch extends Component {
     this.listenForFollowing()
   }
 
+
+
   listenForFollowing(){
     if(this.state.userMD && !this.followListener){
       this.followListener = getUserFollowers(this.state.userMD.uid)
@@ -162,14 +177,9 @@ class BoxSearch extends Component {
         boxIDs.forEach(id =>{
           following[id] = true
         })
-
-
-
         this.setState({userFollowing: following})
       },
       err => { console.log(err) })
-
-
     }
   }
 
@@ -217,6 +227,61 @@ class BoxSearch extends Component {
     }
   }
 
+  showUploadImage(boxID, boxTitle){
+    /* Show upload image modal and set state for the box that called.
+     */
+    this.setState({
+      showingUploadImage: true,
+      curUploadBoxID: boxID,
+      curUploadBoxTitle: boxTitle
+    })
+  }
+
+  hideUploadImage(){
+    this.setState({showingUploadImage: false})
+  }
+
+  uploadImage(file){
+
+    if(!file || !this.state.curUploadBoxID || !this.state.curUploadBoxTitle){
+      console.log("Failed to begin upload.")
+      console.log(file, this.state.curUploadBoxID, this.state.curUploadBoxTitle)
+    }
+
+
+    setImage(file, this.state.curUploadBoxID, this.state.curUploadBoxTitle)
+    .then((msg) => {
+      this.hideUploadImage()
+      this.props.onAlert({
+        type: 'success',
+        message: msg
+      })
+    })
+    .catch(msg => {
+      this.hideUploadImage()
+      this.props.onAlert({
+        type: 'error',
+        message: msg
+      })
+    })
+  }
+
+
+  _getImages(){
+    let fileNames = this.state.allBoxes.map(box => {
+      return [box.boxID, box.title]
+    })
+
+    getImages(fileNames)
+    .then(urls => {
+      this.setState({ boxImages: Object.fromEntries(urls) })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+  }
+
   render () {
     return (
       <Grid item xs={12} style={{marginTop: "3vh"}}>
@@ -242,10 +307,13 @@ class BoxSearch extends Component {
 
     { this.state.filteredBoxes.length > 0?
       this.state.filteredBoxes.map((box, i) => {
+        let url = this.state.boxImages[`${box.boxID}/${box.title}`]
+        url = url? url: DEFAULT_IMAGE_URL
         return <Box
                 key={i}
                 theme={this.props.theme}
                 info={box}
+                boxImage={url}
                 color={this.props.theme.palette.primary.mainGrad}
                 handleBoxView={this.props.handleBoxView}
                 handleRemoveBox={this.props.handleRemoveBox}
@@ -254,12 +322,21 @@ class BoxSearch extends Component {
                 handleFollow={this.handleFollow.bind(this)}
                 handleUnfollow={this.handleUnfollow.bind(this)}
                 onRowClick={this.onRowClick.bind(this)}
+                showUploadImage={this.showUploadImage.bind(this)}
                 />
       })
     :
       <EmptyBox />
     }
         </Grid>
+        <UploadImageModal
+          open={this.state.showingUploadImage}
+          actionText="Upload Image"
+          cancelText="Cancel"
+          modalText="Select an image to upload"
+          onAction={this.uploadImage.bind(this)}
+          onClose={this.hideUploadImage.bind(this)}
+        />
       </Grid>
     );
   }

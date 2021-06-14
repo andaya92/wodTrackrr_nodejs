@@ -35,6 +35,8 @@ class HomePage extends Component {
             <Grid item xs={6}>
                 <Typography variant="h3">Find a gym</Typography>
                 <Typography variant="h3">Track your results</Typography>
+                <Typography variant="h3">Show top gys here</Typography>
+                <Typography variant="h3">Show events local to the user here</Typography>
                 <img className="img-responsive" src="nike.png"/>
             </Grid>
           </Paper>
