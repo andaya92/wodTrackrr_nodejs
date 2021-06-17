@@ -3,6 +3,7 @@ import "firebase/auth";
 import "firebase/firestore";
 
 import { removeGymClass } from "./gymClass"
+import { deleteGymImage } from "./gymImages"
 
 let fs = firebase.firestore();
 
@@ -229,15 +230,22 @@ function removeClassesandFollowers(boxID){
 export function removeBox(boxID){
 	return new Promise((res, rej) => {
 		removeClassesandFollowers(boxID)
-		.then((result) => {
+		.then(() => {
 			fs.collection("boxes").doc(boxID)
 			.get()
 			.then( ss => {
-				console.log(ss)
+				// console.log(ss)
 				if(ss.exists){
 					ss.ref.delete()
 					.then(() => {
-						res("Deleted box!")
+						deleteGymImage(boxID)
+						.then(() => {
+							res("Deleted box!")
+						})
+						.catch(err => {
+							console.log(err)
+							rej(err)
+						})
 					})
 					.catch( err => {
 						console.log(err)
@@ -249,15 +257,11 @@ export function removeBox(boxID){
 				console.log(err)
 				rej(err.message)
 			})
-
 		})
 		.catch(err => {
 			console.log(err)
 			rej(err.message)
 		})
-
-
-
 	})
 
 }

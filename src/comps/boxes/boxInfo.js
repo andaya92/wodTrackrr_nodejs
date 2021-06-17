@@ -50,12 +50,12 @@ class BoxInfo extends Component {
 			boxMD: props.boxMD,
 			editModalOpen: false
 		}
-		console.log(props.boxMD)
 	}
 
 	static getDerivedStateFromProps(props, state){
 		return props
 	}
+
 
 	openEditInfo(){
 		this.setState({editModalOpen: true})
@@ -63,9 +63,9 @@ class BoxInfo extends Component {
 
 	closeEditInfo(){
         this.setState({editModalOpen: false})
-    }
+  }
 
-    render(){
+  render(){
 		let showEditBoxInfoBtn = this.state.userMD != null && this.state.boxMD['uid'] == this.state.userMD['uid']
 		console.log(`Show edit btn? ${showEditBoxInfoBtn}`)
 		return(
@@ -93,7 +93,7 @@ class BoxInfo extends Component {
 				</Typography>
 				<Grid item align="center" xs={12}>
 					<StyledImage
-						src="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+						src={this.props.url}
 					/>
 				</Grid>
 			</Grid>

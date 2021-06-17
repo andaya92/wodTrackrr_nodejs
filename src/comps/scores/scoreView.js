@@ -272,6 +272,8 @@ class ScoreView extends Component{
               <AddScore
                 userMD={this.state.userMD}
                 wodMD={this.state.wodMD}
+                onAlert={this.props.onAlert}
+                onClose={this.toggleAddScore.bind(this)}
               />
             </Grid>
           :

@@ -4,7 +4,7 @@ import "firebase/firestore"
 import { removeAdmin } from "./classAdmin"
 import { removeWod } from "./wods"
 import { removeMember } from "./classMember"
-
+import { deleteClassImage } from './classImages'
 
 let fs = firebase.firestore()
 
@@ -431,6 +431,7 @@ export function removeGymClass(gymClassInfo){
 			removeMemberInvitesFromClass(gymClassInfo),
 			removeAdminsFromClass(gymClassInfo),
 			removeMembersFromClass(gymClassInfo),
+			deleteClassImage(gymClassInfo.boxID, gymClassInfo.gymClassID),
 			new Promise((res, rej) => {
 				getWodIDs(gymClassInfo.boxID, gymClassInfo.gymClassID, gymClassInfo.isPrivate)
 				.then((ids =>{

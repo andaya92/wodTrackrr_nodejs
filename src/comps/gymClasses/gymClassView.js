@@ -34,6 +34,7 @@ import BackButton  from "../backButton"
 import { getWods, removeWod } from "../../utils/firestore/wods"
 import { getClassAdmins } from "../../utils/firestore/classAdmin"
 import { getClassMembers } from "../../utils/firestore/classMember"
+import { getClassImage } from "../../utils/firestore/classImages"
 
 import { isEmpty } from "../../utils/valid"
 import "../../styles.css"
@@ -48,6 +49,7 @@ import "../../styles.css"
 		details of Box and its WODS, allows for removal of wods by owner
 */
 const fs = firebase.firestore();
+const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
 
 class GymClassView extends Component {
 	constructor(props){
@@ -77,7 +79,8 @@ class GymClassView extends Component {
 			showMemberList: false,
 			isAdmin: false,
 			isMember: false,
-			showAddWod: false
+			showAddWod: false,
+			classImageURL: DEFAULT_IMAGE_URL
 
 		}
 	}
@@ -97,6 +100,17 @@ class GymClassView extends Component {
 				}
 			})
 		}
+	}
+
+	_getClassImage(){
+		getClassImage(this.state.boxID, this.state.gymClassID)
+		.then(url => {
+			console.log(url)
+			this.setState({classImageURL: url})
+		})
+		.catch(err => {
+			console.log(err)
+		})
 	}
 
 	getUserBoxListener(){
@@ -202,7 +216,7 @@ class GymClassView extends Component {
 	componentDidMount(){
 		this.checkListeners()
 		this.getGymClassListener()
-
+		this._getClassImage()
 	}
 
 	static getDerivedStateFromProps(props, state){
@@ -433,6 +447,7 @@ class GymClassView extends Component {
 						gymClassMD={this.state.gymClassMD}
 						userMD={this.state.userMD}
 						showEditBtn={this.isAdmin()} // TODO() check this
+						url={this.state.classImageURL}
 						onAlert={this.props.onAlert}
 					/>
 					<Grid item align="right" xs={12}>

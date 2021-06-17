@@ -127,8 +127,20 @@ class AddScore extends Component{
 		}
 
 		setScore(title, boxID, gymClassID, wodID, owner, uid, username, userScore, scoreType)
-		.then((res) => console.log(res))
-		.catch((err) => console.log(err))
+		.then((res) => {
+			console.log(res)
+			// Toggles back button to close addScore
+			if(this.props.onClose){
+				this.props.onClose()
+			}
+		})
+		.catch((err) => {
+			console.log(err)
+			this.props.onAlert({
+				type: "error",
+				message: "Failed to add score."
+			})
+		})
 	}
 
 

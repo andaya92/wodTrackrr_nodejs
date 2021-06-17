@@ -25,6 +25,7 @@ import { toDayYear } from "../../utils/formatting"
 
 const fs = firebase.firestore();
 
+
 function Image(props){
 	const { classes, children, className, ...other } = props
 
@@ -49,7 +50,8 @@ class ClassInfo extends Component {
 			userMD: props.userMD,
 			gymClassMD: props.gymClassMD,
 			editModalOpen: false,
-			showEditClassInfoBtn: props.showEditBtn
+			showEditClassInfoBtn: props.showEditBtn,
+			url: props.url
 		}
 	}
 
@@ -57,9 +59,12 @@ class ClassInfo extends Component {
 		return props
 	}
 
+
 	openEditInfo(){
 		this.setState({editModalOpen: true})
 	}
+
+
 
 	closeEditInfo(){
         this.setState({editModalOpen: false})
@@ -93,7 +98,7 @@ class ClassInfo extends Component {
 				}
 				<Grid item align="center" xs={12}>
 					<StyledImage
-						src="https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
+						src={this.state.url}
 					/>
 				</Grid>
 			</Grid>

@@ -28,7 +28,7 @@ import BoxView from "./boxView"
 import UploadImageModal from "./uploadImageModal"
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import { toDayYear } from "../../utils/formatting"
-import { setImage, getImages } from "../../utils/firestore/images"
+import { setImage, getImages, deleteGymImage} from "../../utils/firestore/gymImages"
 
 const fs = firebase.firestore()
 const storage = firebase.storage()
@@ -100,7 +100,7 @@ function BoxRaw(props){
             </Tooltip>
             <Tooltip title="Upload Image">
               <IconButton
-                onClick={()=>{ props.showUploadImage(boxID, title) }}>
+                onClick={()=>{ props.showUploadImage(boxID) }}>
                   <PhotoIcon color="primary"/>
               </IconButton>
 
@@ -110,6 +110,12 @@ function BoxRaw(props){
           :
             <React.Fragment></React.Fragment>
           }
+          <Tooltip title="Delete GymImages">
+              <IconButton
+                onClick={()=>{ deleteGymImage(boxID) }}>
+                <Delete  color="primary" />
+              </IconButton>
+          </Tooltip>
         </React.Fragment>
       </CardActions>
     </Card>
@@ -141,7 +147,6 @@ class BoxSearch extends Component {
       userFollowing: {},
       showingUploadImage: false,
       curUploadBoxID: "",
-      curUploadBoxTitle: "",
       boxImages: {}
 
   }
@@ -227,13 +232,13 @@ class BoxSearch extends Component {
     }
   }
 
-  showUploadImage(boxID, boxTitle){
+  showUploadImage(boxID){
     /* Show upload image modal and set state for the box that called.
      */
     this.setState({
       showingUploadImage: true,
       curUploadBoxID: boxID,
-      curUploadBoxTitle: boxTitle
+
     })
   }
 
@@ -243,13 +248,13 @@ class BoxSearch extends Component {
 
   uploadImage(file){
 
-    if(!file || !this.state.curUploadBoxID || !this.state.curUploadBoxTitle){
+    if(!file || !this.state.curUploadBoxID){
       console.log("Failed to begin upload.")
-      console.log(file, this.state.curUploadBoxID, this.state.curUploadBoxTitle)
+      console.log(file, this.state.curUploadBoxID)
     }
 
 
-    setImage(file, this.state.curUploadBoxID, this.state.curUploadBoxTitle)
+    setImage(file, this.state.curUploadBoxID)
     .then((msg) => {
       this.hideUploadImage()
       this.props.onAlert({
@@ -268,11 +273,11 @@ class BoxSearch extends Component {
 
 
   _getImages(){
-    let fileNames = this.state.allBoxes.map(box => {
-      return [box.boxID, box.title]
+    let boxIDs = this.state.allBoxes.map(box => {
+      return box.boxID
     })
 
-    getImages(fileNames)
+    getImages(boxIDs)
     .then(urls => {
       this.setState({ boxImages: Object.fromEntries(urls) })
     })
@@ -307,7 +312,7 @@ class BoxSearch extends Component {
 
     { this.state.filteredBoxes.length > 0?
       this.state.filteredBoxes.map((box, i) => {
-        let url = this.state.boxImages[`${box.boxID}/${box.title}`]
+        let url = this.state.boxImages[box.boxID]
         url = url? url: DEFAULT_IMAGE_URL
         return <Box
                 key={i}

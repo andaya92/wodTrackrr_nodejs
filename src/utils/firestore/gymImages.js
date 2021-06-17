@@ -8,7 +8,7 @@ const ROOT = "gymImages"
 export default function mTea(){}
 
 
-export function setImage(file, boxID, boxTitle){
+export function setImage(file, boxID){
   /* Uploads an image to the user's location
 
   /gymImages/boxID/boxTitle/image
@@ -21,9 +21,7 @@ export function setImage(file, boxID, boxTitle){
     message: A string to indicate success or failure.
    */
   let root = stor.ref(ROOT)
-  let boxImage = root.child(boxID).child(boxTitle)
-  console.log("file, boxID, boxTitle")
-  console.log(file, boxID, boxTitle)
+  let boxImage = root.child(boxID)
   return new Promise((res, rej) => {
     boxImage.put(file).then( ss => {
       console.log(ss)
@@ -38,35 +36,36 @@ export function setImage(file, boxID, boxTitle){
 
 
 
-export function getImage(boxID, boxTitle){
+export function getImage(boxID){
   let root = stor.ref(ROOT)
-  let boxImage = root.child(boxID).child(boxTitle)
-  boxImage.getDownloadURL()
-  .then((res) => {
-    console.log(res)
-  })
-  .catch(err => {
-    console.log(err)
+  let boxImage = root.child(boxID)
+  return new Promise((res, rej) => {
+    boxImage.getDownloadURL()
+    .then((url) => {
+      res(url)
+    })
+    .catch(err => {
+      rej(err)
+    })
   })
 }
 
 
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
-export function getImages(fileNames){
+export function getImages(boxIDs){
   let root = stor.ref(ROOT)
   let promises = []
 
-  fileNames.forEach(file => {
+  boxIDs.forEach(boxID => {
     promises.push(new Promise((res, rej) => {
-      const [ boxID, boxTitle ] = file
-      console.log(`Getting image for ${boxID}/${boxTitle}`)
-      let boxImage = root.child(boxID).child(boxTitle)
+      console.log(`Getting image for ${boxID}`)
+      let boxImage = root.child(boxID)
       boxImage.getDownloadURL()
       .then(url => {
-          res([`${boxID}/${boxTitle}`, url])
+          res([boxID, url])
       })
       .catch(err => {
-        res([`${boxID}/${boxTitle}`, DEFAULT_IMAGE_URL])
+        res([boxID, DEFAULT_IMAGE_URL])
       })
     }))
   })
@@ -74,18 +73,21 @@ export function getImages(fileNames){
   return Promise.all(promises)
 }
 
-
-
-
-export function deleteImage(boxID, boxTitle){
-  // Remove node gymImages/boxID/boxTitle
+export function deleteGymImage(boxID){
+  return new Promise((res, rej) => {
+    let boxImages = stor.ref(ROOT).child(boxID).delete()
+    .then(() => {
+      res("Deleted boxImages")
+    })
+    .catch(err => {
+      if(err.code == 404){
+        res("No Image to delete.")
+        return
+      }
+      rej(err.message)
+    })
+  })
 }
-
-export function deleteGymImages(boxID){
-  // Remove node gymImages/boxID
-}
-
-
 
 
 /**
