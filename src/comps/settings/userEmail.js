@@ -1,18 +1,11 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 import React, { Component } from 'react'
 
-import { withTheme, withStyles } from '@material-ui/core/styles';
+import { withTheme } from '@material-ui/core/styles';
 
-import { Grid, Paper, Button, Typography, Collapse,
-        Accordion, AccordionSummary, AccordionDetails }
-from '@material-ui/core';
+import { Grid, Button, Typography }from '@material-ui/core';
 
 import makeCancelable from "../../utils/promises"
 import { CheckCircleOutlined } from "@material-ui/icons";
-
-
 
 class UserEmail extends Component{
     constructor(props){

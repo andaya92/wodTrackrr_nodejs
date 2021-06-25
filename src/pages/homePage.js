@@ -1,21 +1,13 @@
-import firebase from "../context/firebaseContext"
-import "firebase/firestore"
-
 import React, { Component } from 'react'
 
-import { Grid, Paper, Button, Typography, Collapse,
-        Accordion, AccordionSummary, AccordionDetails }
-from '@material-ui/core';
+import { Grid, Paper, Typography }from '@material-ui/core'
 
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
-import { Redirect, withRouter } from "react-router-dom";
+import { withTheme } from '@material-ui/core/styles'
 
 
 class HomePage extends Component {
   constructor(props){
     super(props)
-    console.log(props)
     this.state = {}
   }
 
@@ -37,7 +29,8 @@ class HomePage extends Component {
                 <Typography variant="h3">Track your results</Typography>
                 <Typography variant="h3">Show top gys here</Typography>
                 <Typography variant="h3">Show events local to the user here</Typography>
-                <img className="img-responsive" src="nike.png"/>
+                <img className="img-responsive" alt="nike" src="nike.png"/>
+
             </Grid>
           </Paper>
   		</Grid>

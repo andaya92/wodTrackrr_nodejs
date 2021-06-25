@@ -32,6 +32,7 @@ import apptheme from "./css/apptheme"
 import lightapptheme from "./css/applighttheme"
 import "./styles.css"
 
+
 const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
 let darkTheme = createMuiTheme(apptheme)
 let lightTheme = createMuiTheme(lightapptheme)
@@ -41,8 +42,9 @@ lightTheme = responsiveFontSizes(lightTheme, breakPoints)
 const BackgroundGrid = withStyles(theme =>({
   root:{
     backgroundColor: theme.palette.background.paper,
-    minHeight: "calc(100vh - 126px)",
-    maxHeight: "calc(100vh - 126px)",
+    position: "absolute",
+    maxHeight: "calc(100vh - 199%)",
+    minHeight: "calc(100vh - 199%)",
     overflowY: "scroll"
   }
 }))(Grid)
@@ -51,6 +53,9 @@ const StyledBottomNavigation = withStyles(theme =>({
   root:{
     minHeight: "64px",
     maxHeight: "64px",
+    top: "calc(100vh - 64px)",
+    width: "100%",
+    position: "fixed",
     background: theme.palette.primary.mainGrad
   }
 }))(BottomNavigation)
@@ -79,14 +84,7 @@ export default class App extends React.Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    console.log("App STATE:")
-    console.log(state)
     return state
-  }
-
-  onURLChange(ev){
-    // console.log("Window EVENT!!!!!!!!!!!!!!!!!!!!")
-    // console.log(ev)
   }
 
   componentDidMount(){
@@ -96,7 +94,9 @@ export default class App extends React.Component {
       if(user){
         let doc = fs.collection("users").doc(user.uid)
         this.userMDListener = doc.onSnapshot(metadata => {
+          console.log("USer MD change")
           if(metadata.exists){
+            console.log(metadata.data())
             this.setState({ user: user, userMD: metadata.data() })
           }else{
             this.setState({ user: user, userMD: false })
@@ -127,8 +127,6 @@ export default class App extends React.Component {
       this.firebaseAuthListener && this.firebaseAuthListener()
     if(this.userMDListener !== null)
       this.userMDListener && this.userMDListener()
-
-    window.removeEventListener('click', this.onURLChange)
   }
 
   changeTheme(){
@@ -160,11 +158,11 @@ export default class App extends React.Component {
     />
 
     <BackgroundGrid container direction="column" alignItems="center">
-      <Grid item container xs={12} sm={10}
+      <Grid item container xs={12}
         style={{"minHeight": "100%", paddingTop: "8px"}}
       >
         <Paper style={{width: "100%"}}>
-          <Grid item xs={12}>
+          <React.Fragment>
             {this.state.loading?
               <h1>Loading</h1>
             :
@@ -244,10 +242,8 @@ export default class App extends React.Component {
               </Route>
             </Switch>
             }
-          </Grid>
+          </React.Fragment>
         </Paper>
-
-        <div style={{"margin": "5vh"}}></div>
       </Grid>
     </BackgroundGrid>
 

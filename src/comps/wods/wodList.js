@@ -1,17 +1,8 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
 // React
 import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom';
 import { withRouter } from "react-router-dom"
 
-import ReactMarkdown from 'react-markdown'
-
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
 { 	Grid, Paper, IconButton, Typography, TextField,
 	InputAdornment, TableBody, Table, TableContainer,
@@ -34,8 +25,6 @@ const TableCell = withStyles({root:{
 
 function WodRaw(props){
 	let title = props.info["title"]
-	let scoreType = props.info["scoreType"]
-	let wodText = props.info["wodText"]
 	let boxID = props.info.boxID
 	let wodID = props.info["wodID"]
 	let gymClassID = props.info["gymClassID"]
@@ -125,7 +114,7 @@ class WodList extends Component {
 
 
 	onKeyUp(data){
-		if((data.keyCode || data.which) == 13){
+		if((data.keyCode || data.which) === 13){
 		}
 	}
 

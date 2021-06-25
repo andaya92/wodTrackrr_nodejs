@@ -3,12 +3,10 @@ import "firebase/auth";
 
 import React, { Component } from 'react'
 import {
-  Grid, TextField, Button, Paper, Typography , Collapse, IconButton
+  Grid, TextField, Button, Paper, Typography
 } from '@material-ui/core';
 
 import { withTheme } from '@material-ui/core/styles';
-
-
 
 class ResetPassword extends Component {
    constructor(props){
@@ -21,13 +19,11 @@ class ResetPassword extends Component {
     }
    }
 
-
   static getDerivedStateFromProps(props, state){
     return state.user? state: props
   }
 
   handleSubmit(ev){
-
     let currentPassword = this.state.currentPassword
     let newPassword = this.state.newPassword
     let confirmPassword = this.state.confirmPassword

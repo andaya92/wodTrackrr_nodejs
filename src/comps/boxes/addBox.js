@@ -1,26 +1,13 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-
 import React, { Component } from 'react'
 
 import
-{ 	Grid, Paper, Button, Typography, TextField, Select,
-		TableRow, TableHead, TableContainer,
-		TableBody, Table
+{ 	Grid, Button, TextField,
 }
 from '@material-ui/core';
-import {TableCell as TC} from '@material-ui/core';
-import { withTheme, withStyles } from '@material-ui/core/styles';
+import { withTheme } from '@material-ui/core/styles';
 
 import { setBox } from "../../utils/firestore/boxes"
 
-let fs = firebase.firestore();
-
-const TableCell = withStyles({root:{
-		borderBottom: "none"
-}})(TC)
 
 class AddBox extends Component {
 	constructor(props){
@@ -42,7 +29,7 @@ class AddBox extends Component {
 	}
 
 	onKeyUp(data){
-		if((data.keyCode || data.which) == 13){
+		if((data.keyCode || data.which) === 13){
 			this.createBox()
 		}
 	}
@@ -57,10 +44,15 @@ class AddBox extends Component {
 	}
 
 	createBox(){
-			let title = this.state.boxMD.title
-			let description = this.state.boxMD.description
-			if(!title)
-					return
+		let title = this.state.boxMD.title
+		let description = this.state.boxMD.description
+		if(!title){
+				this.props.onAlert({
+					type: 'error',
+					message: 'No title given'
+				})
+				return
+		}
 		setBox(title, description, this.props.userMD.uid)
 		.then((res)=>{
 				this.props.onAlert({
@@ -75,6 +67,8 @@ class AddBox extends Component {
 			})
 		})
 	}
+
+
 
 	render () {
 		return (
@@ -105,7 +99,9 @@ class AddBox extends Component {
 					</Grid>
 					<Grid item xs={12}>
 						<Button size="small" variant="outlined" color="primary"
-								onClick={ () =>{ this.createBox() }}>
+							onClick={this.createBox.bind(this)}
+							style={{margin: "16px auto", width: "90%" }}
+						>
 								Submit
 						</Button>
 					</Grid>

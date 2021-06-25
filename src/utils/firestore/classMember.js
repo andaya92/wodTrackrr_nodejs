@@ -9,9 +9,7 @@ const USER_CLASS_MEMBER = "userClassMembers"
 const MEMBERS = "members"
 const MEMBER_NOTIFICATIONS = "memberNotifications"
 const USER_NOTIFICATIONS = "userMemberNotifications"
-const USERS = "users"
 const NOTIFICATIONS = "notifications"
-const INVITES = "invites"
 const CLASSES = "classes"
 
 

@@ -1,34 +1,19 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 // React
 import React, { Component } from 'react'
 
 // Material UI
 import { Check, Close } from '@material-ui/icons'
-import
-{ 	Grid, Paper, Button, Typography, IconButton, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
-} from '@material-ui/core';
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
+import{
+    Grid, Paper, Typography, IconButton
+} from '@material-ui/core'
+import { withTheme } from '@material-ui/core/styles'
 
 import { setClassAdmin, getUserAdminInvites, removeNotification } from "../../utils/firestore/classAdmin"
-
 import "../../styles.css"
-
-const fs = firebase.firestore();
 
 
 function NotificationRaw(props){
     let senderUsername = props.info.senderUsername
-    let adminInviteID = props.info.adminInviteID
     let gymClassTitle = props.info.gymClassTitle
     let gymClassBoxTitle = props.info.boxTitle
 

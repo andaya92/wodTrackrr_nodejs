@@ -1,17 +1,12 @@
-import firebase from "../context/firebaseContext"
-import "firebase/auth";
-import "firebase/firestore";
-
 import React, { Component } from 'react'
 
 import
-{ 	Grid, Paper, Button, Typography, TextField, Select,
-	TableRow, TableHead, TableContainer,
+{ 	Grid, Typography, TableRow, TableHead,
 	TableBody, Table, TableCell, IconButton
 }
 from '@material-ui/core';
 
-import { withTheme, withStyles } from '@material-ui/core/styles';
+import { withTheme } from '@material-ui/core/styles';
 import { ArrowBackIos } from '@material-ui/icons';
 
 import ResetPassword from "../comps/settings/resetPassword"
@@ -19,9 +14,6 @@ import DeleteAccount from "../comps/settings/deleteAccount"
 import UsernamePanel from "../comps/settings/usernamePanel"
 import BackButton  from "../comps/backButton"
 import UserEmail from "../comps/settings/userEmail"
-
-
-let fs = firebase.firestore();
 
 const HOME = "home"
 const CHANGE_USERNAME = "change username"
@@ -82,9 +74,7 @@ class Settings extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-    let pageChange = props.userMD.currentPage !== state.userMD.currentPage
-
-	return pageChange || state.user? state: props
+    return props
   }
 
   openSetting(id){
@@ -138,7 +128,7 @@ class Settings extends Component {
                     </Grid>
 
                 </Grid>
-            : this.state.currentPage == DELETE_ACCOUNT?
+            : this.state.currentPage === DELETE_ACCOUNT?
                 <Grid container item xs={12}>
                     <Grid item xs={12}>
                         <IconButton style={{color: this.props.theme.palette.text.primary}} onClick={this.handleBack.bind(this)}>

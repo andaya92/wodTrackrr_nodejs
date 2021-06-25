@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 
 import
-{ 	Grid, Paper, Button, Typography, TextField, Select,
-	CardActions, Card, CardContent, TableRow, TableHead, TableContainer,
-	TableCell, TableBody, Table, Modal
+{ 	Grid, Paper, Button, Typography, Card, CardContent, TableRow, TableHead, TableContainer,
+	TableCell, TableBody, Table
 }
 from '@material-ui/core';
-import { Alert } from '@material-ui/lab'
+
 import { withTheme } from '@material-ui/core/styles'
 import Delete from '@material-ui/icons/Delete'
 
@@ -43,7 +42,7 @@ class ScoreList extends Component {
 				<TableBody>
 					{this.state.scores.map((score, i) => {
 						let isCurUserScore =
-							(this.state.uid == score["uid"])? true : false
+							(this.state.uid === score["uid"])? true : false
 						return <ScoreRow key={i}
 								info={score}
 								onRemove={this.props.onRemove}
@@ -77,10 +76,7 @@ Show details of Box and its WODS
 function ScoreRowRaw(props){
 	let score = props.info["score"]
 	let username = props.info["username"]
-	let wodID = props.info["wodID"]
-	let uid = props.info["uid"]
-	let scoreID = props.info["scoreID"]
-	let rowStyle = (props.isUserScore)? "": ""
+
 	return(
 		<TableRow selected={props.isUserScore}>
 				<TableCell>

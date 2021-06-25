@@ -1,15 +1,9 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
 import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom';
 
-import
-{Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
-InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
-  TableHead, TableRow }
-from '@material-ui/core'
+import{
+  Grid, Paper, Button, Typography, TextField, InputAdornment,
+  TableBody, Table, TableCell, TableContainer, TableHead, TableRow
+}from '@material-ui/core'
 
 import Delete from '@material-ui/icons/Delete'
 import SearchIcon from '@material-ui/icons/Search'
@@ -18,8 +12,6 @@ import { withTheme } from '@material-ui/core/styles'
 import ActionCancelModal from "../actionCancelModal"
 import { removeAdmin } from '../../utils/firestore/classAdmin'
 import "../../styles.css"
-
-const fs = firebase.firestore()
 
 function AdminRowRaw(props){
   console.log(props)
@@ -80,7 +72,7 @@ class ClassAdminList extends Component {
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){
+    if((data.keyCode || data.which) === 13){
     }
   }
 

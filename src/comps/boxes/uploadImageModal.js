@@ -1,22 +1,10 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+{ 	Grid, Paper, Button, Typography, Modal
 } from '@material-ui/core';
-
-import { withTheme, withStyles } from '@material-ui/core/styles';
-
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
-
+import { withTheme } from '@material-ui/core/styles';
 
 const DEFAULT_PREVIEW_URL = "https://www.kindpng.com/picc/m/117-1172923_clip-art-clip-art-panda-free-clipart-transparent.png"
 
@@ -100,7 +88,7 @@ class UploadImageModal extends Component{
 
 							{/* <Grid item xs={12} container alignContent="center" justify="center" alignItems="center" direction="column" > */}
 								<Grid item xs={12} style={{marginTop: "20px"}}>
-									<img src={this.state.previewURL} style={{width: "25vw"}} />
+									<img src={this.state.previewURL} alt="uploadImage" style={{width: "25vw"}} />
 								</Grid>
 							{/* </Grid> */}
 

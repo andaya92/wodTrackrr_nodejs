@@ -1,19 +1,8 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database"; 
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import 
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	ListItem, List, ListItemText
-} 
-from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import {
+	Grid, Paper, Typography
+} from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 import {
@@ -23,13 +12,13 @@ import {
 import LineChart from "../lineChart"
 import BarChart from "../barChart"
 
-import {cvtTimetoInt, cvtIntToTime, cvtTimetoIntList} from "../../utils/formatting"
+import {cvtTimetoInt, cvtIntToTime} from "../../utils/formatting"
 import "../../styles.css"
 
 function transformData(scores){
 	/*
 		create two arrays
-		One for data display in graph, 
+		One for data display in graph,
 				[ {"category": "A", "amount": 28}, ... ]
 		Second to crunch data, raw values
 			key	=> uid
@@ -45,8 +34,8 @@ function transformData(scores){
 		return (score.scoreType === "time") ? cvtTimetoInt(score.score)
 			: parseFloat(score.score)
 	})
-	
-	// create data list for chart 
+
+	// create data list for chart
 	for(let i =0; i < values.length; i++){
 		 graphData.push({"x": i, "y": values[i], "c": 0})
 	}
@@ -73,17 +62,17 @@ class ScoreDataView extends Component {
 			rawScores: [],
 			scoreType: "",
 			stats: {}
-		}		
+		}
 	}
 
-	static getDerivedStateFromProps(props, state){		
+	static getDerivedStateFromProps(props, state){
 		let data = transformData(props.scores)
 		let [graphData, rawScores, scoreType, stats] = data
 
 		return {...props,
-			graphData: graphData, 
-			rawScores: rawScores, 
-			scoreType: scoreType, 
+			graphData: graphData,
+			rawScores: rawScores,
+			scoreType: scoreType,
 			stats: stats
 		}
 	}
@@ -96,7 +85,7 @@ class ScoreDataView extends Component {
 		console.log("Component will unmount")
 	}
 
-	
+
 
   render(){
 	return(
@@ -105,7 +94,7 @@ class ScoreDataView extends Component {
 				<Grid item xs={4}>
 					<Paper elevation={6}>
 						<Typography>
-							Low: {this.state.scoreType === "time" ? 
+							Low: {this.state.scoreType === "time" ?
 								cvtIntToTime(this.state.stats["min"])
 								: this.state.stats["min"]}
 						</Typography>
@@ -129,18 +118,18 @@ class ScoreDataView extends Component {
 						</Typography>
 					</Paper>
 				</Grid>
-			</Grid> 
+			</Grid>
 
-			
+
 				<Grid item xs={12}>
-					<LineChart 
+					<LineChart
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType}
 						stats={this.state.stats} />
 				</Grid>
 				<Grid item xs={12}>
-					<BarChart 
+					<BarChart
 						data = {this.state.graphData}
 						values={this.state.rawScores}
 						scoreType={this.state.scoreType}

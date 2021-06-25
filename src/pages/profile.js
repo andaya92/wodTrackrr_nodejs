@@ -1,18 +1,12 @@
-import firebase from "../context/firebaseContext"
-import "firebase/firestore"
-
 import React, { Component } from 'react'
 
-import { Grid, Paper, Button, Typography, Collapse,
-        Accordion, AccordionSummary, AccordionDetails, IconButton, Tooltip }
-from '@material-ui/core';
-import { AddCircleOutlined, ArrowBackIos
-}from '@material-ui/icons';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
-import { Redirect, withRouter } from "react-router-dom";
+import {
+  Grid, Paper, Button, Typography, IconButton, Tooltip
+}from '@material-ui/core';
 
+import { AddCircleOutlined, ArrowBackIos }from '@material-ui/icons'
+import { withRouter } from "react-router-dom"
+import { withTheme } from '@material-ui/core/styles';
 
 import OwnerControls from "../comps/ownerControls"
 import UserFollows from '../comps/followers/userFollows'
@@ -21,7 +15,7 @@ import AdminInvites from "../comps/profile/adminInvites"
 import MemberInvites from "../comps/profile/memberInvites"
 import ClassAdminView from "../comps/profile/classAdminView"
 import ClassMemberView from "../comps/profile/classMemberView"
-import CalendarScoreView from "../comps/calendar/calendarView"
+// import CalendarScoreView from "../comps/calendar/calendarView"
 
 import { getUserFollowers } from "../utils/firestore/follows"
 import { getUserClassMembers } from "../utils/firestore/classMember"
@@ -29,9 +23,7 @@ import { getUserClassAdmins } from "../utils/firestore/classAdmin"
 import { getUserScores } from "../utils/firestore/scores"
 import { getFirstOfMonthTS } from "../utils/formatting"
 
-let fs = firebase.firestore()
-
-let _BackArrow = withTheme((props) => {
+let BackArrow = withTheme((props) => {
   return(
     <IconButton style={{color: props.theme.palette.text.primary}}
       onClick={() => props.onClick(props.index)}
@@ -41,85 +33,82 @@ let _BackArrow = withTheme((props) => {
   )
 })
 
+// class ProfileSummary extends Component {
+//   constructor(props){
+//     super(props)
+//     this.state = {
+//       user: props.user,
+//       userMD: props.userMD,
+//       scores: props.scores,
+//       adminClasses: props.adminClasses,
+//       memberClasses: props.memberClasses
+//     }
+//   }
+//   static getDerivedStateFromProps(props, state){
+//     return props
+//   }
 
+//   render(){
+//     return(
+//       <Grid item container align="center">
+//       <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
+//           <Typography gutterBottom variant="h5" >
+//             { this.state.userMD.username }
+//           </Typography>
+//       </Grid>
 
+//       <Grid item xs={12}>
 
-class ProfileSummary extends Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      user: props.user,
-      userMD: props.userMD,
-      scores: props.scores,
-      adminClasses: props.adminClasses,
-      memberClasses: props.memberClasses
-    }
-  }
-  static getDerivedStateFromProps(props, state){
-    return props
-  }
+//         <Grid item container xs={12} spacing={2}>
+//           <Grid item xs={12} >
+//             <Typography>Following ({})</Typography>
+//             <UserFollows userMD={ this.state.userMD } />
+//           </Grid>
 
-  render(){
-    return(
-      <Grid item container align="center">
-      <Grid item xs={12} style={{margin: "16px 0px 0px 0px "}}>
-          <Typography gutterBottom variant="h5" >
-            { this.state.userMD.username }
-          </Typography>
-      </Grid>
+//           {this.state.adminClasses.length > 0?
+//             <Grid item xs={12} >
+//               <Typography>Administrator</Typography>
+//               <ClassAdminView
+//                 classes={this.state.adminClasses}
+//               />
+//             </Grid>
+//           :
+//             <React.Fragment></React.Fragment>
+//           }
 
-      <Grid item xs={12}>
+//           {this.state.memberClasses.length > 0?
+//             <Grid item xs={12} >
+//               <Typography>Membership</Typography>
+//               <ClassMemberView
+//                 classes={this.state.memberClasses}
+//               />
+//             </Grid>
+//           :
+//             <React.Fragment></React.Fragment>
+//           }
+//         </Grid>
 
-        <Grid item container xs={12} spacing={2}>
-          <Grid item xs={12} >
-            <Typography>Following ({})</Typography>
-            <UserFollows userMD={ this.state.userMD } />
-          </Grid>
-
-          {this.state.adminClasses.length > 0?
-            <Grid item xs={12} >
-              <Typography>Administrator</Typography>
-              <ClassAdminView
-                classes={this.state.adminClasses}
-              />
-            </Grid>
-          :
-            <React.Fragment></React.Fragment>
-          }
-
-          {this.state.memberClasses.length > 0?
-            <Grid item xs={12} >
-              <Typography>Membership</Typography>
-              <ClassMemberView
-                classes={this.state.memberClasses}
-              />
-            </Grid>
-          :
-            <React.Fragment></React.Fragment>
-          }
-        </Grid>
-
-        <Grid item xs={12}>
-          {this.state.userMD.accountType === "owner" ?
-            <OwnerControls
-              user={this.state.user}
-              userMD={this.state.userMD}
-              onAlert={this.props.onAlert}
-              />
-          :
-            <Athlete
-              user={this.state.user}
-              userMD={this.state.userMD}
-              onAlert={this.props.onAlert}
-              scores={this.state.scores}
-            />
-          }
-        </Grid>
-      </Grid>
-    </Grid>
-    )
-  }
-}
+//         <Grid item xs={12}>
+//           {this.state.userMD.accountType === "owner" ?
+//             <OwnerControls
+//               user={this.state.user}
+//               userMD={this.state.userMD}
+//               onAlert={this.props.onAlert}
+//               />
+//           :
+//             <Athlete
+//               user={this.state.user}
+//               userMD={this.state.userMD}
+//               onAlert={this.props.onAlert}
+//               scores={this.state.scores}
+//             />
+//           }
+//         </Grid>
+//       </Grid>
+//     </Grid>
+//     )
+//   }
+// }
 
 class PageContent extends Component {
   constructor(props){
@@ -250,7 +239,7 @@ class PageContent extends Component {
 
   onView(index){
     let showDetails = this.state.showDetails.map((el, i) => {
-      if(index == i)
+      if(index === i)
         return true
       return false
     })
@@ -281,7 +270,7 @@ class PageContent extends Component {
 
         {this.state.showDetails[0]?
           <React.Fragment>
-            <_BackArrow onClick={this.onView.bind(this)} index={-1} />
+            <BackArrow onClick={this.onView.bind(this)} index={-1} />
             <Typography variant="h2">Following</Typography>
             <UserFollows
               userMD={this.state.userMD}
@@ -289,14 +278,14 @@ class PageContent extends Component {
             </React.Fragment>
         : this.state.showDetails[1]?
             <React.Fragment>
-             <_BackArrow onClick={this.onView.bind(this)} index={-1} />
+             <BackArrow onClick={this.onView.bind(this)} index={-1} />
              <Typography variant="h2">Admin</Typography>
               <ClassAdminView
                 classes={this.state.adminClasses}/>
             </React.Fragment>
         : this.state.showDetails[2]?
             <React.Fragment>
-              <_BackArrow onClick={this.onView.bind(this)} index={-1} />
+              <BackArrow onClick={this.onView.bind(this)} index={-1} />
               <Typography variant="h2">Member</Typography>
               <ClassMemberView
                 classes={this.state.memberClasses} />

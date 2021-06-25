@@ -100,3 +100,13 @@ body {
   max-width: 100%;
   height: auto;
 }
+
+
+/* USer for Google Maps Places API uploadBoxLocationModal,
+       if not used the dropdown list is under the modal
+        content and not visible.
+ */
+.pac-container {
+  z-index: 10000 !important;
+
+}

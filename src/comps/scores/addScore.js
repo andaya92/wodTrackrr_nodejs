@@ -1,38 +1,17 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-import ReactMarkdown from 'react-markdown'
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-	TableBody, Table, Modal, TableCell, IconButton, Tooltip
-}
-from '@material-ui/core';
-
+import{ 	Grid, Typography, TextField,
+	TableRow, Button, TableContainer,
+	TableBody, Table, TableCell
+}from '@material-ui/core';
 import { withTheme, withStyles } from '@material-ui/core/styles';
-
-
 
 import { setScore } from "../../utils/firestore/scores"
 import "../../styles.css"
-import { AddCircleOutlineTwoTone } from "@material-ui/icons";
-
-
 
 const BorderlessTableCell = withStyles({root:{
 	borderBottom: "none"
 }})(TableCell)
-
-
-var db = firebase.database();
 
 class AddScore extends Component{
 	constructor(props){
@@ -170,13 +149,12 @@ class AddScore extends Component{
 										<TextField
 											id="scoreViewUserScoreMins"
 											type="number"
-											style={{ margin: 8}}
+											style={{ margin: 8, width: "100%"}}
 											pattern="[0-9]{3}"
 											inputProps={{
 												title: "Numbers only, max length 3",
 												placeholder: "Minutes"
 											}}
-											style={{width: "100%"}}
 											margin="normal"
 											color="primary"
 											InputLabelProps={{
@@ -188,13 +166,12 @@ class AddScore extends Component{
 										<TextField
 											id="scoreViewUserScoreSecs"
 											type="number"
-											style={{ margin: 8}}
+											style={{ margin: 8, width: "100%"}}
 											pattern="[0-9]{2}"
 											inputProps={{
 												title: "Numbers only, max length 2",
 												placeholder: "Seconds"
 											}}
-											style={{width: "100%"}}
 											margin="normal"
 											color="primary"
 											InputLabelProps={{
@@ -208,14 +185,13 @@ class AddScore extends Component{
 										<TextField
 											id="scoreViewUserScore"
 											type="number"
-											style={{ margin: 8}}
+											style={{ margin: 8, width: "100%"}}
 											pattern="[0-9]{4}"
 											inputProps={{
 												title: "Numbers only, max length 4",
 												placeholder: "Score"
 											}}
 											margin="normal"
-											style={{width: "100%"}}
 											color="primary"
 											InputLabelProps={{
 												shrink: true,

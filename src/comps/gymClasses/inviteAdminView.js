@@ -5,18 +5,6 @@ import "firebase/firestore"
 // React
 import React, { Component } from 'react'
 
-// Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
-} from '@material-ui/core';
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
 import { sendAdminInvite } from "../../utils/firestore/classAdmin"
@@ -129,7 +117,6 @@ class InviteAdminView extends Component {
 		return(
 
             <InviteView
-                modalOpen={this.state.open}
                 title="Invite Admin"
                 onChange={this.onChange.bind(this)}
                 onSelectChange={this.onSelectChange.bind(this)}

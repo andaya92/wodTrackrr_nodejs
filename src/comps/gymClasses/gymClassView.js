@@ -8,7 +8,7 @@ import React, { Component } from 'react'
 
 // Material UI
 import
-{ 	Grid, Paper, Button, Typography, IconButton, Tooltip
+{ 	Grid, Typography, IconButton, Tooltip
 } from '@material-ui/core';
 
 import { ArrowBackIos, Add, Visibility, PersonAdd } from '@material-ui/icons';
@@ -353,7 +353,6 @@ class GymClassView extends Component {
 	 		{id:"title", sortable:true, label:"Title"},
 	 		{id:"btns", sortable:false, label:""}
 	 	]
-		 let viewMemberBtnSize = this.isOnlyMember()? 12: 6
 
 		return (
 		 <Grid item xs={12}>

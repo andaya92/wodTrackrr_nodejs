@@ -3,18 +3,11 @@ import "firebase/auth";
 import "firebase/database";
 
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
-import { Grid, Paper, Button }
-from '@material-ui/core';
+import { Grid, Paper} from '@material-ui/core';
 
 import { withTheme } from '@material-ui/core/styles';
-
-
-
 import BoxSearch from "../comps/boxes/boxSearch"
-
-import { createTestData } from "../utils/firestore/testData"
 
 import "../styles.css"
 

@@ -1,31 +1,12 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
-// React
 import React, { Component } from 'react'
-import { Redirect } from "react-router";
 import { withRouter } from "react-router-dom";
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
-} from '@material-ui/core';
-
+import{ Grid, Paper, Button, Typography, TextField } from '@material-ui/core';
 
 import { withTheme } from '@material-ui/core/styles';
 
-
 import "../../styles.css"
-
-
-
-const fs = firebase.firestore();
 
 class DeleteAccount extends Component {
 	constructor(props){
@@ -35,17 +16,6 @@ class DeleteAccount extends Component {
             userConfirmText: ""
 		}
 	}
-
-	componentDidMount(){
-
-	}
-
-	static getDerivedStateFromProps(props, state){
-		return state.user? state: props
-	}
-
-    componentWillUnmount(){
-    }
 
     confirmText(){
         return this.state.user.uid.slice(-5)

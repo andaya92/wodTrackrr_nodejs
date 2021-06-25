@@ -1,12 +1,11 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth"
-import "firebase/firestore";
-import { withRouter } from "react-router-dom";
+import "firebase/firestore"
+import { withRouter } from "react-router-dom"
 
 import React, { Component } from 'react'
-import { Grid, TextField, Button, Paper, Typography } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
-import { withTheme } from '@material-ui/core/styles';
+import { Grid, TextField, Button, Paper, Typography } from '@material-ui/core'
+import { withTheme } from '@material-ui/core/styles'
 
 class RegisterUser extends Component {
   constructor(props){

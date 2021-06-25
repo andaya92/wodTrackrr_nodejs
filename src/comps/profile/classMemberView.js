@@ -1,19 +1,13 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 // React
 import React, { Component } from 'react'
-import { withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom"
 
 // Material UI
-import
-{ 	Grid, Paper, Button, Typography,
-		TableBody, Table,
-		TableHead, TableRow, TableCell
-} from '@material-ui/core';
-
+import{
+		Typography, TableBody, Table, TableHead, TableRow, TableCell
+} from '@material-ui/core'
 import { withTheme, withStyles } from '@material-ui/core/styles';
+
 import "../../styles.css"
 
 /*
@@ -23,7 +17,6 @@ import "../../styles.css"
 	Show:
 		details of Box and its WODS, allows for removal of wods by owner
 */
-const fs = firebase.firestore();
 
 const StyledTableCell = withStyles({root:{
 	borderBottom: "none"

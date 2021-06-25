@@ -1,6 +1,7 @@
 
 import firebase from "../../context/firebaseContext"
 import "firebase/storage"
+import { makeCancelable } from "../promises"
 
 let stor = firebase.storage();
 const ROOT = "gymImages"
@@ -70,17 +71,17 @@ export function getImages(boxIDs){
     }))
   })
 
-  return Promise.all(promises)
+  return makeCancelable(Promise.all(promises))
 }
 
 export function deleteGymImage(boxID){
   return new Promise((res, rej) => {
-    let boxImages = stor.ref(ROOT).child(boxID).delete()
+    stor.ref(ROOT).child(boxID).delete()
     .then(() => {
       res("Deleted boxImages")
     })
     .catch(err => {
-      if(err.code == 404){
+      if(err.code === "storage/object-not-found"){
         res("No Image to delete.")
         return
       }

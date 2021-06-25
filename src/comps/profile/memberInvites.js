@@ -1,28 +1,14 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 // React
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, IconButton, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+import{
+    Grid, Paper, Typography, IconButton
 } from '@material-ui/core';
 import { Check, Close } from '@material-ui/icons'
 
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
-
 import { setClassMember, getUserMemberInvites, removeNotification } from "../../utils/firestore/classMember"
-
 import "../../styles.css"
 
 /*
@@ -32,12 +18,10 @@ import "../../styles.css"
 	Show:
 		details of Box and its WODS, allows for removal of wods by owner
 */
-const fs = firebase.firestore();
 
 
 function NotificationRaw(props){
     let senderUsername = props.info.senderUsername
-    let memberInviteID = props.info.memberInviteID
     let gymClassTitle = props.info.gymClassTitle
     let gymClassBoxTitle = props.info.boxTitle
 

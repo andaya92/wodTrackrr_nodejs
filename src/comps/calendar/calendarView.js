@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
 
-import
-{ 	Grid, Typography
-}
-from '@material-ui/core';
+import{
+    Grid, Typography
+}from '@material-ui/core';
 
 import { withTheme } from '@material-ui/core/styles';
 
-
-import {CellRow, SuperCell, LightGreyCell, SuperTextCell,
-        TextCell, RedCell, GreenCell, WhiteCell, GreyCell,
-        BlueCell, PurpleCell, GoldCell} from "./cells"
+import {
+    CellRow, SuperCell, LightGreyCell, SuperTextCell,
+    TextCell, RedCell, GreenCell, WhiteCell, GreyCell,
+} from "./cells"
 import "../../styles.css"
 
 import { DateTime } from 'luxon'
@@ -24,8 +23,6 @@ function cellData(color="grey", valid=false, isToday=false){
         count: 1
     }
 }
-
-
 
 /*   May has 6 weekns == Calendar only supports up to 5 apparently.
 
@@ -249,11 +246,11 @@ class CalendarScoreView extends Component {
                                         else if(day.color === 'green'){
                                             console.log(day)
                                             let Cell = null
-                                            if(day.count == 1)
+                                            if(day.count === 1)
                                                 Cell = GreenCell
-                                            if(day.count == 2)
+                                            if(day.count === 2)
                                                 Cell = GreenCell
-                                            if(day.count == 3)
+                                            if(day.count === 3)
                                                 Cell = GreenCell
                                             if(day.count > 3)
                                                 Cell = GreenCell

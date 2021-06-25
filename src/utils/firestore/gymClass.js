@@ -46,7 +46,7 @@ export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner, descr
 					boxID: boxID,
 					boxTitle: boxTitle,
 					title: title,
-					uid, uid,
+					uid: uid,
 					isPrivate: isPrivate,
 					owner: owner,
 					description: description,
@@ -83,27 +83,27 @@ export function setGymClass(title, uid, boxID, boxTitle, isPrivate, owner, descr
  }
 
 
-function deleteCollection(collectionName, fieldName, fieldID, res, rej){
-	const batch = fs.batch()
-	let snapshotSize = 0
-	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
-	.then(ss => {
-		let cnt = 0
-		snapshotSize = ss.size
+// function deleteCollection(collectionName, fieldName, fieldID, res, rej){
+// 	const batch = fs.batch()
+// 	let snapshotSize = 0
+// 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
+// 	.then(ss => {
+// 		let cnt = 0
+// 		snapshotSize = ss.size
 
-		ss.forEach(doc => {
-			batch.delete(doc.ref)
-			cnt++
-		})
+// 		ss.forEach(doc => {
+// 			batch.delete(doc.ref)
+// 			cnt++
+// 		})
 
-		batch.commit().then(() => {
-			if(cnt >= 500)
-			deleteCollection(collectionName, fieldName, fieldID, res, rej)
-		})
-		.catch(err => rej(0))
-	})
-	res(1)
-}
+// 		batch.commit().then(() => {
+// 			if(cnt >= 500)
+// 			deleteCollection(collectionName, fieldName, fieldID, res, rej)
+// 		})
+// 		.catch(err => rej(0))
+// 	})
+// 	res(1)
+// }
 
 
 

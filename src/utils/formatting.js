@@ -32,7 +32,7 @@ export function cvtIntToTime(x){
 
 export function cvtTimetoIntList(rawScores){
 	return rawScores.map((score) => {
-		cvtTimetoInt(score)
+		return cvtTimetoInt(score)
 	})
 }
 

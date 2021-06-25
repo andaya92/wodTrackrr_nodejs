@@ -1,17 +1,15 @@
-
 import React, { Component } from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
-import { Grid, Paper, Button, Typography, IconButton,
-        TableBody, Table, TableCell, TableContainer, TableRow, TableHead}
-from '@material-ui/core';
+import {
+  Typography, IconButton,TableBody, Table, TableCell, TableRow, TableHead
+}from '@material-ui/core';
 
 import Whatshot from '@material-ui/icons/Whatshot'
-import { Alert } from '@material-ui/lab'
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import ActionCancelModal from "../actionCancelModal"
-import { getUserFollowers, setFollow, removeFollow } from "../../utils/firestore/follows"
+import { setFollow, removeFollow } from "../../utils/firestore/follows"
 
 
 const StyledTableCell = withStyles({root:{

@@ -1,20 +1,15 @@
-import firebase from "../context/firebaseContext"
-import "firebase/auth"
-
 import { Link } from 'react-router-dom';
-
-
 import React, { Component, createRef } from "react";
 
 import {
-	 AppBar, Toolbar, IconButton, Button, Typography, Paper, Collapse,
-	 Popper, MenuList, MenuItem, ClickAwayListener, Grow, Fade
+	 AppBar, Toolbar, IconButton, Typography, Paper,
+	 Popper, MenuList, MenuItem, ClickAwayListener, Fade
 
 }
 from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab'
-import { withTheme, withStyles, makeStyles } from '@material-ui/core/styles';
+import { withTheme, withStyles } from '@material-ui/core/styles';
 
 const StyledMenuItem = withStyles((theme) => ({
 	root: {
@@ -36,18 +31,28 @@ const StyledPaper = withStyles((theme) => ({
 }))(Paper);
 
 
-const styles = theme => ({
-  popper: {
-	  zIndex: 100,
-  }
-});
+const StyledAlert = withStyles((theme) => ({
+	root: {
+		position: 'absolute',
+		top: '56px'
+	},
+}))(Alert);
 
 
 function UserAlertRaw(props){
 	return(
-		<Alert severity={props.alertInfo.type} onClose={props.onCloseAlert}>
-			{props.alertInfo.message}
-		</Alert>
+		<StyledAlert
+			id={props.id}
+			style={{
+				// left: `calc(50% - ${props.left}px)`,
+				width: "calc(100% - 32px)",
+				display: props.open? 'flex' : 'none'
+			}}
+				severity={props.alertInfo.type}
+				onClose={props.onCloseAlert}
+			>
+				{props.alertInfo.message}
+		</StyledAlert>
 	)
 }
 
@@ -62,20 +67,37 @@ class Header extends Component{
 			userMD: props.userMD,
 			open: false,
 			alertOpen: props.alertOpen,
-			alertInfo: props.alertInfo
+			alertInfo: props.alertInfo,
+			alertLeftPos: 1
 		}
+		this.styleFound = false
 	}
 
 	static getDerivedStateFromProps(props, state){
 		return props
-  	}
+  }
+
+	componentDidUpdate(){
+		let el = document.getElementById("headerAlert")
+		if(el ){
+			let style = window.getComputedStyle(el)
+			let padding = parseFloat(style.padding.split(" ")[1].split("px")[0])
+			let w = parseFloat(style.width.split("px")[0]) / 2
+			console.log(w, padding)
+			if(!this.styleFound && w && (padding || w > this.state.alertLeftPos)){
+				this.setState({alertLeftPos: w + padding})
+				this.styleFound = true
+				return
+			}
+			this.styleFound = false
+		}
+	}
 
 	handleToggle(){
 		this.setState({open: !this.state.open})
 	};
 
 	handleClose(ev){
-		console.log("Should close")
 		this.setState({open: false})
 	}
 
@@ -91,6 +113,7 @@ class Header extends Component{
 			<AppBar position="sticky" ref={this.menuRef}
 				style={{background:this.props.theme.palette.background.toolbar}}
 			>
+			<div style={{position: 'relative'}}>
 			<Toolbar disableGutters={false}>
 				<Typography color="textPrimary" variant="h3" >
 					WodTrackrr
@@ -140,15 +163,10 @@ class Header extends Component{
 					</Popper>
 		        </section>
 		    </Toolbar>
-				<Collapse in={this.props.alertOpen}>
-					{this.state.alertInfo ?
-						<UserAlert  alertInfo={this.state.alertInfo}
-							onCloseAlert={this.props.onCloseAlert}
-						/>
-					:
-						<React.Fragment></React.Fragment>
-					}
-				</Collapse>
+				<UserAlert id="headerAlert"  alertInfo={this.state.alertInfo} open={this.state.alertOpen}
+					onCloseAlert={this.props.onCloseAlert} left={this.state.alertLeftPos}
+				/>
+			</div>
 		</AppBar>
 		)
 	}

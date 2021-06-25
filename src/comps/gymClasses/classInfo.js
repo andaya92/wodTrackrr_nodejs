@@ -1,21 +1,13 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
-// React
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CardMedia, IconButton, Imag
+import{
+	Grid, Typography, IconButton
 } from '@material-ui/core';
 
 import clsx from 'clsx'
 
-import { ArrowBackIos, EditOutlined } from '@material-ui/icons';
+import { EditOutlined } from '@material-ui/icons';
 
 import { withTheme, withStyles } from '@material-ui/core/styles';
 
@@ -23,13 +15,12 @@ import EditClassInfo from "./editClassInfo"
 
 import { toDayYear } from "../../utils/formatting"
 
-const fs = firebase.firestore();
 
 
 function Image(props){
 	const { classes, children, className, ...other } = props
 
-	return (<img className={clsx(classes.root, className)} {...other}
+	return (<img className={clsx(classes.root, className)} alt="classImage" {...other}
 	/>)
 }
 

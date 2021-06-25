@@ -1,25 +1,15 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, TableRow, TableHead, TableContainer,
-  	TableBody, Table
-}
-from '@material-ui/core';
+import{
+	Grid, Button, Typography, TextField, Select,
+  TableRow, TableHead, TableContainer, TableBody, Table
+}from '@material-ui/core';
 import {TableCell as TC} from '@material-ui/core';
 
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import { setWod } from "../../utils/firestore/wods"
 
-let fs = firebase.firestore()
 const SCORETYPES = ["reps", "rounds", "time", "total"]
 
 const TableCell = withStyles({root:{

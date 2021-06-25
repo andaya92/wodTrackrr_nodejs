@@ -1,40 +1,26 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth"
-import "firebase/database"
-import "firebase/storage"
-
 import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom';
 
-import
-{Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
-InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
-TableHead, TableRow, Card, CardMedia, CardActionArea, CardContent, CardActions, Tooltip
- }
-from '@material-ui/core'
+import{
+  Grid, Paper, Typography, IconButton, TextField, InputAdornment,
+  Card, CardMedia, CardActionArea, CardContent, CardActions, Tooltip
+}from '@material-ui/core'
 import { withRouter } from "react-router-dom";
 
-
-import { Alert } from '@material-ui/lab'
 import SearchIcon from '@material-ui/icons/Search'
 import PhotoIcon from '@material-ui/icons/Photo';
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import Delete from '@material-ui/icons/Delete'
-import Waves from '@material-ui/icons/Waves'
 import Whatshot from '@material-ui/icons/Whatshot'
 
-import BoxView from "./boxView"
 import UploadImageModal from "./uploadImageModal"
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import { toDayYear } from "../../utils/formatting"
 import { setImage, getImages, deleteGymImage} from "../../utils/firestore/gymImages"
 
-const fs = firebase.firestore()
-const storage = firebase.storage()
+
+
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
-
-
 
 const StyledCardMedia = withStyles(theme =>({
   root:{
@@ -161,6 +147,9 @@ class BoxSearch extends Component {
     if(this.followListener){
       this.followListener()
     }
+    if(this.getGymImageFetcher){
+      this.getGymImageFetcher.cancel()
+    }
   }
 
   static getDerivedStateFromProps(props, state){
@@ -199,7 +188,7 @@ class BoxSearch extends Component {
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){
+    if((data.keyCode || data.which) === 13){
     }
   }
 
@@ -277,8 +266,8 @@ class BoxSearch extends Component {
       return box.boxID
     })
 
-    getImages(boxIDs)
-    .then(urls => {
+    this.getGymImageFetcher = getImages(boxIDs)
+    this.getGymImageFetcher.promise.then(urls => {
       this.setState({ boxImages: Object.fromEntries(urls) })
     })
     .catch(err => {
@@ -292,6 +281,7 @@ class BoxSearch extends Component {
       <Grid item xs={12} style={{marginTop: "3vh"}}>
         <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
         <Paper elevation={2} component="form">
+            {/* <Button onClick={testBoxes}>Test Boxes Generate 1000</Button> */}
            <TextField
              fullWidth
               variant="outlined"

@@ -8,18 +8,20 @@ import React, { Component } from 'react'
 // Material UI
 import
 { 	Grid
-} from '@material-ui/core';
+} from '@material-ui/core'
 
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme } from '@material-ui/core/styles'
 
 // WodTrackrr
 
 import BoxInfo from "./boxInfo"
 import GymClassList from "../gymClasses/gymClassList"
 import BackButton  from "../backButton"
+import UploadImageModal from "../boxes/uploadImageModal"
+import UploadBoxLocationModal from "../boxes/uploadBoxLocationModal"
 import { getImage } from "../../utils/firestore/gymImages"
 import { setClassImage } from "../../utils/firestore/classImages"
-import UploadImageModal from "../boxes/uploadImageModal"
+import { updateBoxLocation } from "../../utils/firestore/boxLocation"
 
 import "../../styles.css"
 
@@ -32,6 +34,7 @@ import "../../styles.css"
 	Show:
 		details of Box and its WODS, allows for removal of wods by owner
 */
+
 const fs = firebase.firestore();
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
 
@@ -45,8 +48,32 @@ class BoxView extends Component {
 			boxID: props.boxID,
 			boxMD: {},
 			boxImageURL: DEFAULT_IMAGE_URL,
-			showingUploadImage: false
+			showingUploadImage: false,
+			showingUploadBoxLocation: false
 		}
+	}
+
+	static getDerivedStateFromProps(props, state){
+		return props
+	}
+
+	componentDidMount(){
+		this.checkListeners()
+		this.getBoxImage()
+	}
+
+	componentDidUpdate(){
+		this.checkListeners()
+	}
+
+	componentWillUnmount(){
+		if(this.boxListener)
+			this.boxListener()
+	}
+
+	checkListeners(){
+		if(!this.boxListener)
+			this.getBoxListener()
 	}
 
 	getBoxListener(){
@@ -66,16 +93,6 @@ class BoxView extends Component {
 		}
 	}
 
-	checkListeners(){
-		if(this.boxListener === undefined)
-			this.getBoxListener()
-	}
-
-	componentDidMount(){
-		this.checkListeners()
-		this.getBoxImage()
-	}
-
 	getBoxImage(){
 		getImage(this.state.boxID)
 		.then(url => {
@@ -86,49 +103,69 @@ class BoxView extends Component {
 		})
 	}
 
-	static getDerivedStateFromProps(props, state){
-		return props
-	}
-
-	componentDidUpdate(){
-		this.checkListeners()
-	}
-
-	componentWillUnmount(){
-		if(this.boxListener)
-			this.boxListener()
-	}
-
-
 	uploadImage(file){
-		if(!this.state.curUploadBoxID || !this.state.curUploadClassID){
+		if(!this.state.boxID || !this.state.curUploadClassID){
 			console.log(`No class selected for upload
-				${this.state.curUploadBoxID}/${this.state.curUploadClassID}`)
+				${this.state.boxID}/${this.state.curUploadClassID}`)
 			return
 		}
 
-		setClassImage(file, this.state.curUploadBoxID, this.state.curUploadClassID)
+		setClassImage(file, this.state.boxID, this.state.curUploadClassID)
 		.then(res => {
 			console.log(res)
+			this.setState({
+				showingUploadImage: false,
+				curUploadClassID: ""
+			})
+		})
+		.catch(err => {
+			console.log(err)
 			this.hideUploadImage()
+		})
+	}
+
+	uploadBoxLocation(location){
+		if(!this.state.boxID || !location || !this.state.userMD){
+			console.log(`No box location selected for (${this.state.boxID}): ${location}`)
+			return
+		}
+
+		console.log(`Uploading box location: ${location}`)
+		updateBoxLocation(this.state.boxID, location, this.state.userMD.uid)
+		.then(res => {
+			console.log(res)
+			this.hideUploadBoxLocation()
+			this.props.onAlert({
+				type: 'success',
+				message: "Updated location."
+			})
 		})
 		.catch(err => {
 			console.log(err)
 		})
 	}
 
-
-	showUploadClassImage(boxID, classID){
+	showUploadClassImage(classID){
 		this.setState({
 			showingUploadImage: true,
-			curUploadBoxID: boxID,
+			showingUploadBoxLocation: false,
 			curUploadClassID: classID,
 		})
 	}
 
-
 	hideUploadImage(){
 		this.setState({showingUploadImage: false})
+	}
+
+	showUploadBoxLocation(){
+		this.setState({
+			showingUploadBoxLocation: true,
+			showingUploadImage: false
+		})
+	}
+
+	hideUploadBoxLocation(){
+		this.setState({showingUploadBoxLocation: false})
 	}
 
 	render(){
@@ -138,6 +175,7 @@ class BoxView extends Component {
 
 		return(
 			<Grid item container xs={12}>
+
 				<Grid item xs={1}>
 					<BackButton />
 				</Grid>
@@ -150,6 +188,7 @@ class BoxView extends Component {
 							boxMD={this.state.boxMD}
 							url={this.state.boxImageURL}
 							onAlert={this.props.onAlert}
+							onLocation={this.showUploadBoxLocation.bind(this)}
 						/>
 						<GymClassList
 							user={this.state.user}
@@ -170,6 +209,15 @@ class BoxView extends Component {
           modalText="Select an image to upload"
           onAction={this.uploadImage.bind(this)}
           onClose={this.hideUploadImage.bind(this)}
+        />
+
+				<UploadBoxLocationModal
+          open={this.state.showingUploadBoxLocation}
+          actionText="Upload Location"
+          cancelText="Cancel"
+          modalText="Type your address or find it on the map."
+          onAction={this.uploadBoxLocation.bind(this)}
+          onClose={this.hideUploadBoxLocation.bind(this)}
         />
 				</Grid>
 			</Grid>

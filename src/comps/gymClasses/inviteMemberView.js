@@ -5,23 +5,10 @@ import "firebase/firestore"
 // React
 import React, { Component } from 'react'
 
-// Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
-} from '@material-ui/core';
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme } from '@material-ui/core/styles'
 
 import { sendMemberInvite } from "../../utils/firestore/classMember"
 import InviteView from "./inviteView"
-
 import "../../styles.css"
 
 /*
@@ -74,7 +61,7 @@ class InviteMemberView extends Component {
 	}
 
 	onKeyUp(data){
-		if((data.keyCode || data.which) == 13){
+		if((data.keyCode || data.which) === 13){
 
 		}
 	}
@@ -93,20 +80,19 @@ class InviteMemberView extends Component {
     sendInvite(){
         if(!this.state.selectedUser)
             return
-
-        let data = {
-            msg: "Accept invite?",
-            gymClassID: this.state.gymClassMD.gymClassID,
-            senderUID: this.state.userMD.uid,
-            senderUsername: this.state.userMD.username,
-            gymClassTitle: this.state.gymClassMD.title,
-            boxTitle: this.state.gymClassMD.boxTitle,
-            boxID: this.state.gymClassMD.boxID,
-            uid: this.state.selectedUser.uid,
-            date: Date.now()
-        }
+        // let data = {
+        //     msg: "Accept invite?",
+        //     gymClassID: this.state.gymClassMD.gymClassID,
+        //     senderUID: this.state.userMD.uid,
+        //     senderUsername: this.state.userMD.username,
+        //     gymClassTitle: this.state.gymClassMD.title,
+        //     boxTitle: this.state.gymClassMD.boxTitle,
+        //     boxID: this.state.gymClassMD.boxID,
+        //     uid: this.state.selectedUser.uid,
+        //     date: Date.now()
+        // }
+        // console.log(`Send invite to ${this.state.selectedUser.uid} from ${this.state.userMD.uid}`)
         this.props.onModalClose()
-        console.log(`Send invite to ${this.state.selectedUser.uid} from ${this.state.userMD.uid}`)
 
         sendMemberInvite(
             this.state.selectedUser.uid,
@@ -137,7 +123,6 @@ class InviteMemberView extends Component {
   render(){
 		return(
             <InviteView
-            modalOpen={this.state.open}
             title="Invite Member"
             onChange={this.onChange.bind(this)}
             onSelectChange={this.onSelectChange.bind(this)}

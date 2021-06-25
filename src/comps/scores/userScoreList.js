@@ -1,32 +1,16 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-import ReactMarkdown from 'react-markdown'
-
 import React, { Component } from 'react'
-import { Route, Link, Redirect } from 'react-router-dom';
 import { withRouter } from "react-router-dom";
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	ListItem, List, ListItemText, TableRow, TableHead, TableContainer,
-	TableCell, TableBody, Table, Modal
-}
-from '@material-ui/core';
-import { Delete, LooksOneOutlined, AddBoxOutlined } from '@material-ui/icons';
-import { Alert } from '@material-ui/lab';
+import{
+	Grid, Button, Typography, Card, CardContent,
+	TableRow, TableHead,TableCell, TableBody, Table
+}from '@material-ui/core';
+import { Delete } from '@material-ui/icons'
 import { withTheme } from '@material-ui/core/styles';
 
 import ActionCancelModal from "../actionCancelModal"
 import { removeScore } from "../../utils/firestore/scores"
 import "../../styles.css"
-
-
-var db = firebase.database();
 
 class UserScoreList extends Component {
 	constructor(props){

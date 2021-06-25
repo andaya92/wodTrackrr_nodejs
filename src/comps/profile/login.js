@@ -24,11 +24,7 @@ class Login extends Component {
 
   handleSubmit(ev){
     let email = document.getElementById('email')
-
     let pass1 = document.getElementById('password')
-    let pass2 = document.getElementById('passwordConfirm')
-
-    console.log(email.value, pass1)
 
     firebase.auth().signInWithEmailAndPassword(email.value, pass1.value)
     .then(res=>{
@@ -36,24 +32,12 @@ class Login extends Component {
       this.props.history.push("/boxSearch")
     })
     .catch((error) => {
-
       this.props.onAlert({
         type: "warning",
         message: error.message
       })
     });
   }
-
-  // static getDerivedStateFromProps(props, state){
-  //   console.log(props.userMD)
-  //   console.log(state.userMD)
-  //   if(state.userMD || props.userMD){
-  //     console.log("redirect Home or something")
-  //     props.history.push("/boxSearch")
-  //   }
-  //   return props
-  // }
-
 
   render () {
     return (

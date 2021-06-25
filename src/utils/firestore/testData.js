@@ -1,6 +1,3 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 import { setBox } from "./boxes.js"
 import { setClassAdmin} from "./classAdmin.js"
 import { setClassMember } from "./classMember"
@@ -10,7 +7,6 @@ import { setScore } from "./scores"
 import {setWod } from "./wods"
 
 
-let fs = firebase.firestore()
 const uid = "7yT7qYHwXvNySI0DVb71PeOTvQl1"
 const uidA = "w4H00HnAr3VZ6gfDl9atBTu6NN83"
 const boxTitle = "Test Box"

@@ -1,4 +1,4 @@
-let apptheme = {
+let _apptheme = {
    "overrides": {
       "MuiContainer": {
          "root":{
@@ -90,4 +90,4 @@ let apptheme = {
    }
 };
 
-export default apptheme = apptheme;
+export default _apptheme

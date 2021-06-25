@@ -13,6 +13,15 @@ export default function mTea(){}
 	Boxes
 */
 
+
+
+export function testBoxes(){
+	let numBoxes = 1000;
+	for(let i=0; i < numBoxes; i++){
+		setBox(`Title:${i}`, "D", "7yT7qYHwXvNySI0DVb71PeOTvQl1")
+	}
+}
+
 export function setBox(title, description, uid){
 
   	return new Promise((res, rej) => {
@@ -23,8 +32,8 @@ export function setBox(title, description, uid){
 		  		doc.set({
 		  			boxID: doc.id,
 		  			title: title,
-					description: description,
-		  			uid, uid,
+						description: description,
+		  			uid: uid,
 		  			date: Date.now()
 		  		})
 		  		.then(()=>{
@@ -53,25 +62,25 @@ export function setBox(title, description, uid){
  }
 
 
-function batchDelete(collectionName, fieldName, fieldID, res, rej){
-	const batch = fs.batch()
-	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
-	.then(ss => {
-		let cnt = 0
+// function batchDelete(collectionName, fieldName, fieldID, res, rej){
+// 	const batch = fs.batch()
+// 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
+// 	.then(ss => {
+// 		let cnt = 0
 
-		ss.forEach(doc => {
-			batch.delete(doc.ref)
-			cnt++
-		})
+// 		ss.forEach(doc => {
+// 			batch.delete(doc.ref)
+// 			cnt++
+// 		})
 
-		batch.commit().then(() => {
-			if(cnt >= 500)  // bacth limits to 500 changes
-			batchDelete(collectionName, fieldName, fieldID, res, rej)
-		})
-		.catch(err => rej(0))
-	})
-	res(1)
-}
+// 		batch.commit().then(() => {
+// 			if(cnt >= 500)  // bacth limits to 500 changes
+// 			batchDelete(collectionName, fieldName, fieldID, res, rej)
+// 		})
+// 		.catch(err => rej(0))
+// 	})
+// 	res(1)
+// }
 
 
 function deleteUserFollowing(boxID, res, rej){
@@ -128,11 +137,9 @@ function deleteFollowers(boxID, res, rej){
 	.then(ss => {
 		let cnt = 0
 		if(!ss.empty){
-			let following = []
 			ss.forEach(doc => {
 				batch.delete(doc.ref)
 				cnt++
-
 			})
 			batch.commit().then(() => {
 				if(cnt >= 500)  // bacth limits to 500 changes

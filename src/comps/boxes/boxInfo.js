@@ -1,34 +1,25 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
-// React
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CardMedia, IconButton, Imag
+{ 	Grid, Typography, Tooltip, IconButton,
 } from '@material-ui/core';
 
 import clsx from 'clsx'
 
-import { ArrowBackIos, EditOutlined } from '@material-ui/icons';
-
+import { EditOutlined } from '@material-ui/icons';
+import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import { withTheme, withStyles } from '@material-ui/core/styles';
 
 import EditBoxInfo from "./editBoxInfo"
 
 import { toDayYear } from "../../utils/formatting"
 
-const fs = firebase.firestore();
 
 function Image(props){
 	const { classes, children, className, ...other } = props
 
-	return (<img className={clsx(classes.root, className)} {...other}
+	return (<img className={clsx(classes.root, className)} alt="boxImage" {...other}
 	/>)
 }
 
@@ -66,31 +57,52 @@ class BoxInfo extends Component {
   }
 
   render(){
-		let showEditBoxInfoBtn = this.state.userMD != null && this.state.boxMD['uid'] == this.state.userMD['uid']
+		let showEditBoxInfoBtn = this.state.userMD != null && this.state.boxMD['uid'] === this.state.userMD['uid']
 		console.log(`Show edit btn? ${showEditBoxInfoBtn}`)
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12}>
-				<Typography variant="h2">
-					{this.state.boxMD.title}
-				</Typography>
-				<Typography variant="h3">
-					{this.state.boxMD.description}
-				</Typography>
-				<Typography variant="h4">
-					Location Here
-				</Typography>
-				{showEditBoxInfoBtn?
-					<IconButton onClick={this.openEditInfo.bind(this)}
-						style={{color: this.props.theme.palette.text.primary}}>
-						<EditOutlined />
-					</IconButton>
-				:
-					<React.Fragment></React.Fragment>
-				}
-				<Typography variant="caption">
-					Joined: { toDayYear(new Date(this.state.boxMD.date)) }
-				</Typography>
+				<Grid item xs={12}>
+					<Typography variant="h2">
+						{this.state.boxMD.title}
+					</Typography>
+					<Typography variant="h4"
+						style={{
+							maxHeight: "20vh",
+							overflowY: "auto"
+						}}
+					>
+						{this.state.boxMD.description}
+					</Typography>
+
+				</Grid>
+				<Grid item xs={12}>
+					<Tooltip title="Change Location">
+						<IconButton onClick={this.props.onLocation}
+							style={{color: this.props.theme.palette.text.primary}}
+						>
+							<GpsFixedIcon />
+						</IconButton>
+					</Tooltip>
+					{showEditBoxInfoBtn?
+						<Tooltip title="Edit Desc">
+							<IconButton onClick={this.openEditInfo.bind(this)}
+								style={{color: this.props.theme.palette.text.primary}}>
+								<EditOutlined />
+							</IconButton>
+						</Tooltip>
+					:
+						<React.Fragment></React.Fragment>
+					}
+					<Typography variant="caption">
+						Joined: { toDayYear(new Date(this.state.boxMD.date)) }
+					</Typography>
+				</Grid>
+				<Grid item xs={12}>
+					<Typography variant="subtitle2">
+						{this.props.boxMD.location? this.props.boxMD.location: "Unknown Location"}
+					</Typography>
+				</Grid>
 				<Grid item align="center" xs={12}>
 					<StyledImage
 						src={this.props.url}

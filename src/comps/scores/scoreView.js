@@ -1,20 +1,10 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-import ReactMarkdown from 'react-markdown'
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import
-{   Grid, Paper, Button, Typography, Tooltip, IconButton
-}
-from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
-
+import{
+    Grid, Typography, Tooltip, IconButton
+}from '@material-ui/core';
+import { withTheme } from '@material-ui/core/styles'
+import { AddCircleOutlineTwoTone, ArrowBackIos } from "@material-ui/icons";
 import { DateTime } from 'luxon'
 
 import ScoreDataView from "./scoreDataView"
@@ -22,19 +12,12 @@ import ScoreList from "./scoreList"
 import AddScore from "./addScore"
 import ActionCancelModal from "../actionCancelModal"
 import BackButton  from "../backButton"
-
-
-
 import { getWodScores, removeScore } from "../../utils/firestore/scores"
 import { getWod } from "../../utils/firestore/wods"
 import { isEmpty } from "../../utils/valid"
 import { getFirstOfMonthTS } from "../../utils/formatting"
 
 import "../../styles.css"
-import { AddCircleOutlineTwoTone, ArrowBackIos } from "@material-ui/icons";
-
-
-var db = firebase.database();
 
 function RenderWodTextRaw(props){
   let lines = props.wodText.split("\n")
@@ -128,7 +111,7 @@ class ScoreViewContent extends Component {
               </Typography>
             </Grid>
             <Grid item container align="left" xs={12}>
-              <RenderWodTextRaw
+              <RenderWodText
                 wodText={this.state.wodMD["wodText"]}
               />
             </Grid>

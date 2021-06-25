@@ -1,16 +1,12 @@
 import React, { Component } from 'react'
 
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, Modal
-}
-from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
+import{
+	 	Grid, Paper, Typography
+}from '@material-ui/core';
 
-import BoxView from "./boxView"
+import { withTheme } from '@material-ui/core/styles'
+
+
 import BoxSearch from "./boxSearch"
 import { removeBox } from "../../utils/firestore/boxes"
 import ActionCancelModal from "../actionCancelModal"
@@ -32,7 +28,6 @@ class BoxListAccordion extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-	  console.log(props)
     return props
   }
 
@@ -54,7 +49,6 @@ class BoxListAccordion extends Component {
 
   deleteBox(){
 	this.handleModalClose()
-	console.log("removing box: ", this.state.curRemoveBoxID)
   	removeBox(this.state.curRemoveBoxID)
   	.then((res)=>{
   		this.props.onAlert({

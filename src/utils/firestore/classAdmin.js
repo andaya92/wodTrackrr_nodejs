@@ -1,7 +1,6 @@
 import firebase from "../../context/firebaseContext"
 import "firebase/auth";
 import "firebase/firestore";
-import { ContactsOutlined } from "@material-ui/icons";
 
 let fs = firebase.firestore()
 
@@ -12,9 +11,6 @@ const USER_CLASS_ADMIN = "userClassAdmins"
 const ADMIN_NOTIFICATIONS = "adminNotifications"
 const NOTIFICATIONS = "notifications"
 const USER_NOTIFICATIONS = "userAdminNotifications"
-const INVITES = "invites"
-const USERS = "users"
-
 
 export default function mTea(){}
 

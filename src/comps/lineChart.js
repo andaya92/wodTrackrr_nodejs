@@ -1,32 +1,15 @@
-import firebase from "../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	ListItem, List, ListItemText
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { withTheme } from '@material-ui/core/styles';
-import Chart from 'chart.js';
+import{ Grid } from '@material-ui/core'
 
-import {cvtTimetoInt, cvtIntToTime} from "../utils/formatting"
+import { withTheme } from '@material-ui/core/styles'
+import Chart from 'chart.js'
+
+import { cvtIntToTime } from "../utils/formatting"
 // Stats
-import {
-	mean, median, standardDeviation
-}from 'simple-statistics'
 
 import "../styles.css"
 
-
-var db = firebase.database();
 
 
 class LineChart extends Component {

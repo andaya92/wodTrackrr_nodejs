@@ -1,4 +1,4 @@
-let applighttheme = {
+const _applighttheme = {
    "overrides": {
       "MuiContainer": {
          "root":{
@@ -66,4 +66,4 @@ let applighttheme = {
     }
  };
 
- export default applighttheme = applighttheme;
+export default _applighttheme

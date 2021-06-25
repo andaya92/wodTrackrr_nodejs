@@ -1,15 +1,10 @@
-import firebase from "../../context/firebaseContext"
-
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
 import { withRouter } from "react-router-dom"
 
-import
-{Grid, Paper, Button, Typography, Collapse, IconButton, TextField,
-InputBase, InputAdornment, TableBody, Table, TableCell, TableContainer,
-  TableHead, TableRow, Tooltip }
-from '@material-ui/core'
+import{
+  Grid, Typography, IconButton, TextField, InputAdornment,
+  TableBody, Table, TableCell, TableContainer, TableHead, TableRow, Tooltip
+}from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
 
 import SearchIcon from '@material-ui/icons/Search'
@@ -22,8 +17,6 @@ import { getGymClasses, removeGymClass } from '../../utils/firestore/gymClass'
 
 import { getClassImages } from '../../utils/firestore/classImages'
 
-
-const fs = firebase.firestore()
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
 function GymClassRaw(props){
   let title = props.info["title"]
@@ -39,7 +32,7 @@ function GymClassRaw(props){
         <Typography variant="subtitle1" color="primary">
           { title }
         </Typography>
-        <img
+        <img alt="classImage"
          src={props.image}
          style={{width: "100%"}}
         />
@@ -55,7 +48,7 @@ function GymClassRaw(props){
             </Tooltip>
             <Tooltip title="Upload Image">
             <IconButton
-              onClick={()=>{ props.showUploadClassImage(boxID, gymClassID) }}>
+              onClick={()=>{ props.showUploadClassImage(gymClassID) }}>
                 <PhotoIcon color="primary"/>
             </IconButton>
           </Tooltip>
@@ -156,7 +149,7 @@ class GymClassList extends Component {
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){
+    if((data.keyCode || data.which) === 13){
     }
   }
 

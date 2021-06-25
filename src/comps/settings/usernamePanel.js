@@ -1,18 +1,10 @@
 import React, { Component } from 'react'
-import { Grid, TextField, Button, Typography, TableBody, Table, TableContainer,
-          TableHead, TableRow }
-from '@material-ui/core';
-import {TableCell as TC} from '@material-ui/core';
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { Grid, TextField, Button, Typography } from '@material-ui/core';
+import { withTheme } from '@material-ui/core/styles'
 
-import Edit from '@material-ui/icons/Edit'
 import { setUsername } from '../../utils/firestore/users'
 import "../../styles.css"
 
-
-const TableCell = withStyles({root:{
-  borderBottom: "none"
-}})(TC)
 const USERNAME_MAX_LEN = 12
 const USERNAME_MAX_LENGTH_ERR_MSG = "Username cannot be longer than 12 characters"
 const USERNAME_ERR_MSG = "Username can only contain letters & numbers"
@@ -27,7 +19,6 @@ class UsernamePanel extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-
     return props
   }
 
@@ -66,7 +57,7 @@ class UsernamePanel extends Component {
   }
 
   onKeyUp(data){
-    if((data.keyCode || data.which) == 13){
+    if((data.keyCode || data.which) === 13){
         this.updateUsername()
     }
   }

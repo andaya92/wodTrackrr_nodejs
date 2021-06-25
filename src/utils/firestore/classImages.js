@@ -1,4 +1,3 @@
-
 import firebase from "../../context/firebaseContext"
 import "firebase/storage"
 
@@ -50,8 +49,6 @@ export function getClassImage(boxID, classID){
   })
 }
 
-
-const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
 export function getClassImages(boxID, classIDs){
   let root = stor.ref(ROOT)
   let promises = []
@@ -77,12 +74,12 @@ export function getClassImages(boxID, classIDs){
 
 export function deleteClassImage(boxID, classID){
   return new Promise((res, rej) => {
-    let boxImages = stor.ref(ROOT).child(boxID).child(classID).delete()
+    stor.ref(ROOT).child(boxID).child(classID).delete()
     .then(() => {
       res("Deleted classImage")
     })
     .catch(err => {
-      if(err.code == 404){
+      if(err.code === "storage/object-not-found"){
         res("No Image to delete.")
         return
       }

@@ -1,23 +1,7 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
-} from '@material-ui/core';
-
-import { withTheme, withStyles } from '@material-ui/core/styles';
-
-
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
-
-
+import { 	Grid, Paper, Button, Typography, Modal } from '@material-ui/core';
+import { withTheme } from '@material-ui/core/styles';
 
 class ActionCancelModal extends Component{
 
@@ -54,9 +38,9 @@ class ActionCancelModal extends Component{
 					width: "80vw",
 				    transform: "translate(-50%, -50%)",
 				}}>
-					<Grid 
-						item 
-						align="center" 
+					<Grid
+						item
+						align="center"
 						xs={12}
 					>
 					<Paper style={{height:"25vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
@@ -69,16 +53,16 @@ class ActionCancelModal extends Component{
 							</Grid>
 
 							<Grid item xs={6}>
-								<Button 
-									variant="outlined" 
+								<Button
+									variant="outlined"
 									onClick={()=>{ this.props.onClose()}}>
 									{this.props.cancelText}
 								</Button>
 							</Grid>
 							<Grid item xs={6}>
-								<Button 
+								<Button
 									color="primary"
-									variant="outlined" 
+									variant="outlined"
 									onClick={()=>{ this.props.onAction()}}>
 									{this.props.actionText}
 								</Button>

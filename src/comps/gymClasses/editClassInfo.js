@@ -1,31 +1,14 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
-// React
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+import{
+    Grid, Paper, Button, Typography, TextField, Modal
 } from '@material-ui/core';
 
-import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
-
-import { sendAdminInvite } from "../../utils/firestore/classAdmin"
 
 import { updateClassInfo } from '../../utils/firestore/gymClass'
 
-
-
-const fs = firebase.firestore();
 
 class EditBoxInfo extends Component {
 	constructor(props){
@@ -38,10 +21,6 @@ class EditBoxInfo extends Component {
 	static getDerivedStateFromProps(props, state){
 		return props
 	}
-
-    componentWillUnmount(){
-    }
-
 
     onChange(ev){
 	    let gymClassMD = this.state.gymClassMD

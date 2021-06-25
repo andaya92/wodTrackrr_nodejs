@@ -81,7 +81,7 @@ function deleteCollection(collectionName, fieldName, fieldID, res, rej){
 	fs.collection(collectionName).where(fieldName, "==", fieldID).get()
 	.then(ss => {
 		let cnt = 0
-		if(ss.size == 0) res(1)
+		if(ss.size === 0) res(1)
 
 		ss.forEach(doc => {
 			batch.delete(doc.ref)
@@ -121,7 +121,7 @@ function deleteUserScores(wodInfo, res, rej){
 		let cnt = 0
 		Promise.all(promises).then( result => {
 			result.forEach( ss => {
-				if(ss.size == 0) res(true)
+				if(ss.size === 0) res(true)
 
 				console.log(ss)
 				if(!ss.empty){

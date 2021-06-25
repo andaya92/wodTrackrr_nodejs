@@ -1,24 +1,13 @@
-import firebase from "../../context/firebaseContext"
-import "firebase/auth";
-import "firebase/database";
-
-
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, Modal
+import{
+	Grid, Paper, Button, Typography,  TextField, Modal
 }
 from '@material-ui/core';
 
 import { editWod } from "../../utils/firestore/wods"
 
 import { withTheme, withStyles } from '@material-ui/core/styles';
-
-var db = firebase.database();
 
 const StyledGrid = withStyles((theme) => ({
 	root: {
@@ -36,7 +25,6 @@ class EditWod extends Component {
 			wodInfo: props.wodInfo,
 			userBoxes: props.userBoxes,
 			hasBoxes: props.hasBoxes,
-			open: props.open,
 			onClose: props.onClose
 		}
 	}
@@ -85,9 +73,7 @@ class EditWod extends Component {
 
 
 	render(){
-		let scoreTypes = ["time", "reps"]
 		return(
-
 			<Modal
 			    open={this.state.open}
 			    onClose={this.props.onClose}

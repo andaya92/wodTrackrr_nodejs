@@ -1,22 +1,14 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 // React
 import React, { Component } from 'react'
 import { withRouter } from "react-router-dom";
 
 // Material UI
-import
-{ 	Grid, Paper, Typography, Modal, TableBody, Table,
-	TableHead, TableRow, TableCell
+import{
+	Typography, TableBody, Table, TableHead, TableRow, TableCell
 } from '@material-ui/core'
-
 import { withTheme, withStyles } from '@material-ui/core/styles'
 
 import "../../styles.css"
-
-const fs = firebase.firestore()
 
 function createData(testID){
 	return{

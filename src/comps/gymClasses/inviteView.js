@@ -1,31 +1,16 @@
-// Firebase
-import firebase from "../../context/firebaseContext"
-import "firebase/firestore"
-
 // React
 import React, { Component } from 'react'
 
 // Material UI
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 
-{ 	Grid, Paper, Button, Typography, Collapse, TextField, Select,
-	Accordion, AccordionSummary, AccordionDetails, FormControlLabel,
-	CircularProgress, LinearProgress, CardActions, Card, CardContent,
-	Modal, InputAdornment, TableBody, Table, TableCell, TableContainer,
-	TableHead, TablePagination, TableRow, TableSortLabel
+import {
+    Grid, Paper, Button, Typography, TextField, Select,
+	Modal, InputAdornment
 } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
-import { Alert } from '@material-ui/lab';
 import { withTheme } from '@material-ui/core/styles';
 
-import { sendAdminInvite } from "../../utils/firestore/classAdmin"
-
 import "../../styles.css"
-
-
-
-const fs = firebase.firestore();
 
 class InviteView extends Component {
 	constructor(props){
@@ -35,21 +20,17 @@ class InviteView extends Component {
 		}
 	}
 
-	componentDidMount(){
-       
-	}
-
 	static getDerivedStateFromProps(props, state){
-        
+
 		return props
 	}
 
     componentWillUnmount(){
     }
 
-	
-  render(){
-		return( 
+
+    render(){
+		return(
 			<Modal
                 open={this.props.modalOpen}
                 onClose={this.props.onModalClose}
@@ -96,7 +77,7 @@ class InviteView extends Component {
                                     onChange={this.props.onSelectChange.bind(this)}>
                                     {this.state.filteredUsers ?
                                         this.state.filteredUsers.map((user, i) => {
-                                            return (<option key={i} 
+                                            return (<option key={i}
                                                             value={JSON.stringify(user)} >
                                                             {user["username"]}
                                                     </option>)
@@ -106,7 +87,7 @@ class InviteView extends Component {
                                     }
                                 </Select>
                             </Grid>
-                            
+
                                 <Grid item xs={6} style={{margin: "16px 0px 16px 0px"}}>
                                     <Button fullWidth
                                         style={{
@@ -124,7 +105,7 @@ class InviteView extends Component {
                                         Invite
                                     </Button>
                                 </Grid>
-                            
+
                         </Grid>
                     </Paper>
                 </div>

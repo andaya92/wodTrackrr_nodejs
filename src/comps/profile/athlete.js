@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom';
 
-import { Grid, Paper, Button, Typography, Collapse } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Grid, Typography } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 import UserScoreList from '../scores/userScoreList'
@@ -17,10 +15,6 @@ class Athlete extends Component{
       scores: props.scores
     }
   }
-
-
-
-
 
   static getDerivedStateFromProps(props, state){
     return props
