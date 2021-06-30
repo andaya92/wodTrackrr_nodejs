@@ -8,8 +8,6 @@ import{
 } from '@material-ui/core'
 import { withTheme, withStyles } from '@material-ui/core/styles';
 
-import "../../styles.css"
-
 /*
 	Given:
 		userMD: props.userMD,
@@ -24,25 +22,25 @@ const StyledTableCell = withStyles({root:{
 
 
 function MemberRowRaw(props){
-    let gymClassTitle = props.info.classTitle
-    let boxTitle = props.info.boxTitle
-    let boxID = props.info.boxID
-    let redirectUrl = `class/${boxID}/${props.info.gymClassID}`
+	let gymClassTitle = props.info.classTitle
+	let boxTitle = props.info.boxTitle
+	let boxID = props.info.boxID
+	let redirectUrl = `class/${boxID}/${props.info.gymClassID}`
 
-    return(
-        <TableRow onClick={ (ev) => props.onView(redirectUrl)}>
-            <StyledTableCell>
-                <Typography color="primary">
-                    {boxTitle}
-                </Typography>
-            </StyledTableCell>
-            <StyledTableCell>
-                <Typography color="primary">
-                    {gymClassTitle}
-                </Typography>
-            </StyledTableCell>
-        </TableRow>
-    )
+	return(
+		<TableRow onClick={ (ev) => props.onView(redirectUrl)}>
+			<StyledTableCell>
+				<Typography color="primary">
+					{boxTitle}
+				</Typography>
+			</StyledTableCell>
+			<StyledTableCell>
+				<Typography color="primary">
+					{gymClassTitle}
+				</Typography>
+			</StyledTableCell>
+		</TableRow>
+	)
 }
 const MemberRow = withTheme(MemberRowRaw)
 
@@ -68,10 +66,10 @@ class ClassMemberView extends Component {
 				{this.state.classes.length > 0?
 					<Table size="small">
 						<TableHead>
-								<TableRow>
-										<StyledTableCell align="left">Gym</StyledTableCell>
-										<StyledTableCell align="left">Class</StyledTableCell>
-								</TableRow>
+							<TableRow>
+								<StyledTableCell align="left">Gym</StyledTableCell>
+								<StyledTableCell align="left">Class</StyledTableCell>
+							</TableRow>
 						</TableHead>
 						<TableBody>
 							{this.state.classes.map((classMember, i) => {

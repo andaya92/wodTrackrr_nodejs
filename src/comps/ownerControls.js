@@ -9,9 +9,14 @@ import OwnerBoxes from "./boxes/ownerBoxes"
 import AddGymClass from "./gymClasses/addGymClass"
 import AddWod from "./wods/addWod"
 import AddBox from "./boxes/addBox"
-import { setGymClass } from "../utils/firestore/gymClass"
+import { setGymClass, getGymClasses } from "../utils/firestore/gymClass"
+import { setWod } from "../utils/firestore/wods"
+import { CollectionsOutlined } from "@material-ui/icons";
+
 
 let fs = firebase.firestore()
+
+const SCORETYPES = ["reps", "rounds", "time", "total"]
 
 class OwnerControls extends Component {
   constructor(props){
@@ -20,10 +25,17 @@ class OwnerControls extends Component {
       user: props.user,
       userMD: props.userMD,
       userBoxes: [],
-      hasBoxes: false,
+      gymClasses: [],
       index: 0,
+      initBoxLoad: true,
       addClassBoxIndex: 0,
       addClassClassInfo: {title: "", description: "", isPrivate: false},
+      addWodWodInfo: {title: "", wodText: ""},
+      addWodBoxSelected: 0,
+      addWodGymClassSelected: 0,
+      addWodScoreTypeSelected: 0,
+      addWodTitleForm: "",
+      addWodWodTextForm: "",
       tabs: {
         0: "show",
         1: "hide",
@@ -38,19 +50,23 @@ class OwnerControls extends Component {
   }
 
   static getDerivedStateFromProps(props, state){
-	  return props
+	  return state
   }
 
   componentDidUpdate(){
     if(this.state.userMD.accountType === "owner"){
-      this.listenForBoxes()
+      if(!this.boxListener){
+        this.listenForBoxes()
+      }
     }
-
   }
 
   componentWillUnmount(){
     if(this.boxListener){
       this.boxListener()
+    }
+    if(this.gymClassListener){
+      this.gymClassListener()
     }
   }
 
@@ -62,31 +78,64 @@ class OwnerControls extends Component {
 		.onSnapshot(ss => {
 			let data = this.state.userBoxes
       let newAddClassBoxIndex = this.state.addClassBoxIndex
+      let newAddWodBoxIndex = this.state.addWodBoxSelected
 
       ss.docChanges().forEach(change => {
         if(change.type === "added"){
           data.splice(change.newIndex, 0, change.doc.data())
-          if(change.newIndex <= newAddClassBoxIndex){
-            newAddClassBoxIndex++
+          if(this.state.userBoxes.length > 0){
+            if(change.newIndex <= newAddClassBoxIndex){
+              newAddClassBoxIndex++
+            }
+            if(change.newIndex <= newAddWodBoxIndex){
+              newAddWodBoxIndex++
+            }
           }
         }else if(change.type === "removed"){
           data.splice(change.oldIndex, 1) // splice(start, delCount, ...itemsToReplaceWith)
-          if(change.oldIndex <= newAddClassBoxIndex){
-            newAddClassBoxIndex = Math.max(0, newAddClassBoxIndex - 1)
+          if(this.state.userBoxes.length > 0){
+            if(change.oldIndex <= newAddClassBoxIndex){
+              newAddClassBoxIndex = Math.max(0, newAddClassBoxIndex - 1)
+            }
+            if(change.oldIndex <= newAddWodBoxIndex){
+              newAddWodBoxIndex = Math.max(0, newAddWodBoxIndex - 1)
+            }
           }
         }
 			})
 
-			this.setState({
-				hasBoxes: true,
-				userBoxes: data,
-        addClassBoxIndex: newAddClassBoxIndex
-			})
+      // If there is no listener set, set it
+      if(!this.gymClassListener && data.length > 0){
+        this.setGymClassListner(data[0].boxID)
+      }
+
+      if(this.state.initBoxLoad){
+        this.setState({
+          userBoxes: data,
+          initBoxLoad: false
+        })
+      }
+      else if(data.length === 0){
+        this.setState({
+          userBoxes: [],
+          addClassBoxIndex: 0,
+          addWodBoxSelected: 0,
+          addWodGymClassSelected: 0
+        })
+      }
+      else{
+        this.setState({
+          userBoxes: data,
+          addClassBoxIndex: newAddClassBoxIndex,
+          addWodBoxSelected: newAddWodBoxIndex,
+          addWodGymClassSelected: 0
+        })
+      }
+
 		},
 		err => {
       console.log(err)
   		this.setState({
-				hasBoxes: false,
 				userBoxes: [],
         addClassBoxIndex: 0
 			})
@@ -105,6 +154,96 @@ class OwnerControls extends Component {
   	this.setState({index: index})
   }
 
+  /**addWod.js
+   *
+   *
+   */
+  addWodOnChange(name, value){
+    // When box changes, set new class listener.
+    if(name === "addWodBoxSelected"){
+      this.setGymClassListner(this.state.userBoxes[value].boxID)
+    }
+    let state = {}
+    state[name] = value
+    this.setState(state)
+  }
+
+  setGymClassListner(boxID){
+    console.log(boxID)
+    // When box changes, set new class listener.
+    if(this.gymClassListener){
+      // Reset listener
+      this.gymClassListener()
+    }
+    this.gymClassListener = getGymClasses(boxID)
+    .onSnapshot(ss => {
+      if(!ss.empty){
+        let classes = []
+        ss.forEach(doc => {
+          classes.push(doc.data())
+        })
+        this.setState({
+          gymClasses: classes,
+          addWodGymClassSelected: 0
+        })
+      }else{
+        this.setState({
+          gymClasses: [],
+          addWodGymClassSelected: 0
+        })
+      }
+    },
+    err => {console.log(err)})
+  }
+
+  missingInfoError(){
+    this.props.onAlert({
+      type: "error",
+      message: "Missing information."
+    })
+  }
+
+  createWOD(){
+    let box = this.state.userBoxes[this.state.addWodBoxSelected]
+    let gymClass = this.state.gymClasses[this.state.addWodGymClassSelected]
+		if(!box || !gymClass){
+     this.missingInfoError()
+      return
+    }
+    const { boxID, uid: owner, title: boxTitle } = box
+    const { gymClassID, isPrivate, title: classTitle } = gymClass
+
+    let title = this.state.addWodTitleForm
+    let scoreType = SCORETYPES[this.state.addWodScoreTypeSelected]
+    let wodText = this.state.addWodWodTextForm
+
+    if(!boxID || !gymClassID || !title || !scoreType || !wodText || !owner || !classTitle || isPrivate === undefined){
+      console.log("Error with input createWod")
+      console.log(boxID, gymClassID, title, scoreType, wodText, owner, classTitle, isPrivate)
+      this.missingInfoError()
+      return
+    }
+
+    setWod(title, boxID, gymClassID, owner, boxTitle,
+      classTitle, scoreType, wodText, isPrivate)
+    .then((res)=>{
+      this.props.onAlert({
+        type: "success",
+        message: "Added workout!"
+      })
+    })
+    .catch((err)=>{
+      this.props.onAlert({
+        type: "error",
+        message: err.message
+      })
+    })
+  }
+
+  /** addClass.js
+   *
+   *
+   */
   onAddClassBoxChange(boxIndex){
     this.setState({addClassBoxIndex: boxIndex})
   }
@@ -127,7 +266,6 @@ class OwnerControls extends Component {
 
 		const { boxID, uid: owner, title: boxTitle } = this.state.userBoxes[this.state.addClassBoxIndex]
 		const { title, description, isPrivate } = this.state.addClassClassInfo
-
 
 		if(!boxID || !title || isPrivate === null || isPrivate === undefined){
 			console.log("Error adding class: ")
@@ -170,43 +308,44 @@ class OwnerControls extends Component {
         </Tabs>
       </AppBar>
       <Grid item xs={12}>
-          {this.state.hasBoxes?
-            <React.Fragment>
-              <Grid item xs={12} className={`${this.state.tabs[0]} slide-left`}>
-                <OwnerBoxes
-                  user = {this.state.user}
-                  userMD = {this.state.userMD}
-                  userBoxes = {this.state.userBoxes}
-                  hasBoxes = {this.state.hasBoxes}
-                  onAlert={this.props.onAlert}
-                />
-              </Grid>
-              <Grid item xs={12} className={`slide-left ${this.state.tabs[1]}`}>
-                  <AddWod
-                    isOwnerView={true}
-                    userMD={this.state.userMD}
-                    userBoxes = {this.state.userBoxes}
-                    hasBoxes = {this.state.hasBoxes}
-                    onAlert={this.props.onAlert}
+        <Grid item xs={12} className={`${this.state.tabs[0]} slide-left`}>
+          <OwnerBoxes
+            user = {this.state.user}
+            userMD = {this.state.userMD}
+            userBoxes = {this.state.userBoxes}
+            handleChange={(ev) => this.handleChange(ev, 3)}
+            onAlert={this.props.onAlert}
+          />
+        </Grid>
+        <Grid item xs={12} className={`slide-left ${this.state.tabs[1]}`}>
+            <AddWod
+              isOwnerView={true}
+              userMD={this.state.userMD}
+              userBoxes = {this.state.userBoxes}
+              gymClasses = {this.state.gymClasses}
+              addWodScoreTypes={SCORETYPES}
+              addWodBoxSelected = {this.state.addWodBoxSelected}
+              addWodGymClassSelected = {this.state.addWodGymClassSelected}
+              addWodScoreTypeSelected = {this.state.addWodScoreTypeSelected}
+              addWodTitleForm = {this.state.addWodTitleForm}
+              addWodWodTextForm = {this.state.addWodWodTextForm}
+              addWodOnChange={this.addWodOnChange.bind(this)}
+              createWOD={this.createWOD.bind(this)}
+              onAlert={this.props.onAlert}
 
-                  />
-              </Grid>
-              <Grid item xs={12} className={`slide-right ${this.state.tabs[2]}`}>
-                  <AddGymClass
-                    userMD = {this.state.userMD}
-                    userBoxes = {this.state.userBoxes}
-                    hasBoxes = {this.state.hasBoxes}
-                    onAlert={this.props.onAlert}
-                    addGymClass={this.addGymClass.bind(this)}
-                    addClassBoxIndex={this.state.addClassBoxIndex}
-                    onBoxChange={this.onAddClassBoxChange.bind(this)}
-                    onClassChange={this.onAddClassClassChange.bind(this)}
-                  />
-              </Grid>
-            </React.Fragment>
-          :
-            <React.Fragment></React.Fragment>
-          }
+            />
+        </Grid>
+        <Grid item xs={12} className={`slide-right ${this.state.tabs[2]}`}>
+            <AddGymClass
+              userMD = {this.state.userMD}
+              userBoxes = {this.state.userBoxes}
+              onAlert={this.props.onAlert}
+              addGymClass={this.addGymClass.bind(this)}
+              addClassBoxIndex={this.state.addClassBoxIndex}
+              onBoxChange={this.onAddClassBoxChange.bind(this)}
+              onClassChange={this.onAddClassClassChange.bind(this)}
+            />
+        </Grid>
 	      <Grid item xs={12} className={`slide-right ${this.state.tabs[3]}`}>
 				  	<AddBox
 							userMD = {this.state.userMD}

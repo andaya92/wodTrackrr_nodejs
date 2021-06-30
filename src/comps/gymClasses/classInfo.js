@@ -67,13 +67,19 @@ class ClassInfo extends Component {
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12} align="left">
-				<Typography variant="h2">
+				<Typography variant="h2" align="center" color="primary">
 					{this.state.gymClassMD.boxTitle}
 				</Typography>
-				<Typography variant="h3">
+				<Typography variant="h3" align="center" color="secondary">
 					{this.state.gymClassMD.title}
 				</Typography>
-				<Typography variant="h4">
+				<Typography
+					variant="h5"
+					style={{
+						maxHeight: "20vh",
+						overflowY: "auto"
+					}}
+				>
 					{this.state.gymClassMD.description}
 				</Typography>
 				<Typography variant="caption">

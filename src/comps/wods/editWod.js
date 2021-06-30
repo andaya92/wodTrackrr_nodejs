@@ -24,7 +24,6 @@ class EditWod extends Component {
 			open: props.open,
 			wodInfo: props.wodInfo,
 			userBoxes: props.userBoxes,
-			hasBoxes: props.hasBoxes,
 			onClose: props.onClose
 		}
 	}

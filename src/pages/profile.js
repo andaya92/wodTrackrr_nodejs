@@ -267,7 +267,6 @@ class PageContent extends Component {
       */
     return (
       <Grid item container align="center">
-
         {this.state.showDetails[0]?
           <React.Fragment>
             <BackArrow onClick={this.onView.bind(this)} index={-1} />
@@ -381,6 +380,7 @@ class ProfilePage extends Component {
       timeComponentMounted: 0,
       isLoading: true
     }
+    this.mountedIndicator = React.createRef()
   }
 
   /*
@@ -391,15 +391,18 @@ class ProfilePage extends Component {
   }
 
   timer(){
+    // Timer to control when the login button will appear.
     return new Promise(res => {
-      setTimeout(res, 5000)
+      setTimeout(res, 2000)
     })
   }
 
   componentDidMount(){
     this.timer()
     .then(() => {
-      this.setState({isLoading: false})
+      if(this.mountedIndicator.current){
+        this.setState({isLoading: false})
+      }
     })
   }
 
@@ -409,12 +412,12 @@ class ProfilePage extends Component {
 
   render () {
     return (
-    	<Grid item xs={12} id="profilepage">
+    	<Grid item xs={12} id="profilepage" ref={this.mountedIndicator}>
         {this.state.user?
           <PageContent
-              user= {this.state.user}
-              userMD={this.state.userMD}
-              onAlert={this.props.onAlert}
+            user= {this.state.user}
+            userMD={this.state.userMD}
+            onAlert={this.props.onAlert}
           />
         :
           <Grid item align="center" xs={12}>

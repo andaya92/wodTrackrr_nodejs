@@ -4,7 +4,7 @@ import "firebase/database";
 
 import React, { Component } from 'react'
 
-import { Grid, Paper} from '@material-ui/core';
+import { Grid, Paper, Typography} from '@material-ui/core';
 
 import { withTheme } from '@material-ui/core/styles';
 import BoxSearch from "../comps/boxes/boxSearch"
@@ -67,8 +67,10 @@ class BoxSearchPage extends Component {
           />
           :
           <Grid item xs={12}>
-            <Paper elevation={2}>
-              No boxes!
+            <Paper elevation={2} align="center">
+              <Typography variant="h3">
+                No Gyms Found
+              </Typography>
             </Paper>
           </Grid>
         }

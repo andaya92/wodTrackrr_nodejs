@@ -18,7 +18,6 @@ import { toDayYear } from "../../utils/formatting"
 
 function Image(props){
 	const { classes, children, className, ...other } = props
-
 	return (<img className={clsx(classes.root, className)} alt="boxImage" {...other}
 	/>)
 }
@@ -47,7 +46,6 @@ class BoxInfo extends Component {
 		return props
 	}
 
-
 	openEditInfo(){
 		this.setState({editModalOpen: true})
 	}
@@ -57,16 +55,16 @@ class BoxInfo extends Component {
   }
 
   render(){
-		let showEditBoxInfoBtn = this.state.userMD != null && this.state.boxMD['uid'] === this.state.userMD['uid']
-		console.log(`Show edit btn? ${showEditBoxInfoBtn}`)
+		const showEditBoxInfoBtn = this.state.userMD && this.state.boxMD['uid'] === this.state.userMD['uid']
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12}>
 				<Grid item xs={12}>
-					<Typography variant="h2">
+					<Typography variant="h2" align="center" color="primary">
 						{this.state.boxMD.title}
 					</Typography>
 					<Typography variant="h4"
+						align="center"
 						style={{
 							maxHeight: "20vh",
 							overflowY: "auto"
@@ -74,23 +72,30 @@ class BoxInfo extends Component {
 					>
 						{this.state.boxMD.description}
 					</Typography>
-
+				</Grid>
+				<Grid item align="center" xs={12}>
+					<StyledImage
+						src={this.props.url}
+					/>
 				</Grid>
 				<Grid item xs={12}>
-					<Tooltip title="Change Location">
-						<IconButton onClick={this.props.onLocation}
-							style={{color: this.props.theme.palette.text.primary}}
-						>
-							<GpsFixedIcon />
-						</IconButton>
-					</Tooltip>
+
 					{showEditBoxInfoBtn?
-						<Tooltip title="Edit Desc">
-							<IconButton onClick={this.openEditInfo.bind(this)}
-								style={{color: this.props.theme.palette.text.primary}}>
-								<EditOutlined />
-							</IconButton>
-						</Tooltip>
+						<React.Fragmet>
+							<Tooltip title="Change Location">
+								<IconButton onClick={this.props.onLocation}
+									style={{color: this.props.theme.palette.text.primary}}
+								>
+									<GpsFixedIcon />
+								</IconButton>
+							</Tooltip>
+							<Tooltip title="Edit Desc">
+								<IconButton onClick={this.openEditInfo.bind(this)}
+									style={{color: this.props.theme.palette.text.primary}}>
+									<EditOutlined />
+								</IconButton>
+							</Tooltip>
+						</React.Fragmet>
 					:
 						<React.Fragment></React.Fragment>
 					}
@@ -103,11 +108,7 @@ class BoxInfo extends Component {
 						{this.props.boxMD.location? this.props.boxMD.location: "Unknown Location"}
 					</Typography>
 				</Grid>
-				<Grid item align="center" xs={12}>
-					<StyledImage
-						src={this.props.url}
-					/>
-				</Grid>
+
 			</Grid>
 			{
 				showEditBoxInfoBtn?

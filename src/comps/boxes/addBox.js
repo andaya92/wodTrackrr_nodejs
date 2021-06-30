@@ -98,7 +98,7 @@ class AddBox extends Component {
 								/>
 					</Grid>
 					<Grid item xs={12}>
-						<Button size="small" variant="outlined" color="primary"
+						<Button size="small" variant="outlined" color="secondary"
 							onClick={this.createBox.bind(this)}
 							style={{margin: "16px auto", width: "90%" }}
 						>

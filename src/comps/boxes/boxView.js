@@ -6,14 +6,13 @@ import "firebase/firestore"
 import React, { Component } from 'react'
 
 // Material UI
-import
-{ 	Grid
+import{
+	Grid, Typography
 } from '@material-ui/core'
 
 import { withTheme } from '@material-ui/core/styles'
 
 // WodTrackrr
-
 import BoxInfo from "./boxInfo"
 import GymClassList from "../gymClasses/gymClassList"
 import BackButton  from "../backButton"
@@ -22,18 +21,6 @@ import UploadBoxLocationModal from "../boxes/uploadBoxLocationModal"
 import { getImage } from "../../utils/firestore/gymImages"
 import { setClassImage } from "../../utils/firestore/classImages"
 import { updateBoxLocation } from "../../utils/firestore/boxLocation"
-
-import "../../styles.css"
-
-
-
-/*
-	Given:
-		userMD: props.userMD,
-		boxID: props.boxID,
-	Show:
-		details of Box and its WODS, allows for removal of wods by owner
-*/
 
 const fs = firebase.firestore();
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
@@ -169,17 +156,16 @@ class BoxView extends Component {
 	}
 
 	render(){
-		let uid = this.state.userMD.uid
-		let boxOwnerUid = this.state.boxMD["uid"]
-		let showOwnerBtns = uid === boxOwnerUid
+		const { uid } = this.state.userMD
+		const { uid: boxOwnerUID } = this.state.boxMD
+		let showOwnerBtns = boxOwnerUID && uid === boxOwnerUID
 
 		return(
 			<Grid item container xs={12}>
-
 				<Grid item xs={1}>
 					<BackButton />
 				</Grid>
-				<Grid item xs={10}>
+				<Grid item xs={10} style={{marginTop: "48px"}}>
 				{Object.keys(this.state.boxMD).length > 0 ?
 					<React.Fragment>
 						<BoxInfo
@@ -190,6 +176,14 @@ class BoxView extends Component {
 							onAlert={this.props.onAlert}
 							onLocation={this.showUploadBoxLocation.bind(this)}
 						/>
+
+						<Grid item xs={12} style={{marginTop: "32px"}}>
+							<Typography
+								gutterBottom variant="h4" color="secondary"
+							>
+								Classes
+							</Typography>
+						</Grid>
 						<GymClassList
 							user={this.state.user}
 							userMD={this.state.userMD}

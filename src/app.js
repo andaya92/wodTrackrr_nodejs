@@ -94,9 +94,9 @@ export default class App extends React.Component {
       if(user){
         let doc = fs.collection("users").doc(user.uid)
         this.userMDListener = doc.onSnapshot(metadata => {
-          console.log("USer MD change")
+          // console.log("USer MD change")
           if(metadata.exists){
-            console.log(metadata.data())
+            // console.log(metadata.data())
             this.setState({ user: user, userMD: metadata.data() })
           }else{
             this.setState({ user: user, userMD: false })
@@ -159,7 +159,12 @@ export default class App extends React.Component {
 
     <BackgroundGrid container direction="column" alignItems="center">
       <Grid item container xs={12}
-        style={{"minHeight": "100%", paddingTop: "8px"}}
+        style={{
+          minHeight: "100%",
+          paddingTop: "8px",
+          paddingLeft: "8px",
+          paddingRight: "8px"
+        }}
       >
         <Paper style={{width: "100%"}}>
           <React.Fragment>

@@ -61,7 +61,6 @@ class GymClassView extends Component {
 			gymClassMD: {},
 			gymClasses:[],
 			userBoxes: [],
-			hasBoxes: false,
 			wods: [],
 			currentWodID: "",
 			currentWodMD: {},
@@ -124,7 +123,7 @@ class GymClassView extends Component {
 						boxes.push(doc.data())
 					})
 				}
-				this.setState({userBoxes: boxes, hasBoxes: boxes.length? true: false})
+				this.setState({userBoxes: boxes})
 			})
 		}
 	}
@@ -534,7 +533,6 @@ class GymClassView extends Component {
 					open={this.state.showEditModal}
 					onClose={this.handleEditModalClose.bind(this)}
 					userBoxes={this.state.userBoxes}
-					hasBoxes={this.state.hasBoxes}
 					wodInfo={this.state.editWodInfo}
 					onAlert={this.props.onAlert}
 				/>

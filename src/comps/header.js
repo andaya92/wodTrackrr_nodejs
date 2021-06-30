@@ -70,28 +70,12 @@ class Header extends Component{
 			alertInfo: props.alertInfo,
 			alertLeftPos: 1
 		}
-		this.styleFound = false
 	}
 
 	static getDerivedStateFromProps(props, state){
 		return props
   }
 
-	componentDidUpdate(){
-		let el = document.getElementById("headerAlert")
-		if(el ){
-			let style = window.getComputedStyle(el)
-			let padding = parseFloat(style.padding.split(" ")[1].split("px")[0])
-			let w = parseFloat(style.width.split("px")[0]) / 2
-			console.log(w, padding)
-			if(!this.styleFound && w && (padding || w > this.state.alertLeftPos)){
-				this.setState({alertLeftPos: w + padding})
-				this.styleFound = true
-				return
-			}
-			this.styleFound = false
-		}
-	}
 
 	handleToggle(){
 		this.setState({open: !this.state.open})

@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 
 import{
-	 	Grid, Paper, Typography
+	Grid, Paper, Typography, Button, Card, CardActionArea,
+ CardContent, CardActions, CardMedia
 }from '@material-ui/core';
 
-import { withTheme } from '@material-ui/core/styles'
+import { withTheme, withStyles } from '@material-ui/core/styles'
 
 
 import BoxSearch from "./boxSearch"
@@ -19,7 +20,6 @@ class BoxListAccordion extends Component {
     this.state = {
       userMD: props.userMD,
       userBoxes: props.userBoxes,
-      hasBoxes: props.hasBoxes,
       currentBoxID: "",
       showRemoveAlert: false,
       curRemoveBoxID: "",
@@ -80,11 +80,9 @@ class BoxListAccordion extends Component {
 						onAlert={this.props.onAlert}
 					/>
 				:
-					<Grid item zeroMinWidth xs={12}>
-						<Paper elevation={4} style={{padding: "1vw"}}>
-							<Typography noWrap align="left">No gyms Found!</Typography>
-						</Paper>
-					</Grid>
+					<EmptyBox
+						handleChange={this.props.handleChange}
+					/>
 				}
 			</Grid>
 			<ActionCancelModal
@@ -102,3 +100,43 @@ class BoxListAccordion extends Component {
 
 export default BoxListAccordion = withTheme(BoxListAccordion);
 
+const StyledCardMedia = withStyles(theme =>({
+  root:{
+    width: "50%",
+    margin: "0 auto",
+    borderRadius: "8px"
+  }
+}))(CardMedia)
+
+
+
+function EmptyBoxRaw(props){
+  return(
+    <Card >
+    <CardActionArea>
+      <StyledCardMedia component="img"
+        image="empty.png"
+        title="No gyms"
+      />
+      <CardContent>
+        <Grid item align='left' xs={12}>
+				<Typography noWrap align="center">No gyms Found!!</Typography>
+
+        </Grid>
+      </CardContent>
+    </CardActionArea>
+			<CardActions align="center">
+				<Button
+					variant="outlined"
+					color="primary"
+					onClick={props.handleChange}
+					style={{ margin: '0 auto'}}
+				>
+					Create Gym
+				</Button>
+			</CardActions>
+
+  </Card>
+  )
+}
+const EmptyBox = withTheme(EmptyBoxRaw)

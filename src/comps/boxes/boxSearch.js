@@ -14,9 +14,11 @@ import Delete from '@material-ui/icons/Delete'
 import Whatshot from '@material-ui/icons/Whatshot'
 
 import UploadImageModal from "./uploadImageModal"
+import ActionCancelModal from '../actionCancelModal';
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import { toDayYear } from "../../utils/formatting"
 import { setImage, getImages, deleteGymImage} from "../../utils/firestore/gymImages"
+import { exportDefaultSpecifier } from '@babel/types';
 
 
 
@@ -43,7 +45,7 @@ function BoxRaw(props){
       <CardActionArea>
         <StyledCardMedia component="img"
           image={props.boxImage}
-          title="NC Fit"
+          title={title}
         />
         <CardContent>
           <Grid item align='left' xs={12}>
@@ -91,17 +93,17 @@ function BoxRaw(props){
               </IconButton>
 
             </Tooltip>
+            <Tooltip title="Delete GymImages">
+                <IconButton
+                  onClick={()=>{ props.deleteGymImage(boxID) }}>
+                  <Delete  color="primary" />
+                </IconButton>
+            </Tooltip>
           </React.Fragment>
 
           :
             <React.Fragment></React.Fragment>
           }
-          <Tooltip title="Delete GymImages">
-              <IconButton
-                onClick={()=>{ deleteGymImage(boxID) }}>
-                <Delete  color="primary" />
-              </IconButton>
-          </Tooltip>
         </React.Fragment>
       </CardActions>
     </Card>
@@ -111,16 +113,6 @@ function BoxRaw(props){
 const Box = withTheme(BoxRaw)
 
 
-function EmptyBoxRaw(props){
-  return(
-    <Grid item align="center" xs={12}>
-      <Typography variant="subtitle1" color="primary">
-        No Gyms!
-      </Typography>
-    </Grid>
-  )
-}
-const EmptyBox = withTheme(EmptyBoxRaw)
 
 class BoxSearch extends Component {
   constructor(props){
@@ -133,10 +125,12 @@ class BoxSearch extends Component {
       userFollowing: {},
       showingUploadImage: false,
       curUploadBoxID: "",
-      boxImages: {}
+      boxImages: {},
+      delBoxImageBoxID: "",
+      showDelBoxImageAlert: false
 
+    }
   }
-}
 
   componentDidMount(){
     this.listenForFollowing()
@@ -159,8 +153,6 @@ class BoxSearch extends Component {
   componentDidUpdate(){
     this.listenForFollowing()
   }
-
-
 
   listenForFollowing(){
     if(this.state.userMD && !this.followListener){
@@ -218,6 +210,38 @@ class BoxSearch extends Component {
     let tagName = ev.target.tagName
     if(["span", "svg", "path", "BUTTON", "SPAN"].indexOf(tagName) < 0){
       this.props.history.push(id);
+    }
+  }
+
+  handleDelBoxImageModalClose(){
+    this.setState({showDelBoxImageAlert: false})
+  }
+
+  handleDelBoxImageModalOpen(boxID){
+    this.setState({showDelBoxImageAlert: true, delBoxImageBoxID: boxID})
+  }
+
+  deleteGymImage(){
+    if(this.state.delBoxImageBoxID){
+      deleteGymImage(this.state.delBoxImageBoxID)
+      .then(res => {
+        console.log(res)
+        this.handleDelBoxImageModalClose()
+        this.props.onAlert({
+          type: 'success',
+          message: "Removed Gym Image."
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        this.handleDelBoxImageModalClose()
+        this.props.onAlert({
+          type: 'error',
+          message: "Failed to Remove Gym Image."
+        })
+      })
+    }else{
+      this.handleDelBoxImageModalClose()
     }
   }
 
@@ -287,7 +311,7 @@ class BoxSearch extends Component {
               variant="outlined"
               onKeyUp={this.onKeyUp.bind(this)}
               onChange={this.onChange.bind(this)}
-              placeholder="Search Boxes"
+              placeholder="Search Gyms"
               InputProps={{
                 endAdornment: (
                   <InputAdornment>
@@ -317,11 +341,12 @@ class BoxSearch extends Component {
                 handleFollow={this.handleFollow.bind(this)}
                 handleUnfollow={this.handleUnfollow.bind(this)}
                 onRowClick={this.onRowClick.bind(this)}
+                deleteGymImage={this.handleDelBoxImageModalOpen.bind(this)}
                 showUploadImage={this.showUploadImage.bind(this)}
                 />
       })
     :
-      <EmptyBox />
+      <React.Fragment></React.Fragment>
     }
         </Grid>
         <UploadImageModal
@@ -332,6 +357,14 @@ class BoxSearch extends Component {
           onAction={this.uploadImage.bind(this)}
           onClose={this.hideUploadImage.bind(this)}
         />
+        <ActionCancelModal
+				  open={this.state.showDelBoxImageAlert}
+          onClose={this.handleDelBoxImageModalClose.bind(this)}
+          onAction={this.deleteGymImage.bind(this)}
+          modalText={ `Delete Gym Image? (${this.state.delBoxImageBoxID})`}
+          actionText={"Remove"}
+          cancelText={"Cancel"}
+			/>
       </Grid>
     );
   }

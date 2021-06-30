@@ -59,7 +59,7 @@ export function getImages(boxIDs){
 
   boxIDs.forEach(boxID => {
     promises.push(new Promise((res, rej) => {
-      console.log(`Getting image for ${boxID}`)
+      // console.log(`Getting image for ${boxID}`)
       let boxImage = root.child(boxID)
       boxImage.getDownloadURL()
       .then(url => {

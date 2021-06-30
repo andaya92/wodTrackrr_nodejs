@@ -31,18 +31,18 @@ function AdminRowRaw(props){
     let redirectUrl = `class/${boxID}/${props.info.gymClassID}`
 
     return(
-        <TableRow onClick={ (ev) => props.onView(redirectUrl)}>
-            <StyledTableCell>
-                <Typography color="primary">
-                    {boxTitle}
-                </Typography>
-            </StyledTableCell>
-            <StyledTableCell>
-                <Typography color="primary">
-                    {gymClassTitle}
-                </Typography>
-            </StyledTableCell>
-        </TableRow>
+			<TableRow onClick={ (ev) => props.onView(redirectUrl)}>
+				<StyledTableCell>
+					<Typography color="primary">
+						{boxTitle}
+					</Typography>
+				</StyledTableCell>
+				<StyledTableCell>
+					<Typography color="primary">
+						{gymClassTitle}
+					</Typography>
+				</StyledTableCell>
+			</TableRow>
     )
 }
 const AdminRow = withTheme(AdminRowRaw)
@@ -50,13 +50,8 @@ const AdminRow = withTheme(AdminRowRaw)
 class ClassAdminView extends Component {
 	constructor(props){
 		super(props)
-		let tmp = [...Array(10).keys()]
-		console.log(tmp)
 		this.state = {
-      		classes: props.classes,
-			testData: tmp.map(el => {
-				return createData(el)
-			})
+			classes: props.classes
 		}
 	}
 
@@ -65,11 +60,10 @@ class ClassAdminView extends Component {
 	}
 
 	onView(redirectUrl){
-			this.props.history.push(redirectUrl)
+		this.props.history.push(redirectUrl)
 	}
 
   render(){
-	  console.log(this.state.testData)
 		return(
 			<React.Fragment>
 				{this.state.classes.length > 0?
@@ -81,7 +75,7 @@ class ClassAdminView extends Component {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{this.state.testData.map((classAdmin, i) => {
+							{this.state.classes.map((classAdmin, i) => {
 								return (
 									<AdminRow key={i}
 										info={classAdmin}

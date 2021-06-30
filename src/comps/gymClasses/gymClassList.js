@@ -6,15 +6,12 @@ import{
   TableBody, Table, TableCell, TableContainer, TableHead, TableRow, Tooltip
 }from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
-
 import SearchIcon from '@material-ui/icons/Search'
 import PhotoIcon from '@material-ui/icons/Photo';
-
 import Delete from '@material-ui/icons/Delete'
 
 import ActionCancelModal from "../actionCancelModal"
 import { getGymClasses, removeGymClass } from '../../utils/firestore/gymClass'
-
 import { getClassImages } from '../../utils/firestore/classImages'
 
 const DEFAULT_IMAGE_URL = "https://cdn.shopify.com/s/files/1/2416/1345/files/NCFIT_Logo_Shop_3x_5224365a-50f5-4079-b7cc-0f7ebeb4f470.png?height=628&pad_color=ffffff&v=1595625119&width=1200"
@@ -63,7 +60,6 @@ function GymClassRaw(props){
 
 const GymClass = withTheme(GymClassRaw)
 
-
 function EmptyClassRaw(props){
   return(
     <TableRow>
@@ -75,9 +71,8 @@ function EmptyClassRaw(props){
     </TableRow>
   )
 }
+
 const EmptyClass = withTheme(EmptyClassRaw)
-
-
 
 class GymClassList extends Component {
   constructor(props){
@@ -164,23 +159,27 @@ class GymClassList extends Component {
   onRowClick(ev, id){
     let tagName = ev.target.tagName
     if(["span", "svg", "path"].indexOf(tagName) < 0){
-      console.log("pushed ", id)
       this.props.history.push(id)
     }
   }
 
   handleRemoveGymClass(){
-    this.closeModal()
     if(!this.state.boxID && !this.state.removeClass.gymClassID){
       this.props.onAlert({type: "error", message: "Class info missing!"})
       return
     }
     removeGymClass(this.state.removeClass)
     .then((res) => {
-      console.log(res)
-      this.props.onAlert({type: "success", message: "Deleted class!"})
+      this.closeModal()
+      this.props.onAlert({
+        type: "success",
+        message: "Deleted class!"
+      })
     })
-    .catch(err => {console.log(err)})
+    .catch(err => {
+      console.log(err)
+      this.closeModal()
+    })
   }
 
   onRemove(gymClass){
@@ -192,35 +191,27 @@ class GymClassList extends Component {
   }
 
   render () {
-    console.log(this.state.gymClasses)
     return (
       <Grid item xs={12}>
         <Grid item xs={12}>
-
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
-
-              <TextField
-                placeholder="Search Classes"
-                variant="outlined"
-                onKeyUp={this.onKeyUp.bind(this)}
-                onChange={this.onChange.bind(this)}
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment >
-                      <SearchIcon color="primary" />
-                    </InputAdornment>
-                  )
-                }}
-              />
+            <TextField
+              placeholder="Search Classes"
+              variant="outlined"
+              onKeyUp={this.onKeyUp.bind(this)}
+              onChange={this.onChange.bind(this)}
+              fullWidth
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment >
+                    <SearchIcon color="primary" />
+                  </InputAdornment>
+                )
+              }}
+            />
             <TableContainer>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Classes</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
+              <Table>
+
                 <TableBody>
                 {this.state.filteredGymClasses.length > 0?
                   this.state.filteredGymClasses.map((gymClass, i) => {
@@ -257,7 +248,5 @@ class GymClassList extends Component {
     )
   }
 }
-
-
 
 export default GymClassList = withRouter(withTheme(GymClassList))
