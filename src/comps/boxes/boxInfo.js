@@ -81,7 +81,7 @@ class BoxInfo extends Component {
 				<Grid item xs={12}>
 
 					{showEditBoxInfoBtn?
-						<React.Fragmet>
+						<React.Fragment>
 							<Tooltip title="Change Location">
 								<IconButton onClick={this.props.onLocation}
 									style={{color: this.props.theme.palette.text.primary}}
@@ -95,7 +95,7 @@ class BoxInfo extends Component {
 									<EditOutlined />
 								</IconButton>
 							</Tooltip>
-						</React.Fragmet>
+						</React.Fragment>
 					:
 						<React.Fragment></React.Fragment>
 					}

@@ -27,7 +27,6 @@ function Image(props){
 const StyledImage = withStyles(theme =>({
 	root: {
 		width: "100%",
-		maxHeight: "15vh",
 		margin: "0 auto",
 		borderRadius: "8px"
 	}
@@ -67,12 +66,17 @@ class ClassInfo extends Component {
 		return(
 		<Grid item xs={12}>
 			<Grid item xs={12} align="left">
-				<Typography variant="h2" align="center" color="primary">
-					{this.state.gymClassMD.boxTitle}
-				</Typography>
-				<Typography variant="h3" align="center" color="secondary">
-					{this.state.gymClassMD.title}
-				</Typography>
+				<Grid item xs={12} align="center">
+					<Typography variant="h2" component="span" color="primary">
+						{`${this.state.gymClassMD.boxTitle}`}
+					</Typography>
+					<Typography variant="h3" component="span" color="primary">
+						&nbsp;-&nbsp;
+					</Typography>
+					<Typography variant="h3" component="span" color="secondary">
+						{this.state.gymClassMD.title}
+					</Typography>
+				</Grid>
 				<Typography
 					variant="h5"
 					style={{

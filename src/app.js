@@ -158,7 +158,7 @@ export default class App extends React.Component {
     />
 
     <BackgroundGrid container direction="column" alignItems="center">
-      <Grid item container xs={12}
+      <Grid item container xs={12} sm={11} md={10} lg={9} xl={8}
         style={{
           minHeight: "100%",
           paddingTop: "8px",

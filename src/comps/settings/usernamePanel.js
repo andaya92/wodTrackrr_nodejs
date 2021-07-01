@@ -66,46 +66,59 @@ class UsernamePanel extends Component {
 
   render () {
     return (
-    <Grid container id="usernamePanel" >
+    <Grid item xs={12}>
     {
       !this.state.userMD
       ?
         <h1> Loading </h1>
       :
-      <Grid item container align="center" xs={12}>
-        <Grid item xs={12}>
-          <Typography variant="h5" color="primary">
-              {this.state.userMD.username}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="updateUsernameInput"
-            type="text"
+      <Grid
+        xs={12} item container
+        direction="column" align="center"
+        alignItems="center" justify="center"
+        style={{height: "25vh"}}
+      >
+        <Grid item>
+          <Grid item xs={12} align="center" style={{marginBottom: "60px"}}>
+            <Typography variant="h3">
+              Change Username
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h5" color="primary">
+                {this.state.userMD.username}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="updateUsernameInput"
+              type="text"
 
-            pattern="[A-Za-z]{12}"
-            inputProps={{
-              title: "Letters only, max length 12",
-              placeholder: "New username"
-            }}
-            onKeyUp={this.onKeyUp.bind(this) }
-            margin="normal"
-            color="primary"
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} style={{marginTop: "8px"}}>
-          <Button size="small" variant="outlined" color="primary"
-              onClick={this.updateUsername.bind(this)}>
-              Update
-          </Button>
+              pattern="[A-Za-z]{12}"
+              inputProps={{
+                title: "Letters only, max length 12",
+                placeholder: "New username"
+              }}
+              onKeyUp={this.onKeyUp.bind(this) }
+              margin="normal"
+              color="primary"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} style={{marginTop: "8px", marginBottom: "8px"}}>
+            <Button size="small" variant="outlined" color="primary"
+                onClick={this.updateUsername.bind(this)}>
+                Update
+            </Button>
+          </Grid>
+
         </Grid>
       </Grid>
     }
     </Grid>
-    );
+    )
   }
 }
 

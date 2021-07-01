@@ -209,7 +209,10 @@ class GymClassList extends Component {
                 )
               }}
             />
-            <TableContainer>
+            <TableContainer style={{
+              minHeight: "50vh",
+              maxHeight: "50vh"
+            }}>
               <Table>
 
                 <TableBody>
