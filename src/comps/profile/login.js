@@ -39,47 +39,53 @@ class Login extends Component {
     });
   }
 
+  linkTo(url){
+    this.props.history.push(url)
+  }
+
   render () {
     return (
       <Grid container id="login" align="center" justify="center">
         <Grid item xs={12} style={{top: "20%", position: "absolute"}}>
-          <Paper elevation={2}>
-            <Typography variant="h4">
-              Login
-            </Typography>
+          <Typography variant="h4">
+            Login
+          </Typography>
 
-            <br />
+          <br />
 
-            <TextField
+          <TextField
             id="email"
             style={{ margin: 8 }}
-            placeholder="Email"
+            label="Email"
             margin="normal"
-            InputLabelProps={{
-            shrink: true,
-            }}
-            /><br /><br />
-            <TextField
+          />
+          <br /><br />
+          <TextField
             id="password"
             type="password"
             style={{ margin: 8 }}
-            placeholder="Password"
+            label="Password"
             margin="normal"
-            InputLabelProps={{
-            shrink: true,
-            }}
-            />
-            <br/><br/>
-
-            <Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
-              Login
-            </Button>
-            <Link to="/register" className="no-line" style={{'paddingLeft': '10px'}}>
-              <Button variant="outlined" color="secondary" >
+          />
+          <br/><br/>
+          <Grid item container align="center">
+            <Grid item xs={6}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.handleSubmit.bind(this)}>
+                Login
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => this.linkTo("/register")}>
                 Register
               </Button>
-            </Link>
-          </Paper>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     );

@@ -63,22 +63,20 @@ class AddGymClass extends Component {
 						<TableHead>
 							<TableRow>
 								<TableCell></TableCell>
-								<TableCell></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
 							<TableRow>
 								<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Gym
-								</Typography>
-								</TableCell>
-								<TableCell>
-									<Select native
+									<TextField select
 										name = "boxID"
 										style={{width: "100%"}}
 										value={this.props.addClassBoxIndex}
+										label="Gym"
 										onChange={this.onBoxChange.bind(this)}
+										SelectProps={{
+											native: true,
+										}}
 									>
 										{this.state.userBoxes.length > 0 ?
 											this.state.userBoxes.map((box, i) => {
@@ -87,69 +85,56 @@ class AddGymClass extends Component {
 																</option>)
 											})
 										:
-											<option aria-label="None" value="" >No gyms</option>
+											<option aria-label="None" value="0" >No gyms</option>
 										}
-									</Select>
+									</TextField>
 								</TableCell>
 							</TableRow>
 							<TableRow>
-								<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Title
-								</Typography>
-								</TableCell>
 								<TableCell>
 									<TextField
 										name = "title"
 										type="text"
 										pattern="[\sA-Za-z0-9]{35}"
 										onChange={this.onClassChange.bind(this)}
-										placeholder="Name of class"
+										label="Name of class"
 										onKeyUp={this.onKeyUp.bind(this) }
 										margin="normal"
 										color="primary"
 										style={{width: "100%"}}
-										InputLabelProps={{
-											shrink: true,
-										}}
 									/>
 								</TableCell>
 							</TableRow>
 							<TableRow>
-								<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Description
-								</Typography>
-								</TableCell>
 								<TableCell>
 									<TextField
 										name="description"
 										type="text"
 										pattern="[\sA-Za-z0-9]{35}"
 										onChange={ this.onClassChange.bind(this) }
-										placeholder="Description"
+										label="Description"
 										onKeyUp={ this.onKeyUp.bind(this) }
 										margin="normal"
 										color="primary"
 										style={{width: "100%"}}
-										InputLabelProps={{
-											shrink: true,
-										}}
 									/>
 								</TableCell>
 							</TableRow>
 							<TableRow>
 								<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Private
-								</Typography>
-								</TableCell>
-								<TableCell>
-								<Switch
-									name="isPrivate" color="secondary"
-									checked={this.state.isPrivate}
-									onChange={this.handleCheckboxChange.bind(this)}
-								/>
+									<Grid container justify="center" direction="column">
+										<Grid item >
+											<Typography variant="caption">Private</Typography>
+										</Grid>
+										<Grid item>
+											<Switch
+												name="isPrivate" color="secondary"
+												label="Private"
+												checked={this.state.isPrivate}
+												onChange={this.handleCheckboxChange.bind(this)}
+											/>
+										</Grid>
+									</Grid>
 								</TableCell>
 							</TableRow>
 							<TableRow>

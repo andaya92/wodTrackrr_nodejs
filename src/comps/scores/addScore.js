@@ -153,13 +153,10 @@ class AddScore extends Component{
 											pattern="[0-9]{3}"
 											inputProps={{
 												title: "Numbers only, max length 3",
-												placeholder: "Minutes"
+												label: "Minutes"
 											}}
 											margin="normal"
 											color="primary"
-											InputLabelProps={{
-												shrink: true,
-											}}
 											/>
 									</BorderlessTableCell>
 									<BorderlessTableCell align="center">
@@ -170,13 +167,10 @@ class AddScore extends Component{
 											pattern="[0-9]{2}"
 											inputProps={{
 												title: "Numbers only, max length 2",
-												placeholder: "Seconds"
+												label: "Seconds"
 											}}
 											margin="normal"
 											color="primary"
-											InputLabelProps={{
-												shrink: true,
-											}}
 										/>
 									</BorderlessTableCell>
 									</React.Fragment>
@@ -189,13 +183,10 @@ class AddScore extends Component{
 											pattern="[0-9]{4}"
 											inputProps={{
 												title: "Numbers only, max length 4",
-												placeholder: "Score"
+												label: "Score"
 											}}
 											margin="normal"
 											color="primary"
-											InputLabelProps={{
-												shrink: true,
-											}}
 										/>
 									</BorderlessTableCell>
 								}

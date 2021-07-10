@@ -101,15 +101,9 @@ class EditWod extends Component {
 									value= {this.state.wodInfo['title']}
 									onChange={this.handleValChange.bind(this)}
 									pattern="[\sA-Za-z0-9]{35}"
-									inputProps={{
-										title: "Letters only, max length 35",
-										placeholder: "Title"
-									}}
+									label="Title"
 									margin="normal"
 									color="primary"
-									InputLabelProps={{
-										shrink: true,
-									}}
 									/>
 							</StyledGrid>
 							<StyledGrid item xs={12}>
@@ -120,17 +114,11 @@ class EditWod extends Component {
 								value= {this.state.wodInfo['wodText']}
 								onChange={this.handleValChange.bind(this)}
 								pattern="[\sA-Za-z0-9]{35}"
-								inputProps={{
-									title: "Letters only, max length 35",
-									placeholder: "Workout here"
-								}}
+								label="Workout here"
 								margin="normal"
 								color="primary"
 								multiline
-										rows={5}
-								InputLabelProps={{
-									shrink: true,
-								}}
+								rows={5}
 								/>
 							</StyledGrid>
 

@@ -37,18 +37,18 @@ function GymClassRaw(props){
       <TableCell align="right">
         { props.isOwner ?
           <React.Fragment>
-            <Tooltip title="Delete Class">
-              <IconButton
-                onClick={()=>{props.onRemove(props.info)}}>
-                <Delete  color="error" />
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Upload Image">
             <IconButton
               onClick={()=>{ props.showUploadClassImage(gymClassID) }}>
                 <PhotoIcon color="primary"/>
             </IconButton>
           </Tooltip>
+            <Tooltip title="Delete Class">
+              <IconButton
+                onClick={()=>{props.onRemove(props.info)}}>
+                <Delete  color="error" />
+              </IconButton>
+            </Tooltip>
         </React.Fragment>
         :
           <React.Fragment></React.Fragment>
@@ -88,6 +88,7 @@ class GymClassList extends Component {
       openModal: false,
       urls: {}
     }
+    this.isMountedRef = React.createRef()
   }
 
   componentDidMount(){
@@ -100,9 +101,11 @@ class GymClassList extends Component {
     getClassImages(this.state.boxID, classIDs)
     .then(urls => {
       console.log(Object.fromEntries(urls))
-      this.setState({
-        urls: Object.fromEntries(urls)
-      })
+      if(this.isMountedRef.current){
+        this.setState({
+          urls: Object.fromEntries(urls)
+        })
+      }
     })
     .catch(err => console.log(err))
   }
@@ -192,7 +195,7 @@ class GymClassList extends Component {
 
   render () {
     return (
-      <Grid item xs={12}>
+      <Grid item xs={12} ref={this.isMountedRef}>
         <Grid item xs={12}>
           <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
             <TextField

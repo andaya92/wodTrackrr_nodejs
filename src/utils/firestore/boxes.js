@@ -16,7 +16,7 @@ export default function mTea(){}
 
 
 export function testBoxes(){
-	let numBoxes = 1000;
+	let numBoxes = 500;
 	for(let i=0; i < numBoxes; i++){
 		setBox(`Title:${i}`, "D", "7yT7qYHwXvNySI0DVb71PeOTvQl1")
 	}

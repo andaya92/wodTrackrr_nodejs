@@ -29,11 +29,12 @@ class BoxSearchPage extends Component {
       if(!ss.empty){
         let boxes = []
         ss.forEach(doc => {
+          // console.log(doc.data())
           boxes.push(doc.data())
         })
-        boxes.sort((x, y) => {
-          return x["title"].toLowerCase() > y["title"].toLowerCase() ? -1 : 1
-        })
+        // boxes.sort((x, y) => {
+        //   return x["title"].toLowerCase() > y["title"].toLowerCase() ? -1 : 1
+        // })
         this.setState({
           allBoxes: boxes
         })

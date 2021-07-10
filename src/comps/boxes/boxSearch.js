@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import{
   Grid, Paper, Typography, IconButton, TextField, InputAdornment,
-  Card, CardMedia, CardActionArea, CardContent, CardActions, Tooltip
+  Card, CardMedia, CardActionArea, CardContent, CardActions, Tooltip, Button
 }from '@material-ui/core'
 import { withRouter } from "react-router-dom";
 
@@ -18,7 +18,7 @@ import ActionCancelModal from '../actionCancelModal';
 import { setFollow, removeFollow, getUserFollowers, getFollowsFromSS } from "../../utils/firestore/follows"
 import { toDayYear } from "../../utils/formatting"
 import { setImage, getImages, deleteGymImage} from "../../utils/firestore/gymImages"
-import { exportDefaultSpecifier } from '@babel/types';
+import { testBoxes } from "../../utils/firestore/boxes"
 
 
 
@@ -134,7 +134,7 @@ class BoxSearch extends Component {
 
   componentDidMount(){
     this.listenForFollowing()
-    this._getImages()
+    // this._getImages()
   }
 
   componentWillUnmount(){
@@ -169,13 +169,35 @@ class BoxSearch extends Component {
     }
   }
 
+
+  /** Get all box names and Top boxes
+   *
+   *    - issue with loading 500 boxes at first, takes too long.
+   *    - Must create a collection of box names and ID's
+   *      - this will make loadin title fast for init search.
+   *    -
+   *
+   *
+   *  - Maintain two lists 1 full of
+   *
+   *
+   *
+   * Filter box names on search and display them
+   * When user clicks on one query for boxes with a limit.
+   * Keep track of first and last of each pagination query.
+   * When user clicks back or forward, new query and  update first and last
+   *
+   *
+   *
+   */
+
+
+
   onChange(ev){
     let val = ev.target.value
     let filteredBoxes = this.state.allBoxes.filter(box =>{
       return box["title"].toLowerCase().includes(val.toLowerCase())
     })
-    console.log("filteredBoxes")
-    console.log(filteredBoxes)
     this.setState({filteredBoxes: filteredBoxes})
   }
 
@@ -285,6 +307,9 @@ class BoxSearch extends Component {
   }
 
 
+  /**
+   * Modify to only fetch the current boxes instead of All of them
+   */
   _getImages(){
     let boxIDs = this.state.allBoxes.map(box => {
       return box.boxID
@@ -304,28 +329,26 @@ class BoxSearch extends Component {
     return (
       <Grid item xs={12} style={{marginTop: "3vh"}}>
         <Grid item xs={12} style={{margin: "0px 0px 8px 0px"}}>
-        <Paper elevation={2} component="form">
-            {/* <Button onClick={testBoxes}>Test Boxes Generate 1000</Button> */}
-           <TextField
-             fullWidth
-              variant="outlined"
-              onKeyUp={this.onKeyUp.bind(this)}
-              onChange={this.onChange.bind(this)}
-              placeholder="Search Gyms"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment>
-                    <SearchIcon color="primary" />
-                  </InputAdornment>
-                )
-              }}
-          />
-        </Paper>
+          <Button onClick={testBoxes}>Test Boxes Generate 1000</Button>
+          <TextField
+            fullWidth
+            variant="outlined"
+            onKeyUp={this.onKeyUp.bind(this)}
+            onChange={this.onChange.bind(this)}
+            placeholder="Search Gyms"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment>
+                  <SearchIcon color="primary" />
+                </InputAdornment>
+              )
+            }}
+        />
         </Grid>
         <Grid item xs={12}>
 
     { this.state.filteredBoxes.length > 0?
-      this.state.filteredBoxes.map((box, i) => {
+      this.state.filteredBoxes.slice(0, 5).map((box, i) => {
         let url = this.state.boxImages[box.boxID]
         url = url? url: DEFAULT_IMAGE_URL
         return <Box

@@ -59,24 +59,20 @@ class AddWod extends Component {
 					<TableHead>
 						<TableRow>
 							<TableCell></TableCell>
-							<TableCell></TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						<TableRow>
 							<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Gym
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
-									style={{width: "100%"}}
-									onChange={this.onChange.bind(this)}
+								<TextField select
+									name='addWodBoxSelected'
 									value={this.state.addWodBoxSelected}
-									inputProps={{
-										name: 'addWodBoxSelected'
+									onChange={this.onChange.bind(this)}
+									label="Gym"
+									SelectProps={{
+										native: true,
 									}}
+									style={{width: "100%"}}
 								>
 									{this.state.userBoxes.length > 0 ?
 										this.state.userBoxes.map((box, i) => {
@@ -86,25 +82,22 @@ class AddWod extends Component {
 												</option>)
 											})
 									:
-										<option aria-label="None" value="" >No gyms</option>
+										<option aria-label="None" value="0" >No gyms</option>
 									}
-								</Select>
+								</TextField>
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Class
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
-									style={{width: "100%"}}
-									onChange={this.onChange.bind(this)}
+								<TextField select
+									name='addWodGymClassSelected'
 									value={this.state.addWodGymClassSelected}
-									inputProps={{
-										name: 'addWodGymClassSelected'
+									onChange={this.onChange.bind(this)}
+									label="Class"
+									SelectProps={{
+										native: true,
 									}}
+									style={{width: "100%"}}
 								>
 									{this.state.gymClasses.length > 0 ?
 										this.state.gymClasses.map((gymClass, i) => {
@@ -113,24 +106,21 @@ class AddWod extends Component {
 														</option>)
 									})
 								:
-									<option aria-label="None" value="" >No Classes!</option>
+									<option aria-label="None" value="0" >No Classes!</option>
 								}
-				      	</Select>
+				      	</TextField>
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Score Type
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
+								<TextField select
 									style={{width: "100%"}}
 									onChange={this.onChange.bind(this)}
 									value={this.state.addWodScoreTypeSelected}
-									inputProps={{
-										name: 'addWodScoreTypeSelected'
+									name='addWodScoreTypeSelected'
+									label="Score Type"
+									SelectProps={{
+										native: true,
 									}}
 								>
 									{
@@ -142,61 +132,36 @@ class AddWod extends Component {
 											</option>
 										})
 									}
-								</Select>
+								</TextField>
 							</TableCell>
 						</TableRow>
 						<TableRow>
 							<TableCell>
-								<Typography color="primary" variant="subtitle1">
-									Title
-								</Typography>
-							</TableCell>
-							<TableCell>
 								<TextField
-								  onChange={this.onChange.bind(this)}
-									inputProps={{
-										name: "addWodTitleForm",
-										title: "Letters only, max length 35",
-										placeholder: "Title"
-									}}
+									name="addWodTitleForm"
+									label="Title"
 									type="text"
+									color="primary"
 									style={{width: "100%"}}
 									pattern="[\sA-Za-z0-9]{35}"
 									margin="normal"
-									color="primary"
-									InputLabelProps={{
-										shrink: true,
-									}}
+								  onChange={this.onChange.bind(this)}
 								/>
 							</TableCell>
 						</TableRow>
-
 						<TableRow>
-							<TableCell colSpan={2} align="center">
-								<Typography color="primary" variant="subtitle1">
-									Workout
-								</Typography>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell colSpan={2}>
-							<TextField
-								onChange={this.onChange.bind(this)}
-								inputProps={{
-									name: "addWodWodTextForm",
-									title: "Enter workout",
-									placeholder: "workout"
-								}}
-								type="text"
-								style={{width: "100%"}}
-								margin="normal"
-								color="primary"
-								InputLabelProps={{
-									shrink: true,
-								}}
-								multiline={true}
-								rows={12}
-							/>
+							<TableCell>
+								<TextField
+									name="addWodWodTextForm"
+									type="text"
+									label="Enter workout"
+									rows={12}
+									multiline
+									onChange={this.onChange.bind(this)}
+									margin="normal"
+									color="primary"
+									style={{width: "100%"}}
+								/>
 							</TableCell>
 						</TableRow>
 						<TableRow>

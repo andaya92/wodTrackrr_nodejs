@@ -79,7 +79,7 @@ class AddBox extends Component {
 								value={this.state.boxMD.title}
 								onKeyUp={this.onKeyUp.bind(this) }
 								onChange={this.onChange.bind(this)}
-								placeholder="Name"
+								label="Name"
 								margin="normal"
 								color="primary"
 								style={{width: "80%"}}
@@ -87,15 +87,15 @@ class AddBox extends Component {
 					</Grid>
 					<Grid item xs={12}>
 						<TextField
-								name="description"
-								value={this.state.boxMD.description}
-								onKeyUp={this.onKeyUp.bind(this) }
-								onChange={this.onChange.bind(this)}
-								placeholder="Description"
-								margin="normal"
-								color="primary"
-								style={{width: "80%"}}
-								/>
+							name="description"
+							value={this.state.boxMD.description}
+							onKeyUp={this.onKeyUp.bind(this) }
+							onChange={this.onChange.bind(this)}
+							label="Description"
+							margin="normal"
+							color="primary"
+							style={{width: "80%"}}
+						/>
 					</Grid>
 					<Grid item xs={12}>
 						<Button size="small" variant="outlined" color="secondary"

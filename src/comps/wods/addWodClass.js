@@ -96,32 +96,28 @@ class AddWodClass extends Component {
 
 	render(){
 		return(
-			<Grid item container xs={12}>
+			<Grid item container xs={12} align="center">
 				<TableContainer>
-
 					<Table>
 					<TableHead>
 						<TableRow>
 							<TableCell colSpan={2} align="center">
-                                Add Workout
+									Add Workout
 							</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						<TableRow>
 							<TableCell>
-								<Typography color="primary" variant="caption">
-									Score Type
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Select native
-									style={{width: "100%"}}
+								<TextField select
+									name="Score Type"
+									label="Score Type"
 									onChange={this.onScoreTypeSelectChange.bind(this)}
-									inputProps={{
-										name: 'Score Type',
-										id: 'ownerBoxAddWodScoreType',
-									}}>
+									SelectProps={{
+										native: true,
+									}}
+									style={{width: "100%"}}
+									>
 										{
 											SCORETYPES.map((scoreType, i) => {
 												return <option key={i} value={scoreType}>
@@ -131,61 +127,36 @@ class AddWodClass extends Component {
 												</option>
 											})
 										}
-								</Select>
+								</TextField>
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell>
-								<Typography color="primary" variant="caption">
-									Title
-								</Typography>
-							</TableCell>
 							<TableCell>
 								<TextField
-					              id="ownerBoxAddWodTitle"
-					              type="text"
+									id="ownerBoxAddWodTitle"
+									type="text"
 								  onChange={this.onTitleChange.bind(this)}
-					              style={{width: "100%"}}
-					              pattern="[\sA-Za-z0-9]{35}"
-					              inputProps={{
-					                title: "Letters only, max length 35",
-					                placeholder: "Title"
-					              }}
-					              margin="normal"
-					              color="primary"
-					              InputLabelProps={{
-					                shrink: true,
-					              }}
-					            />
-							</TableCell>
-						</TableRow>
-
-						<TableRow>
-							<TableCell colSpan={2} align="center">
-								<Typography color="primary" variant="caption">
-									Workout
-								</Typography>
+									style={{width: "100%"}}
+									pattern="[\sA-Za-z0-9]{35}"
+									label="Title"
+									margin="normal"
+									color="primary"
+								/>
 							</TableCell>
 						</TableRow>
 						<TableRow>
-							<TableCell colSpan={2}>
+							<TableCell>
 							<TextField
-					              id="wodText"
-					              type="text"
-					              style={{width: "100%"}}
-								  onChange={this.onWodTextChange.bind(this)}
-					              inputProps={{
-					                title: "Enter workout",
-					                placeholder: "workout"
-					              }}
-					              margin="normal"
-					              color="primary"
-					              InputLabelProps={{
-					                shrink: true,
-					              }}
-								  multiline={true}
-								  rows={12}
-					            />
+								id="wodText"
+								type="text"
+								style={{width: "100%"}}
+								onChange={this.onWodTextChange.bind(this)}
+								label="Workout"
+								margin="normal"
+								color="primary"
+								multiline={true}
+								rows={12}
+							/>
 							</TableCell>
 						</TableRow>
 						<TableRow>

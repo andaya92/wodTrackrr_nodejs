@@ -51,7 +51,7 @@ class DeleteAccount extends Component {
         xs={12} item container
         direction="column" align="center"
         alignItems="center" justify="center"
-        style={{height: "25vh"}}
+        style={{marginBottom: "16px"}}
       >
         <Grid item >
           <Grid item xs={12} align="center" style={{marginBottom: "60px"}}>

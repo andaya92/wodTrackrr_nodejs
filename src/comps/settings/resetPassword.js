@@ -71,7 +71,7 @@ class ResetPassword extends Component {
             xs={12} item container
             direction="column" align="center"
             alignItems="center" justify="center"
-            style={{height: "25vh"}}
+            style={{marginBottom: "16px"}}
           >
           <Grid item>
             <Grid item xs={12} align="center" style={{marginBottom: "16px"}}>
@@ -87,11 +87,8 @@ class ResetPassword extends Component {
                   name="currentPassword"
                   onChange={this.onChange.bind(this)}
                   style={{ margin: 8 }}
-                  placeholder="Current Password"
+                  label="Current Password"
                   margin="normal"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
                 />
             </Grid>
             <Grid item xs={12} align="center">
@@ -102,11 +99,8 @@ class ResetPassword extends Component {
                   color="primary"
                   onChange={this.onChange.bind(this)}
                   style={{ margin: 8 }}
-                  placeholder="New Password"
+                  label="New Password"
                   margin="normal"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
                 />
             </Grid>
             <Grid item xs={12} align="center">
@@ -116,11 +110,8 @@ class ResetPassword extends Component {
                 onChange={this.onChange.bind(this)}
                 type="password"
                 style={{ margin: 8 }}
-                placeholder="Confirm Password"
+                label="Confirm Password"
                 margin="normal"
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
             </Grid>
 

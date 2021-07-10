@@ -76,7 +76,7 @@ class UsernamePanel extends Component {
         xs={12} item container
         direction="column" align="center"
         alignItems="center" justify="center"
-        style={{height: "25vh"}}
+        style={{marginBottom: "16px"}}
       >
         <Grid item>
           <Grid item xs={12} align="center" style={{marginBottom: "60px"}}>
@@ -93,18 +93,11 @@ class UsernamePanel extends Component {
             <TextField
               id="updateUsernameInput"
               type="text"
-
               pattern="[A-Za-z]{12}"
-              inputProps={{
-                title: "Letters only, max length 12",
-                placeholder: "New username"
-              }}
+              label="New username"
               onKeyUp={this.onKeyUp.bind(this) }
               margin="normal"
               color="primary"
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
           <Grid item xs={12} style={{marginTop: "8px", marginBottom: "8px"}}>

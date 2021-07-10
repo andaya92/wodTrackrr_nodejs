@@ -90,76 +90,66 @@ class RegisterUser extends Component {
   render () {
     return (
 		<Grid container id="login" align="center" justify="center">
-       		<Grid item xs={12} style={{top: "20%", position: "absolute"}}>
-			<Paper elevation={2}>
+      <Grid item xs={12} style={{top: "20%", position: "absolute"}}>
 				<Typography variant="h4">
 					Register
 				</Typography>
+				<form>
 
-				<TextField
-					name="username"
-					type="text"
-					onChange={this.onChange.bind(this)}
-					style={{ margin: 8 }}
-					placeholder="Username"
-					margin="normal"
-					InputLabelProps={{
-						shrink: true,
-					}}
-				/><br /><br />
+					<TextField
+						name="username"
+						id="testID"
+						type="text"
+						onChange={this.onChange.bind(this)}
+						style={{ margin: 8 }}
+						label="Username"
+						margin="normal"
 
-				<TextField
-					name="email"
-					type="email"
-					onChange={this.onChange.bind(this)}
-					style={{ margin: 8 }}
-					placeholder="Email"
-					margin="normal"
-					InputLabelProps={{
-						shrink: true,
-					}}
-				/><br /><br />
+					/><br /><br />
 
-				<TextField
-					name="password"
-					type="password"
-					onChange={this.onChange.bind(this)}
-					style={{ margin: 8 }}
-					placeholder="Password"
-					margin="normal"
-					InputLabelProps={{
-					shrink: true,
-					}}
-				/><br/><br/>
+					<TextField
+						name="email"
+						type="email"
+						onChange={this.onChange.bind(this)}
+						style={{ margin: 8 }}
+						label="Email"
+						margin="normal"
 
-				<TextField
-					name="passwordConfirm"
-					type="password"
-					style={{ margin: 8 }}
-					placeholder="Confirm Password"
-					margin="normal"
-					onChange={this.onChange.bind(this)}
-					InputLabelProps={{
-					shrink: true,
-					}}
-				/> <br/><br/>
+					/><br /><br />
 
-				<Grid item container xs={12} >
-					<Grid item xs={6} >
-						<Button variant="outlined" color="secondary" onClick={this.goToLogin.bind(this)}>
-						Login
-						</Button>
+					<TextField
+						name="password"
+						type="password"
+						onChange={this.onChange.bind(this)}
+						style={{ margin: 8 }}
+						label="Password"
+						margin="normal"
+					/><br/><br/>
+
+					<TextField
+						name="passwordConfirm"
+						type="password"
+						style={{ margin: 8 }}
+						label="Confirm Password"
+						margin="normal"
+						onChange={this.onChange.bind(this)}
+					/> <br/><br/>
+
+					<Grid item container xs={12} >
+						<Grid item xs={6} >
+							<Button variant="outlined" color="secondary" onClick={this.goToLogin.bind(this)}>
+							Login
+							</Button>
+						</Grid>
+						<Grid item xs={6} >
+							<Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
+								Submit
+							</Button>
+						</Grid>
 					</Grid>
-					<Grid item xs={6} >
-						<Button variant="outlined" color="primary" onClick={this.handleSubmit.bind(this)}>
-						Submit
-						</Button>
-					</Grid>
-				</Grid>
-			</Paper>
+				</form>
 			</Grid>
-		</Grid>
-    );
+		</Grid>)
   }
 }
 
